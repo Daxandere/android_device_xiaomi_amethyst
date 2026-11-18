@@ -14,6 +14,29 @@ Never hand-edit generated files.
 Incremental OTAs are not enough on their own. Use a full OTA, or chain a full
 dump plus incrementals.
 
+## Before the first refresh: fork the vendor repository
+
+`amethyst-playground` is not yours, so you cannot push a refreshed blob tree
+there. Fork `proprietary_vendor_xiaomi_amethyst` to `Daxandere`, then point the
+local manifest at the fork and re-sync that single project:
+
+```bash
+# once
+git clone https://github.com/Daxandere/proprietary_vendor_xiaomi_amethyst \
+    ~/android/lineage-23.2/vendor/xiaomi/amethyst
+```
+
+Change the `remote` to `mine` in
+[local_manifest.example.xml](local_manifest.example.xml) (or in
+`Daxandere/local_manifests`) and run:
+
+```bash
+repo sync -c --force-sync vendor/xiaomi/amethyst
+```
+
+The extraction rewrites the whole directory, so a stale upstream checkout would
+leave you with a fork that cannot be fast-forwarded.
+
 ## Procedure
 
 ### 1. Verify the download
@@ -93,6 +116,23 @@ Blob refreshes are not always neutral. Check for:
 
 If a fixup breaks, the build usually fails with a missing `NEEDED` library or a
 missing file. Fix the fixup, do not delete the blob.
+
+Two cosmetic items are known and harmless, but worth cleaning during a refresh:
+
+1. `device.mk` copies
+   `vendor/etc/seccomp_policy/c2audio.vendor.{base,ext}-arm64.policy` from
+   `hardware/qcom-caf/sm8650/audio/primary-hal`, and the vendor blob tree ships
+   the same two files byte for byte. The build installs both and prints a
+   duplicate-rule warning (tolerated by `BUILD_BROKEN_DUP_RULES`). Keeping only
+   the HAL copies is the cleaner end state: drop the two lines from
+   `proprietary-files.txt`, delete the two blobs and their `Android.bp` entries.
+   `device.mk` itself stays identical to the official sm8650 trees.
+
+2. `extract-files.py` still carries fixups for
+   `vendor/etc/media_codecs_volcano_v0.xml` and `vendor/etc/sensors/hals.conf`,
+   which are not in `proprietary-files.txt`. `extract-utils` ignores unused
+   fixups (it has a TODO to report them), so they are dead code — remove them
+   when the surrounding fixups change.
 
 ### 6. Build and test
 
