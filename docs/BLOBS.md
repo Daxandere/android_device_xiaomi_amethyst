@@ -1,0 +1,141 @@
+# Refreshing the vendor blobs
+
+The vendor repository is generated from a **full** Xiaomi OTA or fastboot ROM.
+Never hand-edit generated files.
+
+## What you need
+
+- A full OTA zip or fastboot ROM for the **global** variant:
+  `OS3.0.307.0.WOPMIXM` (or newer).
+- A synced LineageOS 23.2 source tree, including
+  `tools/extract-utils` and `prebuilts/extract-tools`.
+- About 30 GB of free disk for the temporary dump.
+
+Incremental OTAs are not enough on their own. Use a full OTA, or chain a full
+dump plus incrementals.
+
+## Procedure
+
+### 1. Verify the download
+
+Compare the MD5/SHA-256 published by Xiaomi with the file:
+
+```bash
+sha256sum amethyst_global_OS3.0.307.0.WOPMIXM.zip
+```
+
+### 2. Extract the blobs
+
+From the device tree, with `$SRC` as the source root:
+
+```bash
+cd $SRC/device/xiaomi/amethyst
+./extract-files.py --keep-dump /path/to/amethyst_global_OS3.0.307.0.WOPMIXM.zip
+```
+
+What the tool does:
+
+1. Extracts the zip/tar to a temporary dump directory.
+2. Finds `payload.bin` (or `super.img`) and extracts the partitions.
+3. Unpacks EROFS/EXT4 images.
+4. Applies the fixups in `extract-files.py`.
+5. Cleans and repopulates `vendor/xiaomi/amethyst`.
+6. Regenerates `amethyst-vendor.mk`, `Android.bp` and `BoardConfigVendor.mk`.
+
+`--keep-dump` keeps the temporary dump next to the archive. Delete it when you
+are done; do not commit it.
+
+### 3. Check the result
+
+```bash
+cd $SRC
+git -C vendor/xiaomi/amethyst status --short | head
+git -C vendor/xiaomi/amethyst diff --stat | tail -n 5
+```
+
+The vendor repository is about 2.8 GB and contains roughly 3,100 files. The
+largest file is around 83 MB, below GitHub's 100 MB per-file limit, so Git LFS
+is not required.
+
+### 4. Update the metadata
+
+`extract-files.py` updates `proprietary-files.txt`, but two values are manual:
+
+1. The header of `proprietary-files.txt`:
+
+   ```text
+   # All unpinned blobs below are extracted from amethyst OS3.0.307.0.WOPMIXM
+   ```
+
+2. `VENDOR_SECURITY_PATCH` in `BoardConfig.mk`. Read the real value from the
+   dump:
+
+   ```bash
+   grep ro.vendor.build.security_patch vendor/build.prop
+   ```
+
+   Then set:
+
+   ```make
+   VENDOR_SECURITY_PATCH := 2026-10-01
+   ```
+
+### 5. Review the diff
+
+Blob refreshes are not always neutral. Check for:
+
+- Camera libraries or firmware removed/renamed by Xiaomi.
+- Audio policy files that changed path.
+- New libraries that need a `replace_needed`/`add_needed` fixup in
+  `extract-files.py`.
+- Libraries that no longer exist but are still listed in
+  `proprietary-files.txt`.
+
+If a fixup breaks, the build usually fails with a missing `NEEDED` library or a
+missing file. Fix the fixup, do not delete the blob.
+
+### 6. Build and test
+
+```bash
+. build/envsetup.sh
+lunch lineage_amethyst-userdebug
+mka bacon -j16
+```
+
+Then follow [TESTING.md](TESTING.md). Pay special attention to camera, audio,
+fingerprint, NFC and calls.
+
+### 7. Commit
+
+Commit the two repositories separately:
+
+```bash
+git -C vendor/xiaomi/amethyst add -A
+git -C vendor/xiaomi/amethyst commit -m "amethyst: Update blobs from OS3.0.307.0.WOPMIXM"
+
+git add proprietary-files.txt BoardConfig.mk
+git commit -m "amethyst: Target OS3.0.307.0.WOPMIXM"
+```
+
+## If the extraction fails
+
+| Error | Fix |
+|---|---|
+| `payload.bin` not found | The zip is an incremental OTA or a vendor firmware zip. Use the full ROM. |
+| `ota_extractor` missing | The source is incomplete; `repo sync prebuilts/extract-tools`. |
+| EROFS/EXT4 extraction error | Install `erofs-utils`; check free disk. |
+| Python import error | Run from the device tree, with the shebang's `PYTHONPATH`. |
+| `java` not found | `prebuilts/jdk/jdk21` is missing; sync it. |
+
+As a fallback, extract manually with `payload-dumper-go`, unpack the images
+with `extract.erofs`/loop mount, and pass the resulting directory to
+`extract-files.py`:
+
+```bash
+./extract-files.py --keep-dump /path/to/dump-directory
+```
+
+## Related documents
+
+- [FIRMWARE.md](FIRMWARE.md) — firmware vs ROM, ARB.
+- [ARCHITECTURE.md](ARCHITECTURE.md) — where blobs and fixups live.

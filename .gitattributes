@@ -1,0 +1,19 @@
+# Keep source files LF on every platform.
+* text=auto eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.so binary
+*.img binary
+*.bin binary
+*.jar binary
+*.apk binary
+*.zip binary
+*.7z binary
+
+# Generated / vendor content is never part of this tree
+vendor/** -text

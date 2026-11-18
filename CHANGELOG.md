@@ -1,0 +1,18 @@
+# Changelog
+
+## 2026-11-18 — Tree hygiene and documentation
+
+- Import the `lineage-23.2` tree from `amethyst-playground`.
+- Add a full README with an indexed documentation set.
+- Add `docs/ARCHITECTURE.md`, `BUILD.md`, `FIRMWARE.md`, `BLOBS.md`,
+  `FLASH.md`, `TESTING.md`, `TROUBLESHOOTING.md`, `ROADMAP.md`, `OFFICIAL.md`
+  and `DECISIONS.md`.
+- Add `lineage.dependencies` for roomservice.
+- Add helper scripts under `tools/`.
+- Add `.gitattributes`, `.gitignore`, `CONTRIBUTING.md` and `CREDITS.md`.
+- Document the blob refresh from `OS3.0.307.0.WOPMIXM`.
+
+## 2026-07-02 — Original import
+
+- Last upstream commit: `amethyst: Remove virtual framebuffer`.
+- Base: `lineage-23.2`, firmware `OS3.0.4.0.WOPMIXM`.

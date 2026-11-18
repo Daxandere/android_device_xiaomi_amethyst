@@ -1,0 +1,25 @@
+# Build output
+out/
+*.zip
+*.img
+*.log
+
+# Blob dumps
+dump/
+*-dump/
+*.tar.md5
+
+# Signing material — never commit
+keys/
+*.keystore
+*.jks
+*.pem
+*.pk8
+*.x509.pem
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
