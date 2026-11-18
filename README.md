@@ -176,7 +176,13 @@ Firmware and ROM partitions are different things; read
 | `android_device_xiaomi_amethyst-kernel` | `device/xiaomi/amethyst-kernel` | Prebuilt kernel, dtbo, modules |
 | `proprietary_vendor_xiaomi_amethyst` | `vendor/xiaomi/amethyst` | Proprietary blobs |
 | `android_hardware_xiaomi` | `hardware/xiaomi` | Xiaomi HALs |
-| `android_device_qcom_sepolicy_vndr` | `device/qcom/sepolicy_vndr/sm8650` | CAF sepolicy (`lineage-23.2-caf-sm8650`) |
+
+The Qualcomm trees are provided by LineageOS `snippets/lineage.xml` and must not
+be added to the local manifest:
+
+| Repository | Path | Notes |
+|---|---|---|
+| `LineageOS/android_device_qcom_sepolicy_vndr` | `device/qcom/sepolicy_vndr/sm8650` | CAF sepolicy, branch `lineage-23.2-caf-sm8650` |
 
 The manifest lives in
 [`Daxandere/local_manifests`](https://github.com/Daxandere/local_manifests)

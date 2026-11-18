@@ -87,7 +87,6 @@ The manifest points to:
 - `device/xiaomi/amethyst-kernel`
 - `vendor/xiaomi/amethyst`
 - `hardware/xiaomi`
-- `device/qcom/sepolicy_vndr/sm8650`
 
 Verify the result:
 
@@ -96,8 +95,13 @@ ls device/xiaomi/amethyst/BoardConfig.mk
 ls device/xiaomi/amethyst-kernel/images/kernel
 ls vendor/xiaomi/amethyst/amethyst-vendor.mk
 ls hardware/xiaomi
-ls device/qcom/sepolicy_vndr/sm8650
+ls device/qcom/sepolicy_vndr/sm8650        # from snippets/lineage.xml
+ls hardware/qcom-caf/sm8650                # from snippets/lineage.xml
 ```
+
+The last two come from LineageOS itself. If they are missing, the manifest is
+wrong somewhere else — do not add them, `repo` will reject the sync with
+`duplicate path`.
 
 ## 4. Build
 

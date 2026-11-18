@@ -67,6 +67,7 @@ for path in \
     device/xiaomi/amethyst-kernel/images/kernel \
     vendor/xiaomi/amethyst/amethyst-vendor.mk \
     hardware/xiaomi/Android.bp \
+    hardware/qcom-caf/sm8650 \
     device/qcom/sepolicy_vndr/sm8650; do
     if [[ -e "$path" ]]; then
         echo "  OK   $path"
@@ -78,7 +79,10 @@ done
 
 if (( missing )); then
     echo
-    echo "Some repositories are missing. Check .repo/local_manifests/amethyst.xml" >&2
+    echo "Some paths are missing. The first four come from" >&2
+    echo ".repo/local_manifests/amethyst.xml; sepolicy_vndr and qcom-caf/sm8650" >&2
+    echo "come from LineageOS snippets/lineage.xml (check the local manifest does" >&2
+    echo "not declare them again)." >&2
     exit 1
 fi
 

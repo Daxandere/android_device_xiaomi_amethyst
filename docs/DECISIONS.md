@@ -64,3 +64,16 @@ keys, `persist` backups and personal logs stay out of the repository.
 Android 16 (LineageOS 23.2) is the mature base for this device. Android 17
 ports exist but are still fixing audio, camera and eSIM. Porting to 24.0 before
 23.2 is stable would multiply the variables.
+
+## D010 — Only device-specific repositories in the local manifest
+
+LineageOS `snippets/lineage.xml` already declares the shared Qualcomm trees at
+the paths this device uses, including `device/qcom/sepolicy_vndr/sm8650`
+(`lineage-23.2-caf-sm8650`) and the `SEPolicy.mk` linkfile generated from
+`hardware/qcom-caf/common`. `repo` validates every manifest before syncing and
+aborts on `duplicate path`, so the local manifest lists only the four
+repositories that LineageOS does not have: the device tree, the kernel, the
+vendor blobs and `hardware/xiaomi`.
+
+`lineage.dependencies` was trimmed the same way. It keeps the entries that the
+official process needs, and nothing that the default manifest already provides.
