@@ -14,6 +14,30 @@ Never hand-edit generated files.
 Incremental OTAs are not enough on their own. Use a full OTA, or chain a full
 dump plus incrementals.
 
+## Package verified for this refresh
+
+The archive used to prepare the `OS3.0.307.0.WOPMIXM` blobs was checked before
+extraction. The zip itself is not committed; these values are enough to verify a
+future download.
+
+| Field | Value |
+|---|---|
+| File | `amethyst_global-ota_full-OS3.0.307.0.WOPMIXM-user-16.0-d1217882c3.zip` |
+| Type | Full OTA (`ota-type=AB`, no `pre-build` key) |
+| Size | 6,064,951,297 bytes |
+| MD5 | `d1217882c30d2bb7ffd2bf589ddc3011` |
+| SHA-256 | `8cebd0794f900cd1fe4722651955d705c52147806f0ee090d2012143b8595901` |
+| `payload.bin` | 6,064,942,598 bytes, equal to `FILE_SIZE` in `payload_properties.txt` |
+| Fingerprint | `Redmi/amethyst_global/amethyst:16/BP2A.250605.031.A3/16OS3.1.260917.182821572.QCPEGL.S:user/release-keys` |
+| Platform security patch | 2026-09-01 (`post-security-patch-level`) |
+
+A delta OTA carries `pre-build` and `post-build` describing two different
+releases, and its `payload.bin` is a small set of `SOURCE_COPY` operations
+against the installed images. `payload-dumper-go` rejects those with
+`unsupported op: SOURCE_COPY`, which is the quickest way to tell them apart
+without trusting a filename.
+
+
 ## Before the first refresh: fork the vendor repository
 
 `amethyst-playground` is not yours, so you cannot push a refreshed blob tree
