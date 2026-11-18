@@ -43,9 +43,9 @@ repositories are not in the LineageOS organisation.
 repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs
 repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
-# 2. Add the device repositories (see manifests/amethyst.xml)
+# 2. Add the device repositories (see docs/local_manifest.example.xml)
 mkdir -p .repo/local_manifests
-cp /path/to/amethyst.xml .repo/local_manifests/amethyst.xml
+git clone https://github.com/Daxandere/local_manifests .repo/local_manifests
 repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
 # 3. Build
@@ -178,9 +178,15 @@ Firmware and ROM partitions are different things; read
 | `android_hardware_xiaomi` | `hardware/xiaomi` | Xiaomi HALs |
 | `android_device_qcom_sepolicy_vndr` | `device/qcom/sepolicy_vndr/sm8650` | CAF sepolicy (`lineage-23.2-caf-sm8650`) |
 
-A ready-to-copy manifest is in
-[docs/local_manifest.example.xml](docs/local_manifest.example.xml), pre-filled
-for `github.com/Daxandere`.
+The manifest lives in
+[`Daxandere/local_manifests`](https://github.com/Daxandere/local_manifests)
+and is mirrored in-tree as
+[docs/local_manifest.example.xml](docs/local_manifest.example.xml):
+
+```bash
+mkdir -p .repo/local_manifests
+git clone https://github.com/Daxandere/local_manifests .repo/local_manifests
+```
 
 ---
 

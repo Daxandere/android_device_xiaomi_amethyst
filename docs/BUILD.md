@@ -64,11 +64,15 @@ added through a local manifest.
 
 ```bash
 mkdir -p .repo/local_manifests
-cp /path/to/manifests/amethyst.xml .repo/local_manifests/amethyst.xml
+git clone https://github.com/Daxandere/local_manifests .repo/local_manifests
 repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 ```
 
-The manifest is in the workspace at `manifests/amethyst.xml`. It points to:
+If you prefer not to clone a second repository, copy
+`docs/local_manifest.example.xml` to
+`.repo/local_manifests/amethyst.xml` instead. It is the same manifest.
+
+The manifest points to:
 
 - `device/xiaomi/amethyst`
 - `device/xiaomi/amethyst-kernel`
