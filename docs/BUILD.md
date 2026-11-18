@@ -47,6 +47,15 @@ Add the `PATH` export to `~/.bashrc`.
 
 ## 2. Sync the source
 
+Fast path: `tools/sync.sh` performs steps 2 and 3 in one idempotent run
+(`BRANCH`, `JOBS` and `MANIFEST_REPO` are configurable).
+
+```bash
+tools/sync.sh ~/android/lineage-23.2
+```
+
+Manual equivalent:
+
 ```bash
 mkdir -p ~/android/lineage-23.2
 cd ~/android/lineage-23.2

@@ -8,7 +8,8 @@
   `FLASH.md`, `TESTING.md`, `TROUBLESHOOTING.md`, `ROADMAP.md`, `OFFICIAL.md`
   and `DECISIONS.md`.
 - Add `lineage.dependencies` for roomservice.
-- Add helper scripts under `tools/`.
+- Add helper scripts under `tools/` for host checks, syncing, building,
+  blob extraction and log collection.
 - Add `.gitattributes`, `.gitignore`, `CONTRIBUTING.md` and `CREDITS.md`.
 - Document the blob refresh from `OS3.0.307.0.WOPMIXM`.
 
