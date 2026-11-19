@@ -170,7 +170,7 @@ Firmware and ROM partitions are different things; read
 |---|---|---|
 | `Daxandere/android_device_xiaomi_amethyst` | `device/xiaomi/amethyst` | This tree |
 | `android_device_xiaomi_amethyst-kernel` | `device/xiaomi/amethyst-kernel` | Prebuilt kernel, dtbo, modules |
-| `proprietary_vendor_xiaomi_amethyst` | `vendor/xiaomi/amethyst` | Proprietary blobs |
+| `proprietary_vendor_xiaomi_amethyst` | `vendor/xiaomi/amethyst` | Proprietary blobs, refreshed for `OS3.0.307.0.WOPMIXM` |
 | `android_hardware_xiaomi` | `hardware/xiaomi` | Xiaomi HALs |
 
 The Qualcomm trees are provided by LineageOS `snippets/lineage.xml` and must not

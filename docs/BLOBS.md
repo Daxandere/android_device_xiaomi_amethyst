@@ -38,21 +38,35 @@ against the installed images. `payload-dumper-go` rejects those with
 without trusting a filename.
 
 
-## Before the first refresh: fork the vendor repository
+## The vendor repository is already forked
 
-`amethyst-playground` is not yours, so you cannot push a refreshed blob tree
-there. Fork `proprietary_vendor_xiaomi_amethyst` to `Daxandere`, then point the
-local manifest at the fork and re-sync that single project:
+`proprietary_vendor_xiaomi_amethyst` is forked under `Daxandere`, branch
+`lineage-23.2`:
 
-```bash
-# once
-git clone https://github.com/Daxandere/proprietary_vendor_xiaomi_amethyst \
-    ~/android/lineage-23.2/vendor/xiaomi/amethyst
+```text
+https://github.com/Daxandere/proprietary_vendor_xiaomi_amethyst
 ```
 
-Change the `remote` to `mine` in
-[local_manifest.example.xml](local_manifest.example.xml) (or in
-`Daxandere/local_manifests`) and run:
+The local manifest points that project at the `mine` remote, so a fresh sync
+already gets the refreshed blobs. Nothing else has to be forked for a build.
+
+Refreshing blobs is then a normal commit on that fork:
+
+```bash
+cd vendor/xiaomi/amethyst
+git checkout lineage-23.2
+git add -A
+git commit -m "amethyst: Refresh blobs from <firmware>"
+git push origin lineage-23.2
+```
+
+The build host checks the repository out anonymously, so publishing needs a
+credential: a fine-grained token with `Contents: read and write` on that one
+repository, revoked right after the push. Reading the tree — what everyone else
+does — needs no credentials at all.
+
+If you work from a checkout that still points at the playground remote, repoint
+it once with:
 
 ```bash
 repo sync -c --force-sync vendor/xiaomi/amethyst
