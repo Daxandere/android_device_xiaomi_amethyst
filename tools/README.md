@@ -29,6 +29,6 @@ The scripts use environment variables instead of long option lists:
 | `SRC` | current directory | LineageOS source root |
 | `JOBS` | `16` (`nproc` in `sync.sh`) | `mka`/`repo -j` value |
 | `TARGET` | `bacon` | `mka` target |
-| `PRODUCT` | `lineage_amethyst-userdebug` | `lunch` product |
+| `DEVICE` | `amethyst` | Device passed to `breakfast` |
 | `BRANCH` | `lineage-23.2` | LineageOS branch for `sync.sh` |
 | `MANIFEST_REPO` | `Daxandere/local_manifests` | Manifest repository for `sync.sh` |

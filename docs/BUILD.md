@@ -108,9 +108,16 @@ wrong somewhere else — do not add them, `repo` will reject the sync with
 ```bash
 cd ~/android/lineage-23.2
 . build/envsetup.sh
-lunch lineage_amethyst-userdebug
+breakfast amethyst
 mka bacon -j16
 ```
+
+`breakfast` is the LineageOS wrapper: it sets `TARGET_RELEASE` from
+`vendor/lineage/vars/aosp_target_release` and calls
+`lunch lineage_amethyst-<release>-userdebug`. On Android 16 the two-part
+`lunch lineage_amethyst-userdebug` form is rejected with
+`Invalid lunch combo`, and calling `lunch` without a release makes the build
+fail with `No release config set for target`.
 
 Useful variants:
 

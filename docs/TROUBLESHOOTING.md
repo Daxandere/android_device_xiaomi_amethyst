@@ -62,8 +62,14 @@ mka bacon -j16
 ls -lh out/target/product/amethyst/*.zip
 ```
 
-If `bacon` is not a valid target, the `lunch` combination is wrong. Use
-`lunch lineage_amethyst-userdebug`.
+If `bacon` is not a valid target, the product or release is wrong. Use
+`breakfast amethyst`, which sets `TARGET_RELEASE` and calls `lunch` with the
+three-part form. Two common symptoms:
+
+| Error | Cause |
+|---|---|
+| `Invalid lunch combo: lineage_amethyst-userdebug` | The two-part `lunch` form is not accepted on Android 16 |
+| `No release config set for target` | `TARGET_RELEASE` is empty; `breakfast` sets it from `vendor/lineage/vars/aosp_target_release` |
 
 ### Stale build
 

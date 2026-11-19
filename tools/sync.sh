@@ -93,8 +93,8 @@ Sync finished.
 Next:
 
   cd $TARGET
-  source build/envsetup.sh
-  lunch lineage_amethyst-userdebug
+  . build/envsetup.sh
+  breakfast amethyst
   mka bacon -j$JOBS
 
 EOF

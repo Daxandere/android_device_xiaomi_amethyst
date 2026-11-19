@@ -50,7 +50,7 @@ repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
 # 3. Build
 . build/envsetup.sh
-lunch lineage_amethyst-userdebug
+breakfast amethyst
 mka bacon -j16
 ```
 

@@ -35,7 +35,7 @@ obvious.
 
    ```bash
    . build/envsetup.sh
-   lunch lineage_amethyst-userdebug
+   breakfast amethyst
    mka bacon -j16
    ```
 

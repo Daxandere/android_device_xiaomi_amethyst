@@ -162,7 +162,7 @@ Two cosmetic items are known and harmless, but worth cleaning during a refresh:
 
 ```bash
 . build/envsetup.sh
-lunch lineage_amethyst-userdebug
+breakfast amethyst
 mka bacon -j16
 ```
 
