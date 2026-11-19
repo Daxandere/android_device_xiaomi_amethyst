@@ -190,6 +190,37 @@ git commit -m "amethyst: Target OS3.0.307.0.WOPMIXM"
 | EROFS/EXT4 extraction error | Install `erofs-utils`; check free disk. |
 | Python import error | Run from the device tree, with the shebang's `PYTHONPATH`. |
 | `java` not found | `prebuilts/jdk/jdk21` is missing; sync it. |
+| `path: file not found` | The firmware renamed or dropped the file. Diff the list against the dump before deleting anything (see below). |
+
+### Renamed files are not missing files
+
+`file not found` means the path is wrong, not necessarily that the blob is
+gone. Diff the two lists instead of pruning on sight:
+
+```bash
+grep -o 'binShaders64/[^:]*\.bin' proprietary-files.txt |
+    sed 's|.*/||' | sort -u > /tmp/listed
+find ~/amethyst_ota/odm/etc/camera/resources/render/BuildIn/binShaders64 \
+    -name '*.bin' -printf '%f\n' | sort -u > /tmp/actual
+comm -23 /tmp/listed /tmp/actual   # listed but absent
+comm -13 /tmp/listed /tmp/actual   # present but unlisted
+```
+
+In `OS3.0.307.0.WOPMIXM` the count stayed at 66, but six shaders dropped the
+`_FRAMEBUFFER_FETCH_ADRENO` suffix:
+
+| Old name (`OS3.0.290.0`) | New name (`OS3.0.307.0`) |
+|---|---|
+| `OGL_BLEND_COLOR_LAYER_WITH_MASK_Define_NORMAL_MASK_CHANNEL_TYPE_R_FRAMEBUFFER_FETCH_ADRENO.bin` | `OGL_BLEND_COLOR_LAYER_WITH_MASK_Define_NORMAL_MASK_CHANNEL_TYPE_R.bin` |
+| `OGL_BLEND_IMAGE_LAYER_Define_MULTIPLY_FRAMEBUFFER_FETCH_ADRENO.bin` | `OGL_BLEND_IMAGE_LAYER_Define_MULTIPLY.bin` |
+| `OGL_BLEND_IMAGE_LAYER_Define_SOFT_LIGHT_FRAMEBUFFER_FETCH_ADRENO.bin` | `OGL_BLEND_IMAGE_LAYER_Define_SOFT_LIGHT.bin` |
+| `OGL_BLEND_IMAGE_LAYER_WITH_MASK_Define_MULTIPLY_MASK_CHANNEL_TYPE_R_FRAMEBUFFER_FETCH_ADRENO.bin` | `OGL_BLEND_IMAGE_LAYER_WITH_MASK_Define_MULTIPLY_MASK_CHANNEL_TYPE_R.bin` |
+| `OGL_BLEND_IMAGE_LAYER_WITH_MASK_Define_SOFT_LIGHT_MASK_CHANNEL_TYPE_R_FRAMEBUFFER_FETCH_ADRENO.bin` | `OGL_BLEND_IMAGE_LAYER_WITH_MASK_Define_SOFT_LIGHT_MASK_CHANNEL_TYPE_R.bin` |
+| `OGL_NORMAL_LUT_512_512_Define_FRAMEBUFFER_FETCH_ADRENO.bin` | `OGL_NORMAL_LUT_512_512.bin` |
+
+`OGL_RETOUCH_FOGGY_SIMPLE_PROCESS_Define_CHANNEL_R_FRAMEBUFFER_FETCH_ADRENO.bin`
+kept its suffix, so do not strip it globally: rename only the six affected
+entries.
 
 As a fallback, extract manually with `payload-dumper-go`, unpack the images
 with `extract.erofs`/loop mount, and pass the resulting directory to
