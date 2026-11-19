@@ -1,4 +1,4 @@
-# All unpinned blobs below are extracted from amethyst OS3.0.4.0.WOPMIXM
+# All unpinned blobs below are extracted from amethyst OS3.0.307.0.WOPMIXM
 
 # ACDB
 odm/etc/acdbdata/Mise/MISE_HD_model.eai

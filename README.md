@@ -150,19 +150,15 @@ Update this table after each hardware test. The full matrix lives in
 
 ## Firmware base
 
-The tree currently declares:
-
-```text
-OS3.0.4.0.WOPMIXM
-```
-
-The recommended base for new builds is the latest global stable:
+The blobs in this tree are extracted from:
 
 ```text
 OS3.0.307.0.WOPMIXM
 ```
 
-Blobs will be refreshed from that firmware (see [docs/BLOBS.md](docs/BLOBS.md)).
+Flash that build before reporting camera, audio or modem issues: the blobs come
+from it, so anything older is untested. To refresh them again, see
+[docs/BLOBS.md](docs/BLOBS.md).
 Firmware and ROM partitions are different things; read
 [docs/FIRMWARE.md](docs/FIRMWARE.md) before flashing or downgrading anything.
 

@@ -15,11 +15,11 @@ can still differ.
 
 | | Version |
 |---|---|
-| Tree declared in `proprietary-files.txt` / `lineage_amethyst.mk` | `OS3.0.4.0.WOPMIXM` |
+| Tree declared in `proprietary-files.txt` / `lineage_amethyst.mk` | **`OS3.0.307.0.WOPMIXM`** |
 | Recommended global stable (Oct 2026) | **`OS3.0.307.0.WOPMIXM`** |
 | Region | Global (`WOPMIXM`), model `24115RA8EG` |
 
-The tree is being refreshed to `OS3.0.307.0.WOPMIXM`. Do that before
+The blobs were refreshed from `OS3.0.307.0.WOPMIXM`. Flash that build before
 reporting camera/audio issues.
 
 ## Check what the phone is running
