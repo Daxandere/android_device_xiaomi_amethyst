@@ -1,0 +1,4 @@
+# Match the HyperOS policy used by the Thales StrongBox HAL.
+get_prop(vendor_hal_keymint_strongbox, boot_status_prop)
+allow vendor_hal_keymint_strongbox hal_system_suspend_service:service_manager find;
+allow vendor_hal_keymint_strongbox system_suspend_server:binder { call transfer };
