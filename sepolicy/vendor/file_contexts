@@ -68,6 +68,10 @@
 # NFC
 /(odm|vendor)/bin/hw/android\.hardware\.nfc-service-st u:object_r:hal_nfc_default_exec:s0
 
+# StrongBox and Weaver
+/odm/bin/hw/android\.hardware\.security\.keymint-service\.strongbox-thales u:object_r:vendor_hal_keymint_strongbox_exec:s0
+/odm/bin/hw/android\.hardware\.weaver-service\.thales u:object_r:vendor_hal_weaver_default_exec:s0
+
 # QRTR
 /(vendor|system/vendor)/bin/qrtr-lookup u:object_r:vendor_qrtr_exec:s0
 
