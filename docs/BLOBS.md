@@ -138,7 +138,7 @@ is not required.
    Then set:
 
    ```make
-   VENDOR_SECURITY_PATCH := 2026-10-01
+   VENDOR_SECURITY_PATCH := 2026-09-01
    ```
 
 ### 5. Review the diff
@@ -155,23 +155,14 @@ Blob refreshes are not always neutral. Check for:
 If a fixup breaks, the build usually fails with a missing `NEEDED` library or a
 missing file. Fix the fixup, do not delete the blob.
 
-Two cosmetic items are known and harmless, but worth cleaning during a refresh:
+The generated vendor makefile installs the two ARM64 Codec2 audio seccomp
+policies. Keep both entries in `proprietary-files.txt` when refreshing blobs.
+If the source OTA drops either file, verify the matching HAL policy before
+moving that install rule back to `device.mk`.
 
-1. `device.mk` copies
-   `vendor/etc/seccomp_policy/c2audio.vendor.{base,ext}-arm64.policy` from
-   `hardware/qcom-caf/sm8650/audio/primary-hal`, and the vendor blob tree ships
-   the same two files byte for byte. The build installs both and prints a
-   duplicate-rule warning (tolerated by `BUILD_BROKEN_DUP_RULES`). Keeping only
-   the HAL copies is the cleaner end state: drop the two lines from
-   `proprietary-files.txt`, delete the two blobs and their `Android.bp` entries.
-   `device.mk` itself stays identical to the official sm8650 trees.
-
-2. `extract-files.py` still carries fixups for
-   `vendor/etc/media_codecs_volcano_v0.xml` and `vendor/etc/sensors/hals.conf`,
-   which are not in `proprietary-files.txt`. `extract-utils` ignores unused
-   fixups (it has a TODO to report them), so they are dead code — remove them
-   when the surrounding fixups change.
-
+The fixups for `vendor/etc/media_codecs_volcano_v0.xml` and
+`vendor/etc/sensors/hals.conf` are unused because those files are absent from
+`proprietary-files.txt`.
 ### 6. Build and test
 
 ```bash
