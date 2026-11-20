@@ -63,7 +63,8 @@ Preferred, if you must:
 
 1. Download the **fastboot ROM** for `OS3.0.307.0.WOPMIXM` (global).
 2. Verify the checksum.
-3. Run the vendor `flash_all.sh` (Linux) with the bootloader unlocked.
+3. Follow the [stock restoration procedure](FLASH.md#7-restoring-stock) and
+   choose the script according to whether you need to keep userdata.
 4. Boot HyperOS once, finish setup, enable developer options.
 5. Flash LineageOS again.
 

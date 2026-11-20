@@ -54,29 +54,34 @@ Keep the file somewhere safe.
 
 ## 3. Install
 
-The device is A/B with `init_boot` and `vendor_boot`. The exact fastboot target
-for the recovery image can vary with the boot header, so verify what the build
-produced:
+Amethyst has a dedicated slotted `recovery` partition. This tree builds
+`recovery.img` without a kernel and includes `recovery` as a separate partition
+in `AB_OTA_PARTITIONS`. Before using the image, check that the bootloader
+reports `has-slot:recovery: yes`:
 
-```text
-out/target/product/amethyst/recovery.img
-out/target/product/amethyst/boot.img
-out/target/product/amethyst/init_boot.img
-out/target/product/amethyst/vendor_boot.img
+```bash
+fastboot getvar has-slot:recovery
+fastboot getvar current-slot
 ```
 
-Typical A/B flow with LineageOS recovery:
+Use the recovery image and ZIP from the same verified build. The following
+command targets the recovery partition in the current slot:
 
 ```bash
 # From the build output directory
-fastboot flash boot recovery.img
+fastboot flash recovery recovery.img
 fastboot reboot recovery
 ```
 
-If the device does not enter recovery, flash the recovery image to the
-partition it was built for (`vendor_boot` or `init_boot`) and try again. When
-in doubt, use the LineageOS installation page for a device with the same
-partition layout as a reference.
+If recovery fails to start, check the active slot and the AVB key chain for
+that slot before writing anything else. Stock `vbmeta` can reference a recovery
+key different from the one used by LineageOS.
+
+Before moving from HyperOS to LineageOS, verify that your backup is readable
+and that you can restore it. Stock userdata may use Xiaomi's `mifs` format.
+If recovery reports `unknown fs_type "mifs"` or fails to mount `/data`, stop
+and check the data under stock before deciding whether to perform a clean
+installation. Formatting userdata erases its contents.
 
 Once in recovery:
 
@@ -88,8 +93,11 @@ adb sideload lineage-23.2-<date>-UNOFFICIAL-amethyst.zip
 The zip:
 
 - flashes the inactive slot,
-- updates `boot`, `init_boot`, `vendor_boot`, `dtbo`, `vbmeta` and `super`,
-- switches the active slot on success.
+- updates physical A/B partitions including `boot`, `init_boot`,
+  `vendor_boot`, `dtbo`, `recovery`, `vbmeta` and `vbmeta_system`,
+- stages logical partitions using Virtual A/B snapshots and selects the new
+  slot after a successful installation. Snapshot merge follows a successful
+  boot.
 
 Do **not** reboot in the middle of the sideload.
 
@@ -123,10 +131,13 @@ Run the test matrix in [TESTING.md](TESTING.md).
 
 1. Download the fastboot ROM for your exact model and region.
 2. Extract it on the build host.
-3. Run `flash_all.sh` (Linux) or `flash_all.bat` (Windows) with the bootloader
-   unlocked.
-4. Boot HyperOS once.
-5. Only relock the bootloader after a full stock restore.
+3. Verify the package, battery and anti-rollback compatibility. For a
+   data-preserving attempt, review the package's `flash_all_except_storage`
+   script and verify that it leaves `userdata` and `metadata` intact.
+   Confirm that you have a backup whenever you can still access the files.
+   The plain `flash_all` scripts erase userdata.
+4. Keep the bootloader unlocked during restoration and verify that HyperOS
+   boots and can read your files.
 
 ## 8. Emergency notes
 
