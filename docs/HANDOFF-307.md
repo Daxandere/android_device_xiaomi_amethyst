@@ -12,7 +12,7 @@ Actualizado el 20 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro
 | `k307-strongbox-init` | Freebuff registró el sistema en el slot A con SELinux enforcing. En la prueba de cámara funcionaron fotos, 720p y 4K. | La grabación a 1080p tuvo croma corrupto en ambas cámaras. El usuario comunicó buen funcionamiento general. |
 | `k308-eisfix` | Tras salir de Fastboot con Encendido, ADB verificó el build, slot B y `sys.boot_completed=1`. El dispositivo ejecuta el kernel 6.1.118. | Persiste el croma corrupto en 1080p y CamX sigue iniciando EIS2 offline. |
 | `k307-eisfix` | Reproduce el cambio en el archivo CamX genérico sobre el kit Global 307. | Referencia de compilación para comparar con la variante Global. |
-| `k307-eisfix-global` | Aplica el mismo cambio de `vsquality` al perfil Global, además del genérico. | Variante para la siguiente prueba de cámara. |
+| `k307-eisfix-global` | El payload contiene las dos líneas `vsquality` corregidas. VINTF y AVB pasaron. Kernel, DTB y DTBO coinciden byte por byte con `k307-strongbox-init`. | ZIP y recovery verificados. Prueba en el Redmi pendiente. |
 
 El error de cámara se observó en archivos grabados. En la cámara trasera dominaba el cian y en la frontal aparecían zonas naranja y azul. El nodo `VideoEIS2PreviewEIS2Offline_IPE14` reportó un crop de `2400x1800` sobre una entrada de `1920x1440`. El ajuste de Freebuff retira `6@30` y `6@60` de `vsquality`, dejando `5@30|8@30|8@60|3001@24`.
 
@@ -43,6 +43,11 @@ El manifiesto local habitual fija ramas y el manifiesto de cada compilación gen
 2. Usa el directorio `out` habitual. Los intentos con un `OUT_DIR` alterno fallaron en `libipanat` por la ubicación de `linux/msm_ipa.h`. El parche temporal de host de Freebuff quedó respaldado y se revirtió para la variante con el kit 307.
 3. Compila `m libipanat` antes de `m bacon`. Comprueba VINTF, AVB con la clave de prueba de la compilación, el listado de particiones del payload y los SHA-256 del ZIP y del recovery extraído de ese mismo payload. Comprueba también las etiquetas de StrongBox y Weaver y el contenido de CamX dentro de ODM.
 4. El kernel de `k308-eisfix` tiene hash `6144d19de9c1f1915819b53fcb05424ee283a2f6b0dea725f4a05c1934974d61`, igual al prebuilt 6.1.118 del checkout. El DTB de `vendor_boot` y el DTBO difieren de los del kit 307. El recovery descargable de `k308-eisfix` también difiere del recovery de su payload. El equipo inició Android tras el reinicio manual desde Fastboot.
+
+| Archivo verificado del candidato Global | SHA-256 |
+| --- | --- |
+| `lineage-23.2-20261120-UNOFFICIAL-k307-eisfix-global-amethyst.zip` | `f0cbd77588da1d9673611d15c16ac74616af5cdd092225a083c762151abf13b2` |
+| `recovery.img` extraído de ese payload | `dbd9ff29478d45c2b2e2b04684e69c20fad75c9de59a89824fb4a1b2761954f9` |
 
 ## Próxima prueba en el Redmi
 
