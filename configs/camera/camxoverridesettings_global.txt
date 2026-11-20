@@ -432,7 +432,7 @@ isZoomEISPipSupported=1
 enableDMEbasedMCTF=1
 
 #For 3rdEISV2
-is3rdEISV2Enabled=TRUE
+is3rdEISV2Enabled=FALSE
 
 # Mimotion
 isMiMotionSupported=TRUE
