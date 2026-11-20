@@ -136,7 +136,7 @@ verified on hardware.
 | Mobile data | ⬜ Untested | |
 | Wi-Fi / hotspot | ⬜ Untested | |
 | Bluetooth / LE Audio | ⬜ Untested | |
-| Camera | ⚠️ Partial | Photos, 720p and 4K worked in the latest reported test. Front and rear 1080p recordings had chroma corruption. |
+| Camera | ⚠️ Partial | Front and rear 1080p and rear 720p and 4K produced correct color on `k307-eis2diag`. CamX reported EIS disabled in all four tests. |
 | Fingerprint (UDFPS) | 🔧 In progress | `k307-strongbox-clean` failed credential confirmation during enrollment. See the [handoff](docs/HANDOFF-307.md) for the follow-up. |
 | NFC / eSIM | ⬜ Untested | |
 | GPS | ⬜ Untested | |
