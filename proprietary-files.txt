@@ -266,8 +266,9 @@ odm/etc/camera/beauty_config_gl_8g.json
 odm/etc/camera/cameradfx_config.json
 odm/etc/camera/cameraopt.json
 odm/etc/camera/cameraopt_reclaim.json
-odm/etc/camera/camxoverridesettings.txt
-odm/etc/camera/camxoverridesettings_global.txt
+# Installed from the device tree (configs/camera), see device.mk
+#odm/etc/camera/camxoverridesettings.txt
+#odm/etc/camera/camxoverridesettings_global.txt
 odm/etc/camera/com.xiaomi.dcal.wt.golden
 odm/etc/camera/com.xiaomi.dcal.wu.golden
 odm/etc/camera/com.xiaomi.dcal.wu.golden2
