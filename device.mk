@@ -117,7 +117,8 @@ PRODUCT_PACKAGES += \
 # Override the stock CamX settings: video EIS disabled at 1080p, the
 # EIS 2.0 offline IPE node corrupts chroma at that resolution.
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/camera/camxoverridesettings.txt:$(TARGET_COPY_OUT_ODM)/etc/camera/camxoverridesettings.txt
+    $(LOCAL_PATH)/configs/camera/camxoverridesettings.txt:$(TARGET_COPY_OUT_ODM)/etc/camera/camxoverridesettings.txt \
+    $(LOCAL_PATH)/configs/camera/camxoverridesettings_global.txt:$(TARGET_COPY_OUT_ODM)/etc/camera/camxoverridesettings_global.txt
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.flash-autofocus.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.flash-autofocus.xml \

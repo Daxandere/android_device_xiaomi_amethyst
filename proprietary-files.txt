@@ -268,7 +268,7 @@ odm/etc/camera/cameraopt.json
 odm/etc/camera/cameraopt_reclaim.json
 # Installed from the device tree (configs/camera), see device.mk
 #odm/etc/camera/camxoverridesettings.txt
-odm/etc/camera/camxoverridesettings_global.txt
+#odm/etc/camera/camxoverridesettings_global.txt
 odm/etc/camera/com.xiaomi.dcal.wt.golden
 odm/etc/camera/com.xiaomi.dcal.wu.golden
 odm/etc/camera/com.xiaomi.dcal.wu.golden2
