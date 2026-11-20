@@ -113,6 +113,7 @@ A detailed explanation of every directory and “where to change what” is in
 | [docs/BLOBS.md](docs/BLOBS.md) | Refresh vendor blobs from a full OTA |
 | [docs/FLASH.md](docs/FLASH.md) | Backup, recovery, sideload, slots, restore |
 | [docs/TESTING.md](docs/TESTING.md) | Test matrix and log collection |
+| [docs/HANDOFF-307.md](docs/HANDOFF-307.md) | Global 307 results, build inputs and pending 1080p validation |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Build, boot and runtime issues |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | 23.2 → 24.0 → official |
 | [docs/OFFICIAL.md](docs/OFFICIAL.md) | Requirements and gaps for LineageOS submission |
@@ -129,14 +130,14 @@ verified on hardware.
 
 | Area | Status | Notes |
 |---|---|---|
-| Build | 🔧 In progress | LineageOS 23.2, prebuilt kernel |
-| Boot | ⬜ Untested | Target: global `24115RA8EG` on `OS3.0.307.0.WOPMIXM` |
+| Build | ✅ Verified | LineageOS 23.2 with the standalone Global 307 kernel kit |
+| Boot | ✅ Verified | `k307-strongbox-clean` and `k307-strongbox-init` reached Android on global `24115RA8EG`. See the [handoff](docs/HANDOFF-307.md) for build inputs. |
 | Calls / SMS | ⬜ Untested | Verify VoLTE/VoWiFi on stock first |
 | Mobile data | ⬜ Untested | |
 | Wi-Fi / hotspot | ⬜ Untested | |
 | Bluetooth / LE Audio | ⬜ Untested | |
-| Camera | ⬜ Untested | Aperture + MiuiCamera |
-| Fingerprint (UDFPS) | ⬜ Untested | |
+| Camera | ⚠️ Partial | Photos, 720p and 4K worked in the latest reported test. Front and rear 1080p recordings had chroma corruption. |
+| Fingerprint (UDFPS) | 🔧 In progress | `k307-strongbox-clean` failed credential confirmation during enrollment. See the [handoff](docs/HANDOFF-307.md) for the follow-up. |
 | NFC / eSIM | ⬜ Untested | |
 | GPS | ⬜ Untested | |
 | Sensors | ⬜ Untested | |

@@ -95,9 +95,12 @@ The zip:
 - flashes the inactive slot,
 - updates physical A/B partitions including `boot`, `init_boot`,
   `vendor_boot`, `dtbo`, `recovery`, `vbmeta` and `vbmeta_system`,
-- stages logical partitions using Virtual A/B snapshots and selects the new
-  slot after a successful installation. Snapshot merge follows a successful
-  boot.
+- selects the target slot after a successful installation. When recovery
+  cannot allocate Virtual A/B snapshots, a full OTA can reuse source extents
+  in `super`. This happened during the Global 307 clean migration. A slot
+  marked successful in the bootloader may then have incomplete logical
+  partitions. Confirm the actual contents of the slot before relying on it
+  for rollback.
 
 Do **not** reboot in the middle of the sideload.
 
@@ -143,7 +146,7 @@ Run the test matrix in [TESTING.md](TESTING.md).
 
 | Situation | What to do |
 |---|---|
-| Bootloop after flashing | Re-flash the stock `boot`/`init_boot`/`vendor_boot`; check the active slot. |
-| `fastboot` works, recovery does not | Flash the stock boot images, then retry recovery. |
+| Bootloop after flashing | Record the active slot and collect the recovery and boot logs. Use a complete, matching stock package if restoration is required. |
+| `fastboot` works, recovery does not | Check the active slot, recovery partition and AVB chain against the intended build. |
 | No display, but USB works | Try `adb`/`fastboot`; if neither, EDL recovery is required. |
 | IMEI null | Do not flash `modem`/`persist` from another device; restore the correct firmware. |

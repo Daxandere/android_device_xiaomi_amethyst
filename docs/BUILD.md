@@ -3,6 +3,11 @@
 These instructions assume a **Linux build host**. Windows is not supported for
 the build itself (WSL2 may work, but it is not the supported path).
 
+The hardware-tested Global 307 builds use a separately staged kernel, DTBs,
+DTBO and modules from HyperOS Global 307. Use the standard `out` directory and
+the revisions in the [Global 307 handoff](HANDOFF-307.md) to reproduce that
+configuration. The kernel checkout supplies the headers.
+
 ## 1. Host requirements
 
 | Resource | Minimum | Recommended |
