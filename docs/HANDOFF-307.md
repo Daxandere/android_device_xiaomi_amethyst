@@ -55,6 +55,8 @@ Al elegir el macro en Vídeo, Aperture cierra la actividad. Se reprodujo por ADB
 
 En `k307-aux`, el propietario seleccionó 720p en la principal y luego cambió al macro sin salir de Vídeo. Aperture abrió el ID `3` y guardó un MP4 H.264 de `1280x720`, 6,65 s y 30,24 fps de media. FFmpeg decodificó los 201 fotogramas sin errores. En el candidato Global queda por verificar que el macro elija 720p automáticamente al venir de un lente configurado a 1080p y que la frontal grabe a 60 fps.
 
+Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-aux60-amethyst.zip` desde `ed5ca6b` con `TARGET_UNOFFICIAL_BUILD_ID=k307-aux60`. La OTA declara `amethyst`, A/B y el incremental `1795277115`. El XML empaquetado limita los perfiles del ID `3` a `1280x720` a 30 fps. `idmap2` confirmó que el overlay se asigna al selector de lentes y a la configuración de vídeo adicional de Aperture. El ZIP y el recovery pasaron SHA-256 en el servidor. La prueba de este ZIP en el teléfono sigue pendiente.
+
 ## Ramas, código y dependencias
 
 - `lineage-23.2` integra bootconfig y fingerprint Global 307, políticas de audio y de StrongBox y Weaver, el kernel 6.1.138 y los ajustes de cámara validados en `k307-eis2diag`. El vendor de la misma rama instala una sola copia de cada perfil CamX. [Commits del device tree](https://github.com/Daxandere/android_device_xiaomi_amethyst/commits/lineage-23.2/).
