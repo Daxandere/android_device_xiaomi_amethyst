@@ -144,6 +144,49 @@ The trace config includes scheduler wakeups, DMA fence waits, SDE fence status
 and DRM vblank events to compare against the SDE callbacks. Use it to see which
 layer and commit changes precede the wait. [Linux DRM atomic commit documentation](https://docs.kernel.org/gpu/drm-kms-helpers.html)
 
+### Present route when the touch spot is active
+
+Within the fixed-120-Hz Show taps trace, group SurfaceFlinger `present` slices
+by how recently `Sprite` appeared in the main thread's layer summary. Count
+the separate `HwcPresentDisplay 0` calls nested inside each presentation.
+
+| Last Sprite layer summary | Presentations | Separate HWC presents | Median `present` |
+|---|---:|---:|---:|
+| Within 7 ms | 409 | 409 | 9.38 ms |
+| 7–30 ms earlier | 29 | 1 | 3.46 ms |
+| At least 30 ms earlier or absent | 689 | 14 | 1.79 ms |
+
+The summary marker indicates when SurfaceFlinger evaluated the layer. It does
+not report a new buffer or the composition type selected for that frame. The
+separate HWC present correlates with that marker. AOSP can combine validation
+and presentation when the composition state and expected present time allow
+it. Check the effective composition type of `Sprite` and the rest of the
+layers before attributing the change to cursor-plane support.
+[AOSP HWComposer implementation](https://android.googlesource.com/platform/frameworks/native/+/main/services/surfaceflinger/DisplayHardware/HWComposer.cpp)
+
+An ADB smoke test confirmed the layer capture works and shows a hidden `Sprite`
+at rest. A finger gesture is still needed to inspect the visible spot.
+
+For a short structural capture, append the following to a copy of
+`display-perfetto.pbtxt`. Inspect the visible `Sprite` layers and their
+`hwc_composition_type` in Winscope or Perfetto. Use the base config for frame
+timing because active layer tracing adds work to SurfaceFlinger.
+[AOSP Winscope capture guide](https://source.android.com/docs/core/graphics/winscope/capture/adb)
+
+```textproto
+buffers { size_kb: 32768 fill_policy: RING_BUFFER }
+data_sources {
+  config {
+    name: "android.surfaceflinger.layers"
+    target_buffer: 1
+    surfaceflinger_layers_config {
+      mode: MODE_ACTIVE
+      trace_flags: TRACE_FLAG_COMPOSITION
+    }
+  }
+}
+```
+
 ## Reproduce and trace
 
 Keep the launcher, wallpaper, foreground screen, brightness and battery saver
