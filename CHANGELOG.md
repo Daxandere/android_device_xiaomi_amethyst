@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-20 — Integrated Global 307 build
+
+- Sync the Global 307 kernel, DTBs, DTBO and matching modules through the
+  published local manifest. The device tree builds with these inputs directly.
+- Integrate the StrongBox and Weaver policy and the tested camera settings
+  with the matching vendor makefile.
+- Record functional calls, SMS, cellular data, Wi-Fi, hotspot, Bluetooth,
+  Bluetooth in the car, screen-off fingerprint unlock, in-call proximity
+  and USB. Record the EIS limitation and pending tests in [TESTING.md](docs/TESTING.md).
+
 ## 2026-11-18 — Tree hygiene and documentation
 
 - Import the `lineage-23.2` tree from `amethyst-playground`.

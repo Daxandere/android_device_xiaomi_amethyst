@@ -44,20 +44,18 @@ else
     echo "==> existing .repo found, skipping repo init"
 fi
 
-echo "==> repo sync (base)"
-repo sync -c -j"$JOBS" --force-sync --no-clone-bundle --no-tags
-
 echo "==> local manifest"
-mkdir -p .repo/local_manifests
-if [[ -d .repo/local_manifests/.git ]]; then
-    git -C .repo/local_manifests pull --ff-only
+manifests=.repo/local_manifests
+if [[ -e "$manifests/.git" ]]; then
+    git -C "$manifests" pull --ff-only
+elif [[ -f "$manifests/amethyst.xml" ]]; then
+    echo "Using the existing $manifests/amethyst.xml"
 else
-    rm -f .repo/local_manifests/amethyst.xml
-    git clone "$MANIFEST_REPO" .repo/local_manifests
+    git clone "$MANIFEST_REPO" "$manifests"
 fi
 
-echo "==> repo sync (device repositories)"
-repo sync -c -j"$JOBS" --force-sync --no-clone-bundle --no-tags
+echo "==> repo sync"
+repo sync -c -j"$JOBS" --no-clone-bundle --no-tags
 
 echo
 echo "Checking required paths:"
@@ -65,6 +63,7 @@ missing=0
 for path in \
     device/xiaomi/amethyst/BoardConfig.mk \
     device/xiaomi/amethyst-kernel/images/kernel \
+    device/xiaomi/amethyst-kernel/kernel-kit.sha256 \
     vendor/xiaomi/amethyst/amethyst-vendor.mk \
     hardware/xiaomi/Android.bp \
     hardware/qcom-caf/sm8650 \
@@ -79,10 +78,7 @@ done
 
 if (( missing )); then
     echo
-    echo "Some paths are missing. The first four come from" >&2
-    echo ".repo/local_manifests/amethyst.xml; sepolicy_vndr and qcom-caf/sm8650" >&2
-    echo "come from LineageOS snippets/lineage.xml (check the local manifest does" >&2
-    echo "not declare them again)." >&2
+    echo "Some paths are missing. Verify .repo/local_manifests/amethyst.xml and LineageOS snippets/lineage.xml." >&2
     exit 1
 fi
 
@@ -93,8 +89,9 @@ Sync finished.
 Next:
 
   cd $TARGET
+  unset OUT_DIR OUT_DIR_COMMON_BASE
   . build/envsetup.sh
   breakfast amethyst
-  mka bacon -j$JOBS
+  m -j$JOBS bacon
 
 EOF

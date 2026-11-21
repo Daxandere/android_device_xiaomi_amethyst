@@ -35,23 +35,21 @@ Unofficial LineageOS device tree for the **Xiaomi Redmi Note 14 Pro+ 5G**.
 
 ## Quick start
 
-The tree is designed to be used with a **local manifest**, because the device
-repositories are not in the LineageOS organisation.
+Use the local manifest to sync the device tree, vendor blobs, Global 307
+kernel bundle and Xiaomi hardware support with LineageOS 23.2. These repositories
+contain the build inputs used by the current device configuration.
 
 ```bash
-# 1. LineageOS 23.2 source
+mkdir -p ~/android/lineage-23.2
+cd ~/android/lineage-23.2
 repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs
-repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
-
-# 2. Add the device repositories (see docs/local_manifest.example.xml)
-mkdir -p .repo/local_manifests
 git clone https://github.com/Daxandere/local_manifests .repo/local_manifests
-repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+repo sync -c -j8 --no-clone-bundle --no-tags
 
-# 3. Build
+unset OUT_DIR OUT_DIR_COMMON_BASE
 . build/envsetup.sh
 breakfast amethyst
-mka bacon -j16
+m -j16 bacon
 ```
 
 The flashable zip is written to:
@@ -125,24 +123,30 @@ A detailed explanation of every directory and “where to change what” is in
 
 ## Current status
 
-This table is intentionally conservative: it only records what has been
-verified on hardware.
+These results apply to the Global `24115RA8EG` with
+`OS3.0.307.0.WOPMIXM` firmware. Calls, messaging, Bluetooth and fingerprint
+results are from the device owner's tests. Boot, USB ADB and the video samples
+were also checked directly.
 
 | Area | Status | Notes |
 |---|---|---|
-| Build | ✅ Verified | LineageOS 23.2 with the standalone Global 307 kernel kit |
-| Boot | ✅ Verified | `k307-strongbox-clean` and `k307-strongbox-init` reached Android on global `24115RA8EG`. See the [handoff](docs/HANDOFF-307.md) for build inputs. |
-| Calls / SMS | ⬜ Untested | Verify VoLTE/VoWiFi on stock first |
-| Mobile data | ⬜ Untested | |
-| Wi-Fi / hotspot | ⬜ Untested | |
-| Bluetooth / LE Audio | ⬜ Untested | |
+| Build | ✅ Verified | LineageOS 23.2 with the kernel and modules provided by the local manifest. |
+| Boot | ✅ Verified | `k307-eis2diag` reached Android. The current device tree includes its configuration. |
+| Calls and SMS | ✅ Verified | Device-owner test. MMS, VoLTE and VoWiFi remain pending. |
+| Cellular network and mobile data | ✅ Verified | Device-owner test. |
+| Wi-Fi | ✅ Verified | Device-owner test. Individual bands remain pending. |
+| Wi-Fi hotspot | ✅ Verified | Device-owner test. |
+| Bluetooth | ✅ Verified | Bluetooth and the car Bluetooth connection. LE Audio and Android Auto remain pending. |
 | Camera | ⚠️ Partial | Front and rear 1080p and rear 720p and 4K produced correct color on `k307-eis2diag`. CamX reported EIS disabled in all four tests. |
-| Fingerprint (UDFPS) | 🔧 In progress | `k307-strongbox-clean` failed credential confirmation during enrollment. See the [handoff](docs/HANDOFF-307.md) for the follow-up. |
-| NFC / eSIM | ⬜ Untested | |
+| Fingerprint (UDFPS) | ✅ Verified | Unlock works even with the display off. |
+| NFC | ⬜ Untested | |
+| eSIM | ⬜ Untested | |
 | GPS | ⬜ Untested | |
-| Sensors | ⬜ Untested | |
+| Proximity | ✅ Verified | The display responds when the phone is held to the ear during a call. |
+| Other sensors | ⬜ Untested | |
 | Charging (120 W) | ⬜ Untested | |
-| USB / OTG | ⬜ Untested | |
+| USB | ✅ Verified | USB connection and ADB. |
+| USB OTG | ⬜ Untested | |
 
 Update this table after each hardware test. The full matrix lives in
 [docs/TESTING.md](docs/TESTING.md).
@@ -170,9 +174,9 @@ Firmware and ROM partitions are different things; read
 | Repository | Path | Notes |
 |---|---|---|
 | `Daxandere/android_device_xiaomi_amethyst` | `device/xiaomi/amethyst` | This tree |
-| `android_device_xiaomi_amethyst-kernel` | `device/xiaomi/amethyst-kernel` | Prebuilt kernel, dtbo, modules |
-| `proprietary_vendor_xiaomi_amethyst` | `vendor/xiaomi/amethyst` | Proprietary blobs, refreshed for `OS3.0.307.0.WOPMIXM` |
-| `android_hardware_xiaomi` | `hardware/xiaomi` | Xiaomi HALs |
+| `Daxandere/android_device_xiaomi_amethyst-kernel` | `device/xiaomi/amethyst-kernel` | Global 307 kernel, DTBs, DTBO, modules and headers |
+| `Daxandere/proprietary_vendor_xiaomi_amethyst` | `vendor/xiaomi/amethyst` | Global 307 blobs and the matching ODM makefile |
+| `amethyst-playground/android_hardware_xiaomi` | `hardware/xiaomi` | Xiaomi HALs at the revision selected by the manifest |
 
 The Qualcomm trees are provided by LineageOS `snippets/lineage.xml` and must not
 be added to the local manifest:

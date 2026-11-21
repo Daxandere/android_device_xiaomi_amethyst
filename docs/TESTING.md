@@ -6,46 +6,56 @@ submission.
 
 ## Status matrix
 
-Copy this table into the pull request or release notes and fill it in.
+Results for the Global `24115RA8EG` on HyperOS Global 307 firmware and
+the `k307-eis2diag` configuration. The device owner confirmed everyday
+hardware use. ADB and the original camera clips cover the checks noted below.
 
 | Area | Status | Notes |
 |---|---|---|
-| Boot to setup wizard | ⬜ | |
-| Boot to launcher | ⬜ | |
-| Calls (in/out) | ⬜ | |
-| SMS / MMS | ⬜ | |
+| Boot to setup wizard | ✅ | Verified during the clean installation of the Global 307 base build |
+| Boot to launcher | ✅ | Verified on `k307-eis2diag` |
+| Calls | ✅ | Device-owner test |
+| SMS | ✅ | Device-owner test |
+| MMS | ⬜ | |
 | VoLTE | ⬜ | Verify on stock first |
 | VoWiFi | ⬜ | Verify on stock first |
-| Mobile data | ⬜ | |
+| Cellular network and mobile data | ✅ | Device-owner test |
 | Dual SIM | ⬜ | |
-| Wi-Fi 2.4/5/6 GHz | ⬜ | |
-| Wi-Fi hotspot | ⬜ | |
+| Wi-Fi | ✅ | Device-owner test |
+| Individual Wi-Fi bands | ⬜ | |
+| Wi-Fi hotspot | ✅ | Device-owner test |
+| Bluetooth | ✅ | Device-owner test |
+| Bluetooth connection to a car | ✅ | Device-owner test |
+| Android Auto | ⬜ | |
 | Bluetooth audio | ⬜ | |
 | Bluetooth LE Audio | ⬜ | |
 | NFC | ⬜ | |
 | eSIM | ⬜ | |
 | GPS / GNSS | ⬜ | |
-| Camera — main | ⬜ | Aperture |
+| Camera — main | ✅ | Aperture recording at 1080p, 720p and 4K |
 | Camera — ultrawide | ⬜ | |
 | Camera — telephoto | ⬜ | |
-| Camera — front | ⬜ | |
-| Camera — video | ⬜ | EIS on/off |
+| Camera — front | ✅ | Aperture recording at 1080p30 |
+| Camera — video | ⚠️ | Color verified. CamX reported `EISMode:0` at 1080p, 720p and 4K. |
 | Camera — MiuiCamera | ⬜ | If installed |
-| Fingerprint (UDFPS) | ⬜ | Enrollment + unlock |
+| Fingerprint (UDFPS) | ✅ | The owner verified unlock with the display off. |
 | Face unlock | ⬜ | |
-| Sensors | ⬜ | Accelerometer, gyro, light, proximity |
+| Proximity | ✅ | The owner verified the display response when holding the phone to the ear during a call. |
+| Other sensors | ⬜ | Accelerometer, gyro and ambient light |
 | IR blaster | ⬜ | |
 | Vibration / haptics | ⬜ | |
-| Charging (wired) | ⬜ | 120 W |
+| Charging at 120 W | ⬜ | Peak charging power remains unmeasured. |
 | Charging limit | ⬜ | If implemented |
-| USB file transfer | ⬜ | |
+| USB data and ADB | ✅ | Verified over USB. |
+| USB file transfer (MTP) | ⬜ | |
 | USB OTG | ⬜ | |
 | USB tethering | ⬜ | |
 | Screen cast | ⬜ | |
 | Idle battery drain | ⬜ | %/hour overnight |
 | Encryption | ⬜ | |
 | SafetyNet / Play Integrity | ⬜ | Expected to fail without fixes |
-| OTA update | ⬜ | Same keys only |
+| Sideload update | ✅ | Recovery and boot verified for the same test-key builds. |
+| Updater app and snapshot merge | ⬜ | |
 
 Legend: ✅ works, ⚠️ works with caveat, ❌ broken, ⬜ untested.
 

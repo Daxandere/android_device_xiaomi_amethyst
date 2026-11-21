@@ -47,8 +47,10 @@ without trusting a filename.
 https://github.com/Daxandere/proprietary_vendor_xiaomi_amethyst
 ```
 
-The local manifest points that project at the `mine` remote, so a fresh sync
-already gets the refreshed blobs. Nothing else has to be forked for a build.
+The local manifest fetches the refreshed blobs and matching Global 307 kernel
+from the Daxandere forks. The published vendor branch supplies the generated
+makefiles. The device tree installs both CamX override files. Their entries
+in `proprietary-files.txt` are disabled to keep a single source per ODM path.
 
 Refreshing blobs is then a normal commit on that fork:
 
@@ -65,15 +67,15 @@ credential: a fine-grained token with `Contents: read and write` on that one
 repository, revoked right after the push. Reading the tree — what everyone else
 does — needs no credentials at all.
 
-If you work from a checkout that still points at the playground remote, repoint
-it once with:
+For an existing manifest checkout, update it before syncing the vendor project.
 
 ```bash
-repo sync -c --force-sync vendor/xiaomi/amethyst
+git -C .repo/local_manifests pull --ff-only
+repo sync -c vendor/xiaomi/amethyst
 ```
 
-The extraction rewrites the whole directory, so a stale upstream checkout would
-leave you with a fork that cannot be fast-forwarded.
+The following extraction steps are for maintainers refreshing a future
+firmware base. A normal build uses the files already in the manifest.
 
 ## Procedure
 

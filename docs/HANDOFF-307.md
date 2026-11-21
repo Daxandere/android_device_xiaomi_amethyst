@@ -27,8 +27,8 @@ La variante `k307-eis2diag` cambió únicamente `is3rdEISV2Enabled` a `FALSE` en
 
 ## Ramas, código y dependencias
 
-- `lineage-23.2` incorpora el ajuste de bootconfig y fingerprint a Global 307, la limpieza de duplicados de audio, las instrucciones de recovery dedicado y las etiquetas SELinux de StrongBox y Weaver. Los commits de código son `c5c6f40`, `27de9b2` y `8c0d868`. [Commits del device tree](https://github.com/Daxandere/android_device_xiaomi_amethyst/commits/lineage-23.2/).
-- `amethyst-307-strongbox-init` añade lectura de `boot_status_prop` y acceso a SystemSuspend para el HAL Thales. La rama conserva el commit `910983cc26d241a8b0cafb841795360efd70fb99`. Las denegaciones registradas coincidían con permisos presentes en la política stock, y queda por registrar el resultado específico de inscripción y desbloqueo con huella. [Cambio de StrongBox](https://github.com/Daxandere/android_device_xiaomi_amethyst/commit/910983cc26d241a8b0cafb841795360efd70fb99).
+- `lineage-23.2` integra bootconfig y fingerprint Global 307, políticas de audio y de StrongBox y Weaver, el kernel 6.1.138 y los ajustes de cámara validados en `k307-eis2diag`. El vendor de la misma rama instala una sola copia de cada perfil CamX. [Commits del device tree](https://github.com/Daxandere/android_device_xiaomi_amethyst/commits/lineage-23.2/).
+- `amethyst-307-strongbox-init` añadió lectura de `boot_status_prop` y acceso a SystemSuspend para el HAL Thales. El propietario confirmó que la huella funciona incluso con la pantalla apagada en la configuración actual. [Cambio de StrongBox](https://github.com/Daxandere/android_device_xiaomi_amethyst/commit/910983cc26d241a8b0cafb841795360efd70fb99).
 - `amethyst-307-eisfix` aplica el ajuste de Freebuff a partir de `910983c`. Usa juntos el device tree `beb1475f3b531f3c4c73802a497cb9b45b30fba9` y el vendor `b04d587808bf036a92cf00934c03ff6f16f13f53`. La rama del vendor quita del makefile la copia duplicada del archivo CamX. El fichero corregido se instala desde el device tree en `odm/etc/camera/camxoverridesettings.txt`. [Device para EIS](https://github.com/Daxandere/android_device_xiaomi_amethyst/tree/amethyst-307-eisfix), [vendor para EIS](https://github.com/Daxandere/proprietary_vendor_xiaomi_amethyst/tree/amethyst-307-eisfix).
 - `amethyst-307-eisfix-global` incorpora el ajuste del perfil elegido por el Redmi Global. Usa juntos el device tree `358111a0bbba110f40e0266b721a24019932aa17` y el vendor `e5f565023760393a4909a787b75ef319de012225`. Las dos copias de `camxoverridesettings*.txt` se instalan desde el device tree. Esta rama reproduce el fallo con EIS activado. [Device para EIS Global](https://github.com/Daxandere/android_device_xiaomi_amethyst/tree/amethyst-307-eisfix-global), [vendor para EIS Global](https://github.com/Daxandere/proprietary_vendor_xiaomi_amethyst/tree/amethyst-307-eisfix-global).
 - `amethyst-307-eis2diag` usa el device tree `bd3eaeedc3c4f3ec1317d06fe23e833616364264` con el mismo vendor Global `e5f5650`. El manifiesto fijó las demás revisiones del candidato Global. Kernel, DTB y DTBO coincidieron byte por byte. [Cambio diagnóstico](https://github.com/Daxandere/android_device_xiaomi_amethyst/commit/bd3eaeedc3c4f3ec1317d06fe23e833616364264).
@@ -36,19 +36,17 @@ La variante `k307-eis2diag` cambió únicamente `is3rdEISV2Enabled` a `FALSE` en
 
 ## Reproducir el build
 
-El manifiesto local habitual fija ramas y el manifiesto de cada compilación generado con `repo manifest -r` fija las revisiones exactas. Para el candidato Global selecciona su par de commits tras sincronizar. Los repositorios principales del build que arrancó fueron los siguientes. [Manifiestos locales](https://github.com/Daxandere/local_manifests).
+Clona el manifiesto local en `.repo/local_manifests` después de `repo init` y antes de `repo sync`. El manifiesto selecciona las ramas compatibles del device, vendor y kernel. Tras sincronizar, ejecuta `breakfast amethyst` y `m bacon` con el directorio `out` estándar. Usa `repo manifest -r` para registrar las revisiones exactas de tu compilación. [Guía de compilación](BUILD.md), [manifiesto local](https://github.com/Daxandere/local_manifests).
 
 | Proyecto | Revisión |
 | --- | --- |
-| `device/xiaomi/amethyst-kernel` | `f118e1dbd36c0446ad9f2d20f4690618d3ccb816` para los headers |
+| `device/xiaomi/amethyst-kernel` | `ac41a99bda91def578cf64371fc83798ed8bdd68`, kit Global 307 y headers de `f118e1d` |
 | `hardware/xiaomi` | `57621c3dece8d7dfa33ee92c6ba346cb58db95d8` |
-| `bootable/recovery` | `acd99f7c48e0229eaedd40aa3e2adcbabe2dc283` |
-| `system/update_engine` | `fc83053aa2a71885ba8615da9946033adf3462ce` |
+| `bootable/recovery` | `acd99f7c48e0229eaedd40aa3e2adcbabe2dc283` en los builds de prueba |
+| `system/update_engine` | `fc83053aa2a71885ba8615da9946033adf3462ce` en los builds de prueba |
 
-1. Monta el kit de Global 307 con kernel `6.1.138-android14-11-g0c3d559bcd85-ab14529422`, DTBs, DTBO y módulos de `vendor_boot`, `system_dlkm` y `vendor_dlkm`. Verifica el manifiesto SHA-256 y aplica el parche de staging de `BoardConfig.mk`. El checkout de headers conserva su ruta original. El hash del kernel del kit es `97b2c53022e8c0bd0b279c4c592a196126a6eb0a93647c2957b39dcd5f2dc1c9`.
-2. Usa el directorio `out` habitual. Los intentos con un `OUT_DIR` alterno fallaron en `libipanat` por la ubicación de `linux/msm_ipa.h`. El parche temporal de host de Freebuff quedó respaldado y se revirtió para la variante con el kit 307.
-3. Compila `m libipanat` antes de `m bacon`. Comprueba VINTF, AVB con la clave de prueba de la compilación, el listado de particiones del payload y los SHA-256 del ZIP y del recovery extraído de ese mismo payload. Comprueba también las etiquetas de StrongBox y Weaver y el contenido de CamX dentro de ODM.
-4. El kernel de `k308-eisfix` tiene hash `6144d19de9c1f1915819b53fcb05424ee283a2f6b0dea725f4a05c1934974d61`, igual al prebuilt 6.1.118 del checkout. El DTB de `vendor_boot` y el DTBO difieren de los del kit 307. El recovery descargable de `k308-eisfix` también difiere del recovery de su payload. El equipo inició Android tras el reinicio manual desde Fastboot.
+- El kernel publicado es `6.1.138-android14-11-g0c3d559bcd85-ab14529422`. Su SHA-256 es `97b2c53022e8c0bd0b279c4c592a196126a6eb0a93647c2957b39dcd5f2dc1c9`. La rama del kernel contiene también el DTBO, los DTBs y módulos de `vendor_boot`, `system_dlkm` y `vendor_dlkm`. [Kit Global 307](https://github.com/Daxandere/android_device_xiaomi_amethyst-kernel/tree/lineage-23.2-global307).
+- El build integrado usa ese kit directamente desde `device/xiaomi/amethyst-kernel`. Los parches de staging de `BoardConfig.mk` y del host corresponden al historial de diagnóstico. Para instalar, combina el ZIP con el recovery extraído del mismo payload. [Guía de instalación](FLASH.md).
 
 | Archivo verificado del candidato Global | SHA-256 |
 | --- | --- |

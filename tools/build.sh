@@ -6,8 +6,8 @@
 # Build LineageOS for amethyst with a sane default job count.
 #
 # Usage:
-#   tools/build.sh                 # mka bacon -j16
-#   JOBS=12 tools/build.sh         # mka bacon -j12
+#   tools/build.sh                 # m -j16 bacon
+#   JOBS=12 tools/build.sh         # m -j12 bacon
 #   TARGET=installclean tools/build.sh
 #   TARGET=bootimage tools/build.sh
 #
@@ -30,8 +30,11 @@ fi
 
 cd "$SRC" || exit 1
 
+# The published header and boot-image configuration uses the standard out dir.
+unset OUT_DIR OUT_DIR_COMMON_BASE
+
 # shellcheck disable=SC1091
-. build/envsetup.sh
+. build/envsetup.sh || exit 1
 
 # breakfast sets TARGET_RELEASE and calls lunch with the three-part form.
 # The two-part `lunch lineage_amethyst-userdebug` is rejected on Android 16.
@@ -40,8 +43,8 @@ breakfast "$DEVICE" || {
     exit 1
 }
 
-mka "$TARGET" -j"$JOBS" || {
-    echo "error: mka $TARGET failed" >&2
+m -j"$JOBS" "$TARGET" || {
+    echo "error: m $TARGET failed" >&2
     exit 1
 }
 

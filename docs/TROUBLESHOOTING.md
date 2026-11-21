@@ -9,12 +9,13 @@ slot, or a SELinux denial.
 ### `repo sync` fails
 
 ```bash
-repo sync -c -j4 --force-sync --no-clone-bundle --no-tags
+repo sync -c -j4 --no-clone-bundle --no-tags
 ```
 
-- `--force-sync` recovers from a dirty mirror.
 - Lower `-j` if the host runs out of memory or the network drops.
 - If a single project fails, `repo sync <path>`.
+- For `linux/msm_ipa.h` errors, verify the kernel project selected by
+  the [build guide](BUILD.md) and run the build with the default `out` path.
 
 ### `ninja: error: ... missing and no known rule to make it`
 
