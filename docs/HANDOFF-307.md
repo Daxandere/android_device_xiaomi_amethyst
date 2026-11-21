@@ -119,6 +119,14 @@ El volcado de 300 ajustes no ofrece ninguna clave para limitar EIS2 por resoluci
 
 Tras la prueba, `is3rdEISV2Enabled` se devolvió a `FALSE` en el archivo montado para no dejar el teléfono grabando 1080p con croma corrupto. El montaje con las trazas verbose sigue activo hasta el próximo reinicio. Las capturas y los MP4 quedaron en `videos/2026-11-22-verbose/`.
 
+### `EISv2DisableAccel=0` no corrige el 1080p
+
+Segunda ronda con `is3rdEISV2Enabled=TRUE` y `EISv2DisableAccel=0`, ambos confirmados en el volcado de arranque (`= TRUE` y `= 0`). La estabilización vuelve a activarse (`m_preivewStabilization:2`, `EISMode:1`) y los márgenes son idénticos a la ronda anterior: `480x360` sobre `2400x1800` a 1080p y `400x300` sobre `2000x1500` a 720p. El resultado de color no cambia: el MP4 de `1920x1080` y 14,22 s sigue corrupto, ahora con flecos rojos y cian en los bordes en lugar del cian plano anterior, y el de `1280x720` y 12,84 s conserva el color correcto. La aceleración del nodo no es la causa.
+
+La inspección de esta captura descarta la pista del recorte. El aviso `GetZoomWindowCropInfo() … Error while getting full input port crop from parent node … fulliput:1920x1440, crop:0,0 2400x1800` aparece **en todas las resoluciones**: también con `fulliput:1600x1200` y `crop 2000x1500` a 720p, que sale bien, y con `3840x2880` y `4800x3600` a 4K. No es el croma. Los datos que sí difieren son de configuración del pipeline: `m_previewDimension` se queda en `1600x1200` incluso en la sesión de 1080p, el `IPE14` publica `Final dim 1920 x 1080` y `2400 x 1800` en la misma sesión, y el pase de escala informa `fwidth=1920, fheight=1200` con `preScaleRatio=1.0` y `postScaleRatio=1.0`.
+
+Los márgenes no son configurables: `GetRequestedMargins()` los toma del tuning `EIS 1_6_0` con `widthMargin: 0.200000 heightMargin: 0.200000`, y el volcado de 300 claves no tiene ninguna entrada de margen, formato, stride ni alineación que los altere. Por tanto el punto 2 no se resuelve con configuración: hay que tocar el tuning o la descripción del pipeline del vendor. Las claves se devolvieron a `is3rdEISV2Enabled=FALSE` y `EISv2DisableAccel=1`, confirmado en el volcado tras reiniciar el proveedor.
+
 Corrección de método: el `grep` de Android es toybox y no interpreta `\|` como alternancia, así que las búsquedas con `\|` lanzadas contra el teléfono devolvieron falsos negativos. Repetidas con `-e`, las claves `EISv2OperationMode`, `EISv3OperationMode`, `EISV3Enable` y `is3rdEISV2Enabled` siguen sin aparecer como volcado; lo único que coincide es la línea de `MatchPreivewStabilization()`. Las búsquedas locales sobre los archivos ya extraídos no tenían ese problema porque usan el `grep` de Git Bash.
 
 ### Cámaras traseras de la variante Global
