@@ -109,6 +109,16 @@ El dato nuevo sobre el cliente es que la traza verbose de `IsGL3rdVideoAPK()` im
 
 La captura quedó en `videos/2026-11-22-verbose/camx-verbose.log` (933 447 líneas) y la de prueba en `diag/2026-11-22-root/camx-verbose-probe.log`, ambas fuera del repositorio del device tree. El montaje es temporal y desaparece al reiniciar.
 
+### Estabilización EIS2 real a 720p
+
+Con el archivo montado y `is3rdEISV2Enabled=TRUE` (confirmado por el volcado: `is3rdEISV2Enabled (0xe9603f6f) = TRUE`), la petición de Aperture deja de anularse. La traza lo sigue de punta a punta: `MatchPreivewStabilization() ControlVideoStabilizationMode: 1 before change, is3rdEISV2Enabled: 1`, `bitSet:0x2, m_preivewStabilization:2` y `FillImageStabilizationMode() … EISMode:1 hasVideo:1`. La topología pasa a `VideoEIS2PreviewEIS2Offline` con `_IPE14` y el nodo EISV2 publica márgenes reales: `480x360` sobre una entrada de `2000x1500` a 720p, y `480x360` sobre `2400x1800` a 1080p.
+
+El resultado depende de la resolución, y esa es la novedad. A **720p30** la estabilización funciona y el color es correcto: dos MP4 de `1280x720` (11,34 s y 2,03 s), con `UAVG` 125,1 y `VAVG` 130,8 y fotogramas con tonos de piel normales. A **1080p30** la ruta V2 reproduce el defecto de siempre: un MP4 de `1920x1080` y 9,88 s con dominante cian, piel azulada y el azul del logotipo desplazado. Es decir, el croma corrupto no es de toda la ruta EIS2, sino del recorte de 1080p, `2400x1800` de entrada para entregar `1920x1440` y luego 1080p.
+
+El volcado de 300 ajustes no ofrece ninguna clave para limitar EIS2 por resolución. Las únicas relacionadas son `EISV3Enable=1`, `is3rdEISV2Enabled`, `is1080p60fpseisSupported=TRUE`, `iseispreviewSupported=TRUE`, `isPreviewZoomEISSupported=1`, `isVideoBeautyEISSupported=TRUE`, `isZoomEISPipSupported=1`, `EISv2DisableAccel=1`, `EISv2DisableOIS=0`, `EISv3DisableAccel=1` y `EISv3DisableOIS=0`. Ninguna distingue 720p de 1080p, así que encender EIS2 de forma global corrompe el 1080p y no hay interruptor por calidad en la configuración de CamX.
+
+Tras la prueba, `is3rdEISV2Enabled` se devolvió a `FALSE` en el archivo montado para no dejar el teléfono grabando 1080p con croma corrupto. El montaje con las trazas verbose sigue activo hasta el próximo reinicio. Las capturas y los MP4 quedaron en `videos/2026-11-22-verbose/`.
+
 Corrección de método: el `grep` de Android es toybox y no interpreta `\|` como alternancia, así que las búsquedas con `\|` lanzadas contra el teléfono devolvieron falsos negativos. Repetidas con `-e`, las claves `EISv2OperationMode`, `EISv3OperationMode`, `EISV3Enable` y `is3rdEISV2Enabled` siguen sin aparecer como volcado; lo único que coincide es la línea de `MatchPreivewStabilization()`. Las búsquedas locales sobre los archivos ya extraídos no tenían ese problema porque usan el `grep` de Git Bash.
 
 ### Cámaras traseras de la variante Global
