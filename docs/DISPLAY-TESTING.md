@@ -222,10 +222,31 @@ and selects the single-layer unsignaled-buffer path. It is a frame scheduling
 setting with broader effects than the touch spot. These property differences
 are candidates for isolation and do not by themselves explain the vblank wait.
 
-The discriminating test is the same fixed-120-Hz physical Show taps on/off
-comparison on stock Global 307. If it reproduces there, compare the same HWC
-and vblank slices on both systems. If it only reproduces on LineageOS, use
-one-property or one-framework-change experiments and keep the driver fixed.
+#### Stock physical touch test
+
+On stock Global 307 installed with Clean all, the owner selected 120 Hz in
+Display settings. ADB reported mode 1 at 120 Hz before and after each trace.
+With Show taps enabled, the owner reported smooth scrolling. The trace showed
+the `Sprite` layer and a median gap of 8.34 ms between display frames across
+four touches on the Display settings page. Of 179 gaps, 176 were near 8.3 ms
+and two were near 16.7 ms. This run did not reproduce LineageOS's sustained
+16.68 ms median with Show taps enabled.
+The two attempts with Show taps off captured gestures in the notification
+shade rather than on the Display settings page. They are excluded from the
+matched scrolling comparison.
+
+On the stock SurfaceFlinger main thread the enabled trace recorded 1,576
+`HwcPresentOrValidateDisplay 0` slices, with a 1.66 ms median, and no separate
+`HwcPresentDisplay 0` slice. `presentAndGetReleaseFences` took a median of
+0.004 ms. This contrasts with the separate present calls observed when the
+touch spot was active on LineageOS and gives a specific path to compare.
+
+The stock trace uses the InputDispatcher's touch-down marker to anchor the
+450 ms window because it exposes different input events than LineageOS. It
+uses the display-frame rows rather than app-surface rows for the cadence.
+The test narrows the search to differences between LineageOS and its stock
+reference with the same panel and driver. It does not yet identify a specific
+framework change or display property to carry into the tree.
 
 ### Capturing the layer composition type
 

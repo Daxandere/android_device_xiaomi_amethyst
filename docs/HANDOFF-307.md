@@ -25,6 +25,8 @@ La prueba del candidato Global confirmó que quitar `6@30|6@60` de ambos archivo
 
 La variante `k307-eis2diag` cambió únicamente `is3rdEISV2Enabled` a `FALSE` en ambos perfiles respecto a `k307-eisfix-global`. Con la estabilización activada en Aperture, los cuatro MP4 revisados con FFmpeg conservaron el color. CamX recibió la solicitud `ControlVideoStabilizationMode 1` y seleccionó `EISMode:0` a `1920x1080`, `1280x720` y `3840x2160`. Durante la captura filtrada tampoco volvió a aparecer el error de crop de EIS2 offline. Esto valida una solución temporal con EIS de CamX inactivo en los modos medidos. Conservar la estabilización a 1080p sigue pendiente.
 
+En HyperOS Global 307 instalado con Clean all, el propietario confirmó color normal en los dos MP4 a 1080p de la Cámara de Xiaomi, uno trasero y uno frontal, con el modo de interfaz a 30 fps. Los archivos son H.264 de `1920x1080`, con tasas medias de 24,08 y 25,81 fps respectivamente. En grabaciones traseras adicionales a `1920x1080`, stock registró `VideoEIS3PreviewEIS2Offline` y el nodo `eisv311`. El registro disponible no enlaza ese nodo con los dos clips iniciales ni muestra un crop equivalente de IPE14 para ambos sensores. La referencia confirma el color de stock. Para reproducir su ruta de estabilización, falta correlacionar el pipeline y el crop con cada grabación a 1080p30.
+
 ## Ramas, código y dependencias
 
 - `lineage-23.2` integra bootconfig y fingerprint Global 307, políticas de audio y de StrongBox y Weaver, el kernel 6.1.138 y los ajustes de cámara validados en `k307-eis2diag`. El vendor de la misma rama instala una sola copia de cada perfil CamX. [Commits del device tree](https://github.com/Daxandere/android_device_xiaomi_amethyst/commits/lineage-23.2/).
