@@ -53,13 +53,15 @@ El 21 de noviembre se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-aux-amethy
 
 Al elegir el macro en Vídeo, Aperture cierra la actividad. Se reprodujo por ADB. CamX registra `cameraId=3`, un máximo de `1600x1200` para el formato solicitado y el rechazo `-22` al configurar vídeo de `1920x1080`. El HAL anuncia un flujo de `1280x720` y un rango AE de `30–30 fps`. El XML multimedia activo anuncia 1080p y 2160p para ese ID. La rama experimental Global limita esos perfiles a 720p30 e incorpora la opción 1080p60 para la frontal (`1`). [Candidato Global `ed5ca6b`](https://github.com/Daxandere/android_device_xiaomi_amethyst/commit/ed5ca6b052746a0598bd66ee09ec607736201fac).
 
-En `k307-aux`, el propietario seleccionó 720p en la principal y luego cambió al macro sin salir de Vídeo. Aperture abrió el ID `3` y guardó un MP4 H.264 de `1280x720`, 6,65 s y 30,24 fps de media. FFmpeg decodificó los 201 fotogramas sin errores. En el candidato Global queda por verificar que el macro elija 720p automáticamente al venir de un lente configurado a 1080p y que la frontal grabe a 60 fps.
+En `k307-aux`, el propietario seleccionó 720p en la principal y luego cambió al macro sin salir de Vídeo. Aperture abrió el ID `3` y guardó un MP4 H.264 de `1280x720`, 6,65 s y 30,24 fps de media. FFmpeg decodificó los 201 fotogramas sin errores.
 
 Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-aux60-amethyst.zip` desde `ed5ca6b` con `TARGET_UNOFFICIAL_BUILD_ID=k307-aux60`. La OTA declara `amethyst`, A/B y el incremental `1795277115`. El XML empaquetado limita los perfiles del ID `3` a `1280x720` a 30 fps. `idmap2` confirmó que el overlay se asigna al selector de lentes y a la configuración de vídeo adicional de Aperture. El ZIP y el recovery pasaron SHA-256 en el servidor y en el PC.
 
 Lineage Recovery aplicó `k307-aux60` como actualización sobre `k307-aux` y registró `status 0` para el incremental `1795277115`. ADB confirmó el arranque completo en la ranura `a`. En Android, el overlay está activo y Aperture resuelve `config_enableAuxCameras=true` y el perfil adicional `1/fhd/60`.
 
 En la primera prueba frontal de `k307-aux60`, Aperture abrió el ID `1` y durante la sesión `VIDEO_RECORD` Camera2 registró la solicitud y el resultado AE de `60–60 fps`. El MP4 H.264 guardado mide `1920x1080`, 7,31 s y 59,61 fps de media. FFmpeg decodificó los 436 fotogramas sin errores.
+
+Con `k307-aux60`, el propietario pasó de la principal configurada a 1080p al macro sin tocar la resolución. CameraService registró la desconexión del ID `0` y la apertura del ID `3`. Aperture guardó un MP4 H.264 de `1280x720`, 5,76 s y 30,05 fps de media. FFmpeg decodificó los 173 fotogramas sin errores. El cambio automático de resolución funcionó en el Redmi Global probado.
 
 ## Ramas, código y dependencias
 
