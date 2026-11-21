@@ -164,8 +164,19 @@ it. Check the effective composition type of `Sprite` and the rest of the
 layers before attributing the change to cursor-plane support.
 [AOSP HWComposer implementation](https://android.googlesource.com/platform/frameworks/native/+/main/services/surfaceflinger/DisplayHardware/HWComposer.cpp)
 
-An ADB smoke test confirmed the layer capture works and shows a hidden `Sprite`
-at rest. A finger gesture is still needed to inspect the visible spot.
+The physical layer capture at fixed 120 Hz contained 245 snapshots. The
+touch-spot buffer layer was visible in 232, and all 232 reported `DEVICE` (2).
+The same snapshots kept the Settings surface and the refresh-rate indicator
+as `DEVICE` whether the spot was visible or hidden. The hardware composed the
+spot as an overlay. The capture did not show it using the `CURSOR` composition
+type or causing Settings to fall back to `CLIENT` composition.
+[Composer HAL composition types](https://android.googlesource.com/platform/hardware/interfaces/+/refs/heads/master/graphics/composer/aidl/android/hardware/graphics/composer3/Composition.aidl)
+
+The trace also recorded that `crtc_commit:141` woke the Qualcomm composer in
+all 50 sampled slow `atomic_commit` calls. The observation supports inspecting
+presentation and display synchronization with the extra overlay. To test for
+an interaction between layers, repeat with the developer refresh-rate indicator
+off and the touch spot still on, using the base timing profile.
 
 For a short structural capture, append the following to a copy of
 `display-perfetto.pbtxt`. Inspect the visible `Sprite` layers and their
