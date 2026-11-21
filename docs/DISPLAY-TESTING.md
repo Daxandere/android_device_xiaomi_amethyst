@@ -70,6 +70,31 @@ the touchscreen driver or establish when the touch spot appears. In the physical
 traces, compare the first frames after touch-down, active mode, late presents,
 and any Display HAL or GPU deadline misses. Restore the switch after the tests.
 
+### Physical touch results
+
+The touchscreen logged `BTN_TOUCH DOWN` in both runs and Perfetto showed the
+`Sprite` layer for the touch spot. The owner felt a brief slowdown followed by
+acceleration in both modes. It was nearly imperceptible and more noticeable
+with **Disable HW overlays** enabled.
+
+| Composition mode | Touch-downs | Late presents in the first 450 ms | GPU deadline misses in the first 450 ms |
+|---|---:|---:|---:|
+| Hardware overlays allowed | 8 | 189 / 250 | 46 / 250 |
+| GPU composition forced | 15 | 361 / 433 | 328 / 433 |
+
+The frame windows start at dispatch of each physical `DOWN` to Settings. The
+owner's cadence differed between runs, so these counts describe the traces and
+do not measure finger-to-photon latency. With overlays allowed, two gestures
+began at 60 Hz and SurfaceFlinger recorded 120 Hz 46–52 ms after dispatch.
+Other gestures began at 120 Hz and still had late presents. Every GPU-forced
+gesture began at 120 Hz. Together with the owner's report, the test does not
+support forcing GPU composition as a fix for this symptom.
+
+The next controlled comparison is physical touch with overlays allowed and
+dynamic refresh versus fixed 120 Hz, using the same number of swipes and a
+measured idle interval before each one. Then repeat with Show taps off to
+isolate the cost of drawing the touch spot.
+
 ## Reproduce and trace
 
 Keep the launcher, wallpaper, foreground screen, brightness and battery saver
