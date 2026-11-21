@@ -90,10 +90,31 @@ Other gestures began at 120 Hz and still had late presents. Every GPU-forced
 gesture began at 120 Hz. Together with the owner's report, the test does not
 support forcing GPU composition as a fix for this symptom.
 
-The next controlled comparison is physical touch with overlays allowed and
-dynamic refresh versus fixed 120 Hz, using the same number of swipes and a
-measured idle interval before each one. Then repeat with Show taps off to
-isolate the cost of drawing the touch spot.
+### Show taps at fixed 120 Hz
+
+Both runs used physical gestures over the same Display settings page with
+hardware overlays allowed and Pointer location off. ADB reported 120 Hz before
+and after each run. The `VsyncPeriod` track showed 8.33 ms in both captures, and
+the display mode recorded by SurfaceFlinger was 120 Hz.
+
+| Show taps | Median gap between new frames | Gaps near 8.3 ms | Gaps near 16.7 ms |
+|---|---:|---:|---:|
+| On | 16.68 ms | 68 / 444 | 373 / 444 |
+| Off | 8.34 ms | 757 / 830 | 69 / 830 |
+
+Gaps between unique SurfaceFlinger present timestamps were measured in the
+first 450 ms after each touch reached Settings. The comparison uses gaps below
+50 ms to exclude pauses and includes a different number of gestures per run.
+It measures presentation cadence during the gestures. The owner described
+the first run as feeling like 60 Hz and the second as slightly faster.
+
+With Show taps enabled, new frames usually arrived every other panel refresh.
+Disabling it restored presentation on most refreshes in the test. The enabled
+trace recorded 348 SurfaceFlinger CPU deadline misses. The disabled trace
+recorded zero of that type, with some GPU deadline misses in both traces.
+The result points to the touch-spot composition path. Inspect SurfaceFlinger's
+CPU work and Hardware Composer calls while the `Sprite` layer updates before
+changing refresh modes or interaction power hints.
 
 ## Reproduce and trace
 
