@@ -174,9 +174,26 @@ type or causing Settings to fall back to `CLIENT` composition.
 
 The trace also recorded that `crtc_commit:141` woke the Qualcomm composer in
 all 50 sampled slow `atomic_commit` calls. The observation supports inspecting
-presentation and display synchronization with the extra overlay. To test for
-an interaction between layers, repeat with the developer refresh-rate indicator
-off and the touch spot still on, using the base timing profile.
+presentation and display synchronization with the extra overlay.
+
+### Refresh-rate indicator control
+
+The same fixed-120-Hz physical test was repeated with Show taps on and the
+developer refresh-rate indicator off. It used the original timing profile
+from `936d08b`, hardware overlays allowed, and the same Display settings page.
+The owner reported a slight delay. The panel reported 120 Hz before and after
+the run, and Perfetto recorded an 8.33 ms vsync period.
+
+| Refresh-rate indicator | Median gap between new frames | Gaps near 16.7 ms | Separate HWC presents within 7 ms of a Sprite summary | Median `present` in those frames |
+|---|---:|---:|---:|---:|
+| On | 16.68 ms | 373 / 444 | 409 / 409 | 9.38 ms |
+| Off | 16.68 ms | 447 / 540 | 477 / 477 | 9.36 ms |
+
+These runs had different numbers of gestures. Both reproduced the pacing
+problem with the touch spot, so the refresh-rate indicator is not required
+for it. Disabling Show taps remains the verified workaround on this build.
+
+### Capturing the layer composition type
 
 For a short structural capture, append the following to a copy of
 `display-perfetto.pbtxt`. Inspect the visible `Sprite` layers and their
