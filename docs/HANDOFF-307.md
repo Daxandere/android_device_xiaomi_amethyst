@@ -35,6 +35,12 @@ Los blobs `com.qti.eisv2.so` y `com.qti.eisv3.so` coinciden entre el dump de Hyp
 
 En LineageOS, ambos XML de perfiles de medios del tree declaran los perfiles normales `1080p` a 30 fps y no hay una ampliación de `config_additionalVideoConfigurations` para Aperture. El código de Aperture ofrece ese overlay para añadir FPS por ID de cámara y calidad. Los ajustes `is60fpsDynamicSupported` y `availableFrontMaxResolutions` de CamX no sustituyen esa configuración de la app. Para probar 1080p60 en LineageOS, valida primero la combinación `cameraId=1`, `fhd` y 60 fps, midiendo el MP4 y revisando el color con el workaround de EIS actual. La referencia del clip de stock solo verifica esa combinación en HyperOS. [Configuración de Aperture](https://github.com/LineageOS/android_packages_apps_Aperture/blob/a0b16a6/app/src/main/res/values/config.xml)
 
+### Prueba de estabilización EIS3
+
+`com.qti.settings.milos.so` reconoce `EISV3Enable`. En `com.qti.chi.override.so`, el selector EIS3 consulta el modo de estabilización de la sesión. El valor forzado `2` escribe una solicitud de activación. La rama `amethyst-307-eis3-global`, basada en `k307-main60`, usa el valor `1` en los dos perfiles CamX y conserva `is3rdEISV2Enabled=FALSE`. Se validará el comportamiento del interruptor en hardware. [Candidato EIS3](https://github.com/Daxandere/android_device_xiaomi_amethyst/commit/1b4e5006cc11689059108be6970b3cfe0acdd1a5).
+
+Graba dos clips comparables con la principal a 1× y 1080p30, primero con estabilización apagada y luego encendida. Registra la solicitud y el resultado de Camera2, el estado de OIS y el pipeline de CamX durante cada clip. Revisa el color, el movimiento y cualquier error de recorte en los archivos guardados. Para dar la prueba por válida, el clip con la opción encendida debe mostrar una ruta de estabilización activa, color correcto y reducción de movimiento frente al control. Repite con la frontal y a 60 fps una vez verificada la principal a 30 fps. [Metadatos de Camera2](https://developer.android.com/reference/android/hardware/camera2/CaptureResult#CONTROL_VIDEO_STABILIZATION_MODE).
+
 ### Cámaras traseras de la variante Global
 
 En HyperOS Global 307, el propietario tomó tres fotos en modo Foto, seleccionando 0,6×, 1× y Macro en ese orden. Los eventos de conexión de `com.android.camera` y los metadatos EXIF de cada JPEG identifican los tres módulos de este `24115RA8EG`.
