@@ -193,6 +193,40 @@ These runs had different numbers of gestures. Both reproduced the pacing
 problem with the touch spot, so the refresh-rate indicator is not required
 for it. Disabling Show taps remains the verified workaround on this build.
 
+### Comparison with HyperOS Global 307
+
+Read-only comparison of the local Global `OS3.0.307.0.WOPMIXM` fastboot image,
+the vendor dump with the same firmware fingerprint, and the published kernel
+and vendor revisions `ac41a99` and `e5f5650`:
+
+| Component | Result |
+|---|---|
+| Kernel payload from `boot.img` | Byte-identical to the published prebuilt kernel. |
+| `msm_drm.ko` from `vendor_dlkm_a` | Byte-identical to the module in the kernel tree. |
+| Three DTBs from `vendor_boot.img` | All three payloads match the published DTBs. |
+| DTBO entries | Entry 0 matches. In entry 1, the only decoded property differences are in five panel nodes where `qcom,dsi-supported-dfps-list` drops `30`, keeping `120`, `90` and `60`. The test device reports DTBO index 1. |
+| `libsdmcore.so`, `libsdmutils.so`, `libsdedrm.so` | All three match the stock dump byte for byte. |
+| Qualcomm composer service | ELF build ID, `.text` and `.rodata` match. The extraction fixup changes the package's ELF dependency from `libtinyxml2.so` to `libtinyxml2-v34.so`, so the full executable hash differs. |
+
+This audit narrows the first comparison to the graphics framework and display
+configuration with the same lower-level driver. It does not establish how
+stock HyperOS presents the touch spot. [AOSP DTBO layout](https://source.android.com/docs/core/architecture/dto/partitions)
+
+The installed LineageOS reads `debug.sf.auto_latch_unsignaled=0` and
+`vendor.display.idle_time=0`; stock declares `1` and `80`, respectively.
+`debug.sf.enable_advanced_sf_phase_offset` and
+`debug.sf.mi_asynchronous_re.enable` are declared by stock and have no matching
+property read in the audited Lineage `frameworks/native` SurfaceFlinger or
+`libgui` sources at `26f530caef`. `debug.sf.auto_latch_unsignaled` is read there
+and selects the single-layer unsignaled-buffer path. It is a frame scheduling
+setting with broader effects than the touch spot. These property differences
+are candidates for isolation and do not by themselves explain the vblank wait.
+
+The discriminating test is the same fixed-120-Hz physical Show taps on/off
+comparison on stock Global 307. If it reproduces there, compare the same HWC
+and vblank slices on both systems. If it only reproduces on LineageOS, use
+one-property or one-framework-change experiments and keep the driver fixed.
+
 ### Capturing the layer composition type
 
 For a short structural capture, append the following to a copy of
