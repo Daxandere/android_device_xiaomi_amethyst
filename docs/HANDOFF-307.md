@@ -67,6 +67,8 @@ En `k307-aux60`, Aperture resuelve solo `1/fhd/60` en el overlay, tal como se co
 
 Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-main60-amethyst.zip` desde `b211d0c`. La OTA A/B para `amethyst` declara el incremental `1795280272`. En el paquete se verificaron las dos entradas `0/fhd/60` y `1/fhd/60`, su asignación a Aperture con `idmap2` y los perfiles 720p30 del macro. El ZIP y el recovery pasaron SHA-256 en el servidor. El MP4 de la principal a 60 fps sigue pendiente de comprobar en el Redmi.
 
+Lineage Recovery aplicó `k307-main60` sobre `k307-aux60` y registró `status 0` para el incremental `1795280272`. ADB confirmó `sys.boot_completed=1` en la ranura `b`. En ejecución, Aperture ve el selector de lentes auxiliares activo y ambos perfiles `0/fhd/60` y `1/fhd/60`.
+
 ## Ramas, código y dependencias
 
 - `lineage-23.2` integra bootconfig y fingerprint Global 307, políticas de audio y de StrongBox y Weaver, el kernel 6.1.138 y los ajustes de cámara validados en `k307-eis2diag`. El vendor de la misma rama instala una sola copia de cada perfil CamX. [Commits del device tree](https://github.com/Daxandere/android_device_xiaomi_amethyst/commits/lineage-23.2/).
