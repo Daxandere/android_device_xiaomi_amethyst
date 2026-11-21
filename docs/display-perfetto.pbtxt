@@ -14,7 +14,14 @@ data_sources {
       atrace_categories: "input"
       ftrace_events: "sched/sched_switch"
       ftrace_events: "sched/sched_wakeup"
+      ftrace_events: "sched/sched_waking"
+      ftrace_events: "sched/sched_blocked_reason"
       ftrace_events: "power/cpu_frequency"
+      ftrace_events: "dma_fence/dma_fence_wait_start"
+      ftrace_events: "dma_fence/dma_fence_wait_end"
+      ftrace_events: "drm/drm_vblank_event_queued"
+      ftrace_events: "drm/drm_vblank_event_delivered"
+      ftrace_events: "sde/sde_hw_fence_status"
     }
   }
 }

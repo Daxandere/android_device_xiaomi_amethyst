@@ -112,9 +112,37 @@ With Show taps enabled, new frames usually arrived every other panel refresh.
 Disabling it restored presentation on most refreshes in the test. The enabled
 trace recorded 348 SurfaceFlinger CPU deadline misses. The disabled trace
 recorded zero of that type, with some GPU deadline misses in both traces.
-The result points to the touch-spot composition path. Inspect SurfaceFlinger's
-CPU work and Hardware Composer calls while the `Sprite` layer updates before
-changing refresh modes or interaction power hints.
+The result points to the touch-spot composition path.
+
+### Where presentation stalls
+
+The same fixed-120-Hz traces show that the extra time accumulates in the
+Hardware Composer call. These are median slice durations for calls that start
+within 450 ms of a physical touch reaching Settings.
+
+| Trace slice | Show taps off | Show taps on |
+|---|---:|---:|
+| SurfaceFlinger `present` | 1.88 ms | 9.18 ms |
+| SurfaceFlinger `HwcPresentDisplay 0` | 0.95 ms | 6.06 ms |
+| Qualcomm composer `atomic_commit` | 0.07 ms | 5.48 ms |
+
+The discrete HWC present call also occurred more often with Show taps on
+(414 of 545 presentations versus 76 of 943). In a sample of 50 slow
+`atomic_commit` calls from the enabled trace, the composer thread spent about
+97% of the measured interval asleep. This explains why FrameTimeline marked
+CPU deadline misses even though the driver call spent most of its time waiting.
+[Perfetto FrameTimeline reference](https://perfetto.dev/docs/data-sources/frametimeline)
+
+All 50 sampled calls contained a Qualcomm SDE vblank callback and a trace event
+from `_sde_encoder_phys_vid_wait_for_vblank`. The wait event appeared a median
+0.24 ms before the commit returned. This places the stall in the display sync
+path. The public Qualcomm driver uses that function to wait for a VSYNC IRQ.
+The trace does not yet explain why adding the touch spot sends more frames down
+this path. [Qualcomm SDE reference implementation](https://android.googlesource.com/kernel/msm-extra/display-drivers/+/e7ab2aa8bd2f6f27b311ccada3722d20dee4bcef/msm/sde/sde_encoder_phys_vid.c)
+
+The trace config includes scheduler wakeups, DMA fence waits, SDE fence status
+and DRM vblank events to compare against the SDE callbacks. Use it to see which
+layer and commit changes precede the wait. [Linux DRM atomic commit documentation](https://docs.kernel.org/gpu/drm-kms-helpers.html)
 
 ## Reproduce and trace
 
