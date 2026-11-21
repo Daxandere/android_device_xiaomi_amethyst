@@ -1,6 +1,6 @@
 # Relevo de amethyst con HyperOS Global 307
 
-Actualizado el 20 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro+ 5G Global, modelo `24115RA8EG`, producto Fastboot `amethyst`, bootloader desbloqueado. Base HyperOS `OS3.0.307.0.WOPMIXM` y LineageOS 23.2.
+Actualizado el 21 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro+ 5G Global, modelo `24115RA8EG`, producto Fastboot `amethyst`, bootloader desbloqueado. Base HyperOS `OS3.0.307.0.WOPMIXM` y LineageOS 23.2.
 
 ## Qué se comprobó
 
@@ -27,9 +27,27 @@ La variante `k307-eis2diag` cambió únicamente `is3rdEISV2Enabled` a `FALSE` en
 
 En HyperOS Global 307 instalado con Clean all, el propietario confirmó color normal en los dos MP4 a 1080p de la Cámara de Xiaomi, uno trasero y uno frontal, con el modo de interfaz a 30 fps. Los archivos son H.264 de `1920x1080`, con tasas medias de 24,08 y 25,81 fps respectivamente. En grabaciones traseras adicionales a `1920x1080`, stock registró `VideoEIS3PreviewEIS2Offline` y el nodo `eisv311`. El registro disponible no enlaza ese nodo con los dos clips iniciales ni muestra un crop equivalente de IPE14 para ambos sensores. La referencia confirma el color de stock. Para reproducir su ruta de estabilización, falta correlacionar el pipeline y el crop con cada grabación a 1080p30.
 
-Un clip frontal adicional de HyperOS, grabado con la cámara 1 activa, dio `1920x1080` y **58,41 fps de media**. Un clip trasero adicional dio `1920x1080` y 30,05 fps. El propietario no encontró un interruptor de estabilización en la Cámara de Xiaomi. Los registros de EIS3 corresponden a sesiones traseras y no demuestran estabilización efectiva en el clip frontal de casi 60 fps.
+Un clip frontal adicional de HyperOS, grabado con la cámara 1 activa, dio `1920x1080` y **58,41 fps de media**. Un clip trasero adicional dio `1920x1080` y 30,05 fps. Los registros de EIS3 corresponden a sesiones traseras. La estabilización del clip frontal de casi 60 fps sigue sin verificar.
+
+El propietario grabó dos clips con la trasera (`cameraId=0`) de la Cámara de Xiaomi a 1080p30, uno en **ShootSteady** y otro en **Vídeo normal** con ShootSteady apagado. Ambos MP4 son H.264 de `1920x1080`, a 30,06 y 30,09 fps de media, respectivamente. Tres fotogramas decodificados de cada clip conservaron el color. En ambas sesiones, `cmd media.camera watch` registró `VIDEO_RECORD`, EIS `ON` y OIS `OFF` tanto en la solicitud como en el resultado. CamX registró `VideoEIS3PreviewEIS2Offline` y `com.qti.node.eisv311` para la cámara 0 en ambos modos. Vídeo normal trasero a 1080p30 queda como referencia stock para Aperture. La configuración interna que distingue ShootSteady y la ruta usada por la frontal siguen pendientes. [Especificaciones de Xiaomi](https://www.mi.com/ph/product/redmi-note-14-pro-plus-5g/specs/), [metadatos de Camera2](https://developer.android.com/reference/android/hardware/camera2/CaptureResult#CONTROL_VIDEO_STABILIZATION_MODE).
+
+Los blobs `com.qti.eisv2.so` y `com.qti.eisv3.so` coinciden entre el dump de HyperOS Global 307 y el vendor `e5f5650`. Los nodos `com.qti.node.eisv2.so` y `com.qti.node.eisv3.so` conservan la sección `.text`. En las dependencias ELF, `extract-files.py` cambia `android.hardware.graphics.allocator-V1-ndk.so` por `android.hardware.graphics.allocator-V2-ndk.so` en ambos nodos. Este cambio es verificable por separado de la selección del pipeline. Su relación con el fallo de croma sigue sin comprobarse.
 
 En LineageOS, ambos XML de perfiles de medios del tree declaran los perfiles normales `1080p` a 30 fps y no hay una ampliación de `config_additionalVideoConfigurations` para Aperture. El código de Aperture ofrece ese overlay para añadir FPS por ID de cámara y calidad. Los ajustes `is60fpsDynamicSupported` y `availableFrontMaxResolutions` de CamX no sustituyen esa configuración de la app. Para probar 1080p60 en LineageOS, valida primero la combinación `cameraId=1`, `fhd` y 60 fps, midiendo el MP4 y revisando el color con el workaround de EIS actual. La referencia del clip de stock solo verifica esa combinación en HyperOS. [Configuración de Aperture](https://github.com/LineageOS/android_packages_apps_Aperture/blob/a0b16a6/app/src/main/res/values/config.xml)
+
+### Cámaras traseras de la variante Global
+
+En HyperOS Global 307, el propietario tomó tres fotos en modo Foto, seleccionando 0,6×, 1× y Macro en ese orden. Los eventos de conexión de `com.android.camera` y los metadatos EXIF de cada JPEG identifican los tres módulos de este `24115RA8EG`.
+
+| Selección en Xiaomi | ID abierto | Foto guardada | Distancia focal y apertura |
+| --- | --- | --- | --- |
+| 0,6×, ultra gran angular | `2` | 2464 × 3280 | 1,65 mm, f/2,2 |
+| 1×, principal | `0` | 3060 × 4080 | 6,19 mm, f/1,65 |
+| Macro | `3` | 1200 × 1600 | 2,02 mm, f/2,4 |
+
+El HAL también declara el ID lógico `4`, que agrupa los físicos `2` y `0`. En el volcado de stock, la lista pública de la API antigua (API1) contiene `0`, `1` y `3`. Queda por medir qué IDs enumera CameraX para Aperture en LineageOS. La variante india incorpora un teleobjetivo de 2,5× y requiere su propia identificación. [Ficha Global](https://www.mi.com/global/product/redmi-note-14-pro-plus-5g/specs/), [ficha india](https://www.mi.com/in/product/redmi-note-14-pro-plus-5g/specs/).
+
+En la revisión `a0b16a6` de Aperture, el selector `config_enableAuxCameras` vale `false` por defecto. En ese estado `CameraRepository` acepta los IDs internos `0` y `1`. La rama experimental `amethyst-307-aperture-aux` activa el selector y conserva el filtro predeterminado de cámaras lógicas auxiliares. En LineageOS, comprobar qué IDs enumera CameraX, abrir cada lente en modo Foto y verificar la focal del JPEG. Si falta el `2` o el `3`, revisar su exposición en el proveedor de cámara. El selector requiere validación en el Redmi Global. [Rama de prueba](https://github.com/Daxandere/android_device_xiaomi_amethyst/tree/amethyst-307-aperture-aux), [selección de cámaras en Aperture](https://github.com/LineageOS/android_packages_apps_Aperture/blob/a0b16a6bdf9a0f927307adfbcfa3a63cf72dd965/app/src/main/java/org/lineageos/aperture/repositories/CameraRepository.kt).
 
 ## Ramas, código y dependencias
 
