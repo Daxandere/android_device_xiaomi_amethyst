@@ -65,9 +65,11 @@ Con `k307-aux60`, el propietario pasó de la principal configurada a 1080p al ma
 
 En `k307-aux60`, Aperture resuelve solo `1/fhd/60` en el overlay, tal como se confirmó por ADB cuando el propietario observó que los 60 fps aparecen en la frontal. En la principal Global (`0`), Camera2 anuncia rangos AE normales de hasta 30 fps y configuraciones de alta velocidad de `1920x1080` con rango `60–120 fps`. Xiaomi declara 1080p60 en la cámara trasera. El candidato `k307-main60` añade `0/fhd/60` al overlay para comprobar si Aperture puede grabar a esa velocidad en Vídeo normal. La prueba debe medir los FPS del MP4 y revisar el color. [Ficha de Xiaomi](https://www.mi.com/global/product/redmi-note-14-pro-plus-5g/specs/), [candidato `b211d0c`](https://github.com/Daxandere/android_device_xiaomi_amethyst/commit/b211d0cdef05b166de7380d506f72243f1117c15).
 
-Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-main60-amethyst.zip` desde `b211d0c`. La OTA A/B para `amethyst` declara el incremental `1795280272`. En el paquete se verificaron las dos entradas `0/fhd/60` y `1/fhd/60`, su asignación a Aperture con `idmap2` y los perfiles 720p30 del macro. El ZIP y el recovery pasaron SHA-256 en el servidor. El MP4 de la principal a 60 fps sigue pendiente de comprobar en el Redmi.
+Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-main60-amethyst.zip` desde `b211d0c`. La OTA A/B para `amethyst` declara el incremental `1795280272`. En el paquete se verificaron las dos entradas `0/fhd/60` y `1/fhd/60`, su asignación a Aperture con `idmap2` y los perfiles 720p30 del macro. El ZIP y el recovery pasaron SHA-256 en el servidor y en el PC.
 
 Lineage Recovery aplicó `k307-main60` sobre `k307-aux60` y registró `status 0` para el incremental `1795280272`. ADB confirmó `sys.boot_completed=1` en la ranura `b`. En ejecución, Aperture ve el selector de lentes auxiliares activo y ambos perfiles `0/fhd/60` y `1/fhd/60`.
+
+En el Redmi Global, el propietario grabó con la principal a 1× y 1080p60 y confirmó color normal en el archivo guardado. Aperture abrió el ID `0` y Camera2 registró la solicitud y el resultado AE de `60–60 fps` durante `VIDEO_RECORD`. El MP4 H.264 mide `1920x1080`, 9,94 s y 59,57 fps de media. FFmpeg decodificó los 592 fotogramas sin errores.
 
 ## Ramas, código y dependencias
 
