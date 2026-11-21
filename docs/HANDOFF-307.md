@@ -59,6 +59,8 @@ Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-aux60-amethyst.zip` desde `ed
 
 Lineage Recovery aplicó `k307-aux60` como actualización sobre `k307-aux` y registró `status 0` para el incremental `1795277115`. ADB confirmó el arranque completo en la ranura `a`. En Android, el overlay está activo y Aperture resuelve `config_enableAuxCameras=true` y el perfil adicional `1/fhd/60`.
 
+En la primera prueba frontal de `k307-aux60`, Aperture abrió el ID `1` y durante la sesión `VIDEO_RECORD` Camera2 registró la solicitud y el resultado AE de `60–60 fps`. El MP4 H.264 guardado mide `1920x1080`, 7,31 s y 59,61 fps de media. FFmpeg decodificó los 436 fotogramas sin errores.
+
 ## Ramas, código y dependencias
 
 - `lineage-23.2` integra bootconfig y fingerprint Global 307, políticas de audio y de StrongBox y Weaver, el kernel 6.1.138 y los ajustes de cámara validados en `k307-eis2diag`. El vendor de la misma rama instala una sola copia de cada perfil CamX. [Commits del device tree](https://github.com/Daxandere/android_device_xiaomi_amethyst/commits/lineage-23.2/).
