@@ -129,6 +129,22 @@ Los márgenes no son configurables: `GetRequestedMargins()` los toma del tuning 
 
 Corrección de método: el `grep` de Android es toybox y no interpreta `\|` como alternancia, así que las búsquedas con `\|` lanzadas contra el teléfono devolvieron falsos negativos. Repetidas con `-e`, las claves `EISv2OperationMode`, `EISv3OperationMode`, `EISV3Enable` y `is3rdEISV2Enabled` siguen sin aparecer como volcado; lo único que coincide es la línea de `MatchPreivewStabilization()`. Las búsquedas locales sobre los archivos ya extraídos no tenían ese problema porque usan el `grep` de Git Bash.
 
+### Perfiles CamX de stock frente a LineageOS
+
+Con HyperOS Global 307 reinstalado (MiFlash **Clean all**, `OS3.0.307.0.WOPMIXM`, `BP2A.250605.031.A3`, `amethyst`, sin root: `uid=2000(shell)` y SELinux `Enforcing`), la comparación de configuración no necesita root ni el volcado `DumpData`. En stock, `/odm/etc/camera/camxoverridesettings.txt` y `camxoverridesettings_global.txt` son legibles por el usuario `shell` (`0644 root:root`), así que basta leer los dos ficheros que carga `libcamxsettingsmanager.so`. El `DumpData()` de 300 ajustes no aparece en logcat porque se imprime solo con `chiLogVerboseMask` distinto de `0`, y stock lo deja en `0x0`.
+
+Los dos perfiles de stock y los del árbol solo difieren en tres líneas. En `camxoverridesettings.txt`:
+
+- `aecFlickerFFTNumber=1024` en el árbol frente a `1024 ` con espacio final en stock. Sin efecto.
+- `vsquality=5@30|6@30|6@60|8@30|8@60|3001@24` en stock frente a `vsquality=5@30|8@30|8@60|3001@24` en el árbol. El árbol quitó las entradas de 1080p, `6@30` y `6@60`.
+- `is3rdEISV2Enabled=TRUE` en stock frente a `FALSE` en el árbol, que es el cambio diagnóstico de `bd3eaee`.
+
+En `camxoverridesettings_global.txt` solo cambian las dos líneas funcionales, `vsquality` e `is3rdEISV2Enabled`, con los mismos valores. El resto del fichero, 542 y 555 líneas respectivamente, es idéntico. `misoverridesettings.txt` es el mismo archivo en los dos sistemas: SHA-256 `a50628dbe100a8bf9008921abd7be51b77fc10cabf54e20ae715d75be6d1ad2a`.
+
+El árbol añadió el perfil en `beb1475` ya con el `vsquality` sin 1080p, y `358111a` lo replicó en el perfil Global. Por tanto **las pruebas de EIS2 a 1080p nunca corrieron con la configuración que el vendor espera**: el perfil en ejecución no declaraba `6@30` ni `6@60` mientras la ruta de estabilización se forzaba con `is3rdEISV2Enabled=TRUE`. Esa es la divergencia que queda por probar: dejar los dos ficheros byte a byte como stock, con las entradas de 1080p y el EIS2 de terceros activo, y repetir la grabación de 1080p30. Si el croma sale correcto, el recorte de 1080p no está roto en sí y el fallo venía de estabilizar una calidad que el perfil no declaraba.
+
+Los ficheros de referencia se extrajeron a `diag/stock-307/`, fuera del repositorio: `camxoverridesettings.txt` con SHA-256 `e0f55408dd3fdb2622d7d98bb82f2adca899c960fd70278c4c2b61a481c0607b` y `camxoverridesettings_global.txt` con `cab4239ef6223f8926f56bcbc576b0dac980ccbe5e3ee026644defbcbc507e40`. Del stock también queda pendiente grabar 1080p30 con la cámara de Xiaomi para medir el campo de visión con `diag/compare-fov.py` y confirmar que allí la estabilización recorta como se espera.
+
 ### Cámaras traseras de la variante Global
 
 En HyperOS Global 307, el propietario tomó tres fotos en modo Foto, seleccionando 0,6×, 1× y Macro en ese orden. Los eventos de conexión de `com.android.camera` y los metadatos EXIF de cada JPEG identifican los tres módulos de este `24115RA8EG`.
