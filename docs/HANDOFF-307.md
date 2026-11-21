@@ -159,6 +159,20 @@ La rama `amethyst-307-eisstock` parte de `lineage-23.2` y cambia únicamente los
 
 Es la configuración que nunca se probó a 1080p. Si el color sale correcto, el arreglo es el perfil de stock y se acabó; si sigue corrupto con el recorte correcto, el fallo está en el procesado de color del `IPE14` de la ruta EIS2 y no queda nada que tocar por configuración. No hace falta compilar para probarlo: con root en LineageOS basta montar esos dos ficheros sobre `/odm/etc/camera` con `mount --bind` y reiniciar `vendor.camera-provider`. `lineage-23.2` sigue sirviendo builds con EIS desactivado a 1080p, así que este candidato no altera lo que ya está publicado.
 
+### Build `k307-eisstock`
+
+El servidor no tiene credenciales de GitHub: `git fetch` de los remotos `https://github.com/...` falla con «correct access rights». El build no se hizo desde la rama, sino sobre el árbol canónico `/serverhive5/daxandere/android/lineage-23.2`, en su HEAD `5febb8c`, con los dos perfiles de stock copiados en disco. La equivalencia con el candidato está comprobada: entre `5febb8c` y `27a63e2` solo hay commits de documentación y esas dos líneas de configuración, y los perfiles originales del servidor coincidían byte a byte con `lineage-23.2`. Los originales quedaron en `/serverhive5/daxandere/eisstock-backup-20261121-165202` y el árbol se restauró al terminar el build.
+
+`breakfast amethyst` y `m bacon` con `TARGET_UNOFFICIAL_BUILD_ID=k307-eisstock` terminaron en 6:58 sin errores. La imagen lleva los perfiles byte a byte como stock: `out/target/product/amethyst/odm/etc/camera/camxoverridesettings.txt` con SHA-256 `e0f55408dd3fdb2622d7d98bb82f2adca899c960fd70278c4c2b61a481c0607b` y `camxoverridesettings_global.txt` con `cab4239ef6223f8926f56bcbc576b0dac980ccbe5e3ee026644defbcbc507e40`.
+
+| Archivo verificado | SHA-256 |
+| --- | --- |
+| `lineage-23.2-20261121-UNOFFICIAL-k307-eisstock-amethyst.zip` (2 083 680 623 bytes) | `666fcae2c8a497d597ea7772e50348b0c9ba80c1bae9d96f4a8e97b4532827f6` |
+| `recovery.img` extraído del mismo build | `41aa2c3ab19f773d7ed6135d32d56825ed882761333b86c728ea161e5b08eb1c` |
+
+Publicados en `https://ferrari.serverhive.in/daxandere/k307-eisstock/` con respuesta 200 verificada. El root web lo sirve `ferrari.serverhive.in`; `waffle.serverhive.in` no tiene sitio y su TLS responde con alerta interna. El ZIP no se ha flasheado ni probado todavía.
+
+
 
 ### Cámaras traseras de la variante Global
 
