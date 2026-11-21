@@ -406,6 +406,7 @@ bokehBeautyLensSupported=2
 enableMotionCapture=0x0919
 
 # Video EIS
+EISV3Enable=1
 iseispreviewSupported=TRUE
 #Res1@FPS1|Res2@FPS2 ...,5--720P,6--1080P,8--4K,3001--8K
 vsquality=5@30|8@30|8@60|3001@24
