@@ -241,12 +241,56 @@ On the stock SurfaceFlinger main thread the enabled trace recorded 1,576
 0.004 ms. This contrasts with the separate present calls observed when the
 touch spot was active on LineageOS and gives a specific path to compare.
 
+Using the same 7 ms `Sprite` layer-summary window as the LineageOS trace,
+stock recorded no separate HWC present calls in 661 presentations and a
+2.76 ms median `present` slice. LineageOS recorded a separate call in all
+409 presentations in that window and a 9.38 ms median. Stock and LineageOS
+also used different scheduler work durations at 120 Hz:
+
+| Trace counter | HyperOS Global 307 | LineageOS |
+|---|---:|---:|
+| `VsyncWorkDuration-app` | 11.67 ms | 13.67 ms |
+| `VsyncWorkDuration-sf` | 12.33 ms | 10.50 ms |
+| `VsyncWorkDuration-appSf` | 8.33 ms | 8.33 ms |
+
+Stock still declares `debug.sf.late.app.duration=13666666` and
+`debug.sf.late.sf.duration=10500000`, the same values as the device tree.
+The active trace counters differ, so the property values alone do not describe
+the scheduling behavior. Compare `presentOrValidate` results and the expected
+presentation timestamp before changing work durations.
+
 The stock trace uses the InputDispatcher's touch-down marker to anchor the
 450 ms window because it exposes different input events than LineageOS. It
 uses the display-frame rows rather than app-surface rows for the cadence.
 The test narrows the search to differences between LineageOS and its stock
 reference with the same panel and driver. It does not yet identify a specific
 framework change or display property to carry into the tree.
+
+#### Stock Control Center blur
+
+HyperOS reports cross-window blur supported and enabled. The tested phone
+uses the split Control Center. Open it from the upper-right corner because
+the generic status-bar expansion command can show the notification shade.
+[AOSP window blur implementation](https://source.android.com/docs/core/display/window-blurs?hl=en)
+
+Two physical captures at 120 Hz over Display settings contained three Control
+Center openings. Each opening had one `captureBlurOrBlend` call and one
+`drawBlurRegion` inside RenderEngine's `ScreenCaptureOutput`. The first was
+followed by inflation of MIUI Control Center views. The two other captures
+started 36 and 59 ms after the corresponding status-bar touch-down. In each
+500 ms window following a blur capture, there were 54, 55 and 56 display-frame
+records respectively, without late presents or GPU composition deadline
+misses. A layer dump with the panel visible showed no nonzero continuous
+`backgroundBlurRadius`.
+
+In the earlier LineageOS trace with QS blur enabled, three ADB gesture
+sequences over Settings recorded 385 `BackgroundBlur` and 385
+`drawBlurRegion` slices. With QS blur disabled, neither slice appeared.
+The stock and LineageOS panels and gestures differ, so the counts describe
+their rendering paths rather than a normalized benchmark. The stock trace
+shows one trace-visible blur capture per opening. The LineageOS trace shows
+live blur during the animation. A fix still needs to preserve the visual effect
+while reducing that per-frame work.
 
 ### Capturing the layer composition type
 
