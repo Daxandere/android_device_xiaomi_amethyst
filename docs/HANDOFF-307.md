@@ -65,6 +65,8 @@ Con `k307-aux60`, el propietario pasó de la principal configurada a 1080p al ma
 
 En `k307-aux60`, Aperture resuelve solo `1/fhd/60` en el overlay, tal como se confirmó por ADB cuando el propietario observó que los 60 fps aparecen en la frontal. En la principal Global (`0`), Camera2 anuncia rangos AE normales de hasta 30 fps y configuraciones de alta velocidad de `1920x1080` con rango `60–120 fps`. Xiaomi declara 1080p60 en la cámara trasera. El candidato `k307-main60` añade `0/fhd/60` al overlay para comprobar si Aperture puede grabar a esa velocidad en Vídeo normal. La prueba debe medir los FPS del MP4 y revisar el color. [Ficha de Xiaomi](https://www.mi.com/global/product/redmi-note-14-pro-plus-5g/specs/), [candidato `b211d0c`](https://github.com/Daxandere/android_device_xiaomi_amethyst/commit/b211d0cdef05b166de7380d506f72243f1117c15).
 
+Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-main60-amethyst.zip` desde `b211d0c`. La OTA A/B para `amethyst` declara el incremental `1795280272`. En el paquete se verificaron las dos entradas `0/fhd/60` y `1/fhd/60`, su asignación a Aperture con `idmap2` y los perfiles 720p30 del macro. El ZIP y el recovery pasaron SHA-256 en el servidor. El MP4 de la principal a 60 fps sigue pendiente de comprobar en el Redmi.
+
 ## Ramas, código y dependencias
 
 - `lineage-23.2` integra bootconfig y fingerprint Global 307, políticas de audio y de StrongBox y Weaver, el kernel 6.1.138 y los ajustes de cámara validados en `k307-eis2diag`. El vendor de la misma rama instala una sola copia de cada perfil CamX. [Commits del device tree](https://github.com/Daxandere/android_device_xiaomi_amethyst/commits/lineage-23.2/).
