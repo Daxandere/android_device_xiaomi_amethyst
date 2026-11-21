@@ -3,6 +3,10 @@
 <resources>
     <bool name="config_enableAuxCameras">true</bool>
     <string-array name="config_additionalVideoConfigurations" translatable="false">
+        <!-- Main rear camera, 1920x1080, 60 fps. -->
+        <item>0</item>
+        <item>fhd</item>
+        <item>60</item>
         <!-- Front camera, 1920x1080, 60 fps. -->
         <item>1</item>
         <item>fhd</item>
