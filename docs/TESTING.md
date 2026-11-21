@@ -41,7 +41,7 @@ hardware use. ADB and the original camera clips cover the checks noted below.
 | Fingerprint (UDFPS) | ✅ | The owner verified unlock with the display off. |
 | Face unlock | ⬜ | |
 | Quick Settings with background blur | ⚠️ | Owner reports stutter. Perfetto shows more GPU deadline misses with blur, including at fixed 120 Hz. See [display diagnosis](DISPLAY-TESTING.md). |
-| Developer touch indicators | ⚠️ | Owner reports a short touch delay. ADB swipes with Pointer location produced late frames at fixed 120 Hz. See [display diagnosis](DISPLAY-TESTING.md). |
+| Developer touch indicators | ⚠️ | Owner reports a short delay on physical touches with Show taps. Pointer location also produced late frames in a separate ADB test. See [display diagnosis](DISPLAY-TESTING.md). |
 | Proximity | ✅ | The owner verified the display response when holding the phone to the ear during a call. |
 | Other sensors | ⬜ | Accelerometer, gyro and ambient light |
 | IR blaster | ⬜ | |

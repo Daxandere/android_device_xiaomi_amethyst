@@ -6,11 +6,10 @@ On `k307-eis2diag` with Global 307 firmware, the owner reported two cases:
 
 - Pulling down Quick Settings (QS) stutters with background blur enabled.
   Turning blur off helps. Changing the launcher sometimes helps too.
-- A developer touch indicator causes a short delay at the start of a touch,
-  followed by fast response. The owner observed this with 120 Hz selected.
-  Test the two Android indicators separately: **Show taps** draws the dot
-  (`show_touches`), and **Pointer location** draws the trail and coordinates
-  (`pointer_location`).
+- The owner confirmed a short delay at the start of a physical touch with
+  **Show taps** (`show_touches`, displayed as **Mostrar presiones**), even
+  with 120 Hz selected. It draws the dot below the finger. **Pointer location**
+  (`pointer_location`) draws a trail and coordinates and is a separate test.
 
 ADB confirmed three modes at 1220 × 2712, at 60, 90 and 120 Hz. The physical
 mode and the rate at which new frames are presented are separate measurements.
@@ -38,9 +37,38 @@ traces showed an 8.33 ms `VsyncPeriod` and only the 120 Hz display mode.
 | Fixed 120 Hz, QS blur on | 393 / 453 | 378 / 453 |
 
 The denominators count SurfaceFlinger FrameTimeline records in each trace.
-The measured slowdowns persisted at 120 Hz, so the 90 Hz mode is not needed
-to reproduce them with these gestures. Repeat with finger input to check
-hardware touch latency, and repeat over the home screen to compare launchers.
+The blur and Pointer location slowdowns persisted at 120 Hz with injected
+gestures. The Show taps row above is a synthetic-input control. It does not
+measure the owner's physical-touch symptom. Repeat over the home screen to
+compare launchers for the QS case.
+
+## Check the hardware overlay hypothesis
+
+Two ADB runs in each composition mode used the same Display settings screen and
+the owner's indicators (`show_touches=1`, `pointer_location=0`). SurfaceFlinger
+recorded 60 and 120 Hz in all four runs.
+
+| Composition mode | GPU-composed records | Late presents | GPU deadline misses |
+|---|---:|---:|---:|
+| Hardware overlays allowed | 0 / 1,651 | 4 / 1,651 | 0 / 1,651 |
+| GPU composition forced | 1,153 / 1,158 | 691 / 1,158 | 420 / 1,158 |
+
+Forcing GPU composition made the scripted scroll less consistent. The traces
+did not show the touch-spot surface, so this comparison cannot establish whether
+the switch improves the first physical touch with Show taps enabled.
+
+Leave **Show taps** on and **Pointer location** off. Start on the same scrollable
+Settings page and repeat three finger swipes with two seconds of idle before each
+one. Repeat with **Disable HW overlays** enabled, then with it off again. The
+switch forces SurfaceFlinger client composition on the GPU while enabled. Use
+FrameTimeline's GPU Composition field to verify that the composition path changed.
+[AOSP Hardware Composer documentation](https://source.android.com/docs/core/graphics/implement-hwc)
+
+Use physical input for the verdict. ADB `input swipe` injects a virtual motion
+event. It can compare the render paths on the same screen, but does not exercise
+the touchscreen driver or establish when the touch spot appears. In the physical
+traces, compare the first frames after touch-down, active mode, late presents,
+and any Display HAL or GPU deadline misses. Restore the switch after the tests.
 
 ## Reproduce and trace
 
