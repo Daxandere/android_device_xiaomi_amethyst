@@ -55,7 +55,9 @@ Al elegir el macro en Vídeo, Aperture cierra la actividad. Se reprodujo por ADB
 
 En `k307-aux`, el propietario seleccionó 720p en la principal y luego cambió al macro sin salir de Vídeo. Aperture abrió el ID `3` y guardó un MP4 H.264 de `1280x720`, 6,65 s y 30,24 fps de media. FFmpeg decodificó los 201 fotogramas sin errores. En el candidato Global queda por verificar que el macro elija 720p automáticamente al venir de un lente configurado a 1080p y que la frontal grabe a 60 fps.
 
-Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-aux60-amethyst.zip` desde `ed5ca6b` con `TARGET_UNOFFICIAL_BUILD_ID=k307-aux60`. La OTA declara `amethyst`, A/B y el incremental `1795277115`. El XML empaquetado limita los perfiles del ID `3` a `1280x720` a 30 fps. `idmap2` confirmó que el overlay se asigna al selector de lentes y a la configuración de vídeo adicional de Aperture. El ZIP y el recovery pasaron SHA-256 en el servidor. La prueba de este ZIP en el teléfono sigue pendiente.
+Se compiló `lineage-23.2-20261121-UNOFFICIAL-k307-aux60-amethyst.zip` desde `ed5ca6b` con `TARGET_UNOFFICIAL_BUILD_ID=k307-aux60`. La OTA declara `amethyst`, A/B y el incremental `1795277115`. El XML empaquetado limita los perfiles del ID `3` a `1280x720` a 30 fps. `idmap2` confirmó que el overlay se asigna al selector de lentes y a la configuración de vídeo adicional de Aperture. El ZIP y el recovery pasaron SHA-256 en el servidor y en el PC.
+
+Lineage Recovery aplicó `k307-aux60` como actualización sobre `k307-aux` y registró `status 0` para el incremental `1795277115`. ADB confirmó el arranque completo en la ranura `a`. En Android, el overlay está activo y Aperture resuelve `config_enableAuxCameras=true` y el perfil adicional `1/fhd/60`.
 
 ## Ramas, código y dependencias
 
