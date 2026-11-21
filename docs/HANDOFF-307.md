@@ -59,6 +59,22 @@ La inspección de los binarios del vendor acota dónde está la decisión. `com.
 
 Con eso queda descartado el candidato `k307-eis3b`: repetir `EISV3Enable=1` junto a `is3rdEISV2Enabled=TRUE` no puede mover el selector a V3 y su resultado previsible es `EISMode:0` otra vez. Las opciones que quedan: (1) confirmar el modelo y buscar la clave que fije ese campo en `0` para apps de terceros, probando `EISv3OperationMode` con `0`, `1` y `2` en los dos perfiles, con `vsquality` completo e `is3rdEISV2Enabled=FALSE`; el riesgo es volver a la ruta V2 y al croma si el valor cae en `1` o `2`, con datos descartables; (2) comparar valores en ejecución, porque `com.qti.settings.milos.so` imprime cada clave con su valor (`%*s<clave> (0x<hash>) = %d`): un registro de stock y otro de LineageOS en el mismo modo de vídeo mostrarían qué valor toma `EISv2OperationMode`/`EISv3OperationMode` en cada sistema; (3) corregir la ruta V2 (`VideoEIS2PreviewEIS2Offline_IPE14`, crop `2400x1800` sobre `1920x1440`), que sigue siendo el arreglo real y necesita datos de tuning del vendor. Ninguna se ha ejecutado.
 
+### Valores en ejecución de `EISv2OperationMode` y `EISv3OperationMode`
+
+Se quería leer, sin flashear, lo que CamX imprime para `EISv2OperationMode` y `EISv3OperationMode` en stock y en LineageOS con el mismo modo de vídeo. El cotejo estático ya da la respuesta: esos dos valores no pueden diferir entre los dos sistemas.
+
+Ninguna de las dos claves aparece en un archivo de configuración. En el volcado de la OTA de stock no están en `odm/etc`, `vendor/etc`, `product/etc` ni `system_ext/etc`, y tampoco están en `configs/camera/camxoverridesettings.txt` ni en el perfil `_global`, ni en la copia instalada en `/odm/etc/camera` del teléfono. Su valor es por tanto el predeterminado compilado en `com.qti.settings.milos.so`.
+
+En ese binario las dos únicas referencias son la lectura por hash —`0x5D8797BD` escribe el campo `0x10F8C` y `0x5D8797BF` el `0x10F90`— y los literales `%*sEISv2OperationMode (0x5D8797BD) = %d` / `%*sEISv3OperationMode (0x5D8797BF) = %d` de `CamX::SettingsManager::DumpSettingsToFile`. En `CamX::SettingsManager::InitializeDefaultSettings` ambos campos se inicializan con `str wzr` en esos dos desplazamientos, es decir **`EISv2OperationMode = 0` y `EISv3OperationMode = 0`**.
+
+El volcado no pasa por logcat: `DumpSettingsToFile` escribe con `CamX::OsUtils::DPrintF` a un descriptor de archivo. En las capturas de este repositorio (`videos/2026-11-21-eis3/capture-eis3.log`, 196 MB, y `capture-720.log`, 265 MB) no hay ni una línea con ese formato, así que no existe un registro de logcat que comparar.
+
+El binario es el mismo en los dos sistemas. `debugfs` sobre `/serverhive5/daxandere/amethyst-integrated.6JIS2h/payload-images/vendor.img` devuelve para `lib64/com.qti.settings.milos.so` el SHA-256 `1edba3d6c2bbd3a9001968e51d43920d746c5db5cf6bf785e48c1d4fee58acb2`, idéntico al de `amethyst_ota/vendor/lib64/com.qti.settings.milos.so` de la OTA de stock. Leerlo desde el teléfono con `adb exec-out cat` falla por SELinux, por eso la comprobación se hizo sobre la imagen.
+
+Con el mismo blob y sin clave en ninguno de los dos juegos de configuración, stock y LineageOS leerían `0` y `0`: la comparación no distingue nada y no explica el `EISMode:0`. Queda descartado el candidato de probar `EISv3OperationMode` con `0`, `1` y `2` para forzar la rama V3, porque su valor ya es `0` por defecto y no es el selector tri-estado que lee `UsecaseSelector`. Las diferencias reales entre la configuración de stock y la instalada son solo tres: `is3rdEISV2Enabled` (`TRUE` en stock, `FALSE` aquí), `vsquality` (stock añade `6@30|6@60`) y el `EISV3Enable=1` que introduce el build actual. La hipótesis que queda en pie es la ruta V2 ya medida: `VideoEIS2PreviewEIS2Offline_IPE14`, con su crop de `2400x1800` sobre `1920x1440` y el croma corrupto.
+
+Lo que no se puede comprobar sin root es si existe un archivo de anulación en `/data/vendor/camera` (el `ls` devuelve «Permission denied»). No hay evidencia de que stock escriba ahí estas claves y no hay registro de HyperOS guardado con el que contrastarlo, así que la confirmación en ejecución queda pendiente de habilitar «Depuración root» en el teléfono.
+
 ### Cámaras traseras de la variante Global
 
 En HyperOS Global 307, el propietario tomó tres fotos en modo Foto, seleccionando 0,6×, 1× y Macro en ese orden. Los eventos de conexión de `com.android.camera` y los metadatos EXIF de cada JPEG identifican los tres módulos de este `24115RA8EG`.
