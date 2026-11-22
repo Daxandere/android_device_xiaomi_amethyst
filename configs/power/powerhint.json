@@ -62,7 +62,7 @@
             "Values": [
                 "1",
                 "44",
-                "2000000000"
+                "1000000"
             ],
             "DefaultIndex": 2,
             "HoldFd": true
