@@ -243,6 +243,23 @@ Lineage Recovery aplicó `k307-main60` sobre `k307-aux60` y registró `status 0`
 
 En el Redmi Global, el propietario grabó con la principal a 1× y 1080p60 y confirmó color normal en el archivo guardado. Aperture abrió el ID `0` y Camera2 registró la solicitud y el resultado AE de `60–60 fps` durante `VIDEO_RECORD`. El MP4 H.264 mide `1920x1080`, 9,94 s y 59,57 fps de media. FFmpeg decodificó los 592 fotogramas sin errores.
 
+### 2160p con el lente 0.7× cierra Aperture
+
+Con el vídeo en 2160p, al pulsar el lente `0.7×` en modo Vídeo Aperture cierra la actividad y vuelve al lanzador. Se reprodujo por ADB el 21 de noviembre a las 18:15 sobre `k307-eisstock-main60`, forzando la preferencia `video_quality=uhd` y `video_framerate=30` en `org.lineageos.aperture_preferences.xml` (la copia de seguridad y la restauración se hicieron con `adb shell cp` como root).
+
+La secuencia en `logcat` es esta:
+
+1. Aperture pide la calidad `UHD` para el ID `2`: `CapabilitiesByQuality: Using supported quality of ConstantQuality{value=8, highSpeedValue=2005, name=UHD, typicalSizes=[3840x2160]} for size 3840x2160`.
+2. El mapa de flujos del ultra gran angular no tiene ese tamaño; sus candidatos llegan a `3280x2464` y su mayor 16:9 es `3200x1800`.
+3. Camera2 rechaza la sesión: `CameraDevice-JV-2: Stream configuration failed due to: endConfigure:879: Camera 2: Unsupported set of inputs/outputs provided`.
+4. CameraX lo eleva a error crítico y Aperture sale: `CameraActivity: Error: code: 4, type: CRITICAL` y `wm_finish_activity: [... org.lineageos.aperture/.CameraLauncher, app-request]`.
+
+El origen es el XML multimedia: `configs/media/media_profiles_volcano_amethyst_v0.xml` anunciaba para `cameraId="2"` los perfiles `high`, `4kdci` y `2160p` en 3840 o 4096 de ancho, además de `timelapse4kdci`, `timelapse2160p` y cuatro `highspeed`. CameraX construye la lista de calidades con esos perfiles de codificador, así que ofrecía 2160p en un sensor que no puede emitir ese flujo.
+
+Corrección aplicada en `lineage-23.2`: el bloque `cameraId="2"` queda limitado a 1080p30, con `high` y `timelapsehigh` en 1920×1080 a 20 Mbps y sin los perfiles 4K ni los `highspeed`. El parseo del XML confirma que el ID `2` ya no anuncia ningún tamaño mayor que 1920×1080, mientras el ID `0` conserva 2160p y `4kdci`, el ID `1` mantiene sus 1080p y el ID `3` queda como estaba. Es el mismo mecanismo con el que se limitó el macro a 720p en la rama Global: al cambiar de lente, Aperture descarta la calidad no soportada y graba en la mayor disponible.
+
+El ID `3` (macro) sigue anunciando 2160p en esta rama, aunque su prueba de 720p se hizo en las ramas `amethyst-307-aperture-*`. Si se elige macro con el vídeo en 2160p cabe esperar el mismo cierre; no se toca en este cambio porque la petición era el lente `0.7×`. Pendiente de compilar y validar en el Redmi.
+
 ## Ramas, código y dependencias
 
 - `lineage-23.2` integra bootconfig y fingerprint Global 307, políticas de audio y de StrongBox y Weaver, el kernel 6.1.138 y los ajustes de cámara validados en `k307-eis2diag`. El vendor de la misma rama instala una sola copia de cada perfil CamX. [Commits del device tree](https://github.com/Daxandere/android_device_xiaomi_amethyst/commits/lineage-23.2/).
