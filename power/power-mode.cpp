@@ -29,11 +29,14 @@ typedef struct {
 #define TOUCH_IOC_COMMON_DATA _IOW(TOUCH_MAGIC, COMMON_DATA_CMD, touch_data)
 #define TOUCH_IOC_SELECT_TOUCH_ID _IOW(TOUCH_MAGIC, SELECT_TOUCH_ID, int)
 
+// The Lineage libperfmgr power HAL resolves the mode extension in this
+// namespace; the QTI power HAL used aidl::android::hardware::power::impl.
 namespace aidl {
-namespace android {
+namespace google {
 namespace hardware {
 namespace power {
 namespace impl {
+namespace pixel {
 
 using ::aidl::android::hardware::power::Mode;
 
@@ -67,8 +70,9 @@ bool setDeviceSpecificMode(Mode type, bool enabled) {
     }
 }
 
+}  // namespace pixel
 }  // namespace impl
 }  // namespace power
 }  // namespace hardware
-}  // namespace android
+}  // namespace google
 }  // namespace aidl

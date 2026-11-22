@@ -212,6 +212,7 @@ PRODUCT_PACKAGES += \
     init.qcom.factory.rc \
     init.qcom.rc \
     init.recovery.qcom.rc \
+    init.target.power.rc \
     init.target.rc
 
 PRODUCT_PACKAGES += \
@@ -292,13 +293,21 @@ PRODUCT_PACKAGES += \
     vendor_firmware_mnt_mountpoint
 
 # Power
+# Lineage's libperfmgr power HAL replaces the QTI one. Its boosts are data:
+# configs/power/powerhint.json decides what each hint writes, instead of the
+# heuristics compiled into vendor/qcom/opensource/power.
 PRODUCT_PACKAGES += \
-    android.hardware.power-service-qti
+    android.hardware.power-service.lineage-libperfmgr
 
 PRODUCT_COPY_FILES += \
-    vendor/qcom/opensource/power/config/volcano/powerhint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.xml
+    $(LOCAL_PATH)/configs/power/powerhint.json:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.json
 
-$(call soong_config_set,qtipower,mode_ext_lib,//$(LOCAL_PATH):libpowermode-ext-amethyst)
+# Double tap to wake stays on the Xiaomi touch node, see power/power-mode.cpp.
+$(call soong_config_set,power_libperfmgr,mode_extension_lib,//$(LOCAL_PATH):libpowermode-ext-amethyst)
+
+# libqti-perfd-client is deliberately not built here: the vendor image already
+# ships the real QTI client and the perf2 HAL it talks to. Building the stub
+# from hardware/qcom-caf/common would collide with that blob.
 
 # Properties
 PRODUCT_PACKAGES += \
@@ -331,6 +340,9 @@ PRODUCT_COPY_FILES += \
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH) \
+    hardware/google/interfaces \
+    hardware/google/pixel \
+    hardware/lineage/interfaces/power-libperfmgr \
     hardware/xiaomi
 
 # Telephony

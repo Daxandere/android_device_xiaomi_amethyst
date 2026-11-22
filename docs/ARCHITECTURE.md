@@ -51,17 +51,39 @@ Typical changes:
 - Wi-Fi / NFC / Secure Element behavior → their respective overlays.
 - Lineage-specific defaults → `LineageSettingsOverlayAmethyst`.
 
-### `power/`
+### `power/` and `configs/power/`
 
-Qualcomm power extension library (`libpowermode-ext-amethyst`). It is wired
-through:
+The power HAL is Lineage's `android.hardware.power-service.lineage-libperfmgr`,
+not Qualcomm's `android.hardware.power-service-qti`. What each hint does is data
+in `configs/power/powerhint.json`, installed as `/vendor/etc/powerhint.json`.
+
+`power/power-mode.cpp` is the mode extension (`libpowermode-ext-amethyst`) that
+keeps double tap to wake on the Xiaomi touch node, wired through:
 
 ```make
-$(call soong_config_set,qtipower,mode_ext_lib,//$(LOCAL_PATH):libpowermode-ext-amethyst)
+$(call soong_config_set,power_libperfmgr,mode_extension_lib,//$(LOCAL_PATH):libpowermode-ext-amethyst)
 ```
 
-Android 17 ports replace this with Lineage's `libperfmgr` power HAL. Do not mix
-both approaches in the same tree.
+Two things are easy to get wrong:
+
+- The service parses the JSON at boot but only starts applying hints once
+  `vendor.powerhal.init` is `1`. `rootdir/etc/init.target.power.rc` sets it; drop
+  that file and the HAL runs but does nothing.
+- Nodes named in the JSON still need SELinux write access. The generic libperfmgr
+  policy covers `/sys/devices/system/cpu/*` and the cgroups; `sepolicy/vendor/hal_power.te`
+  adds `vendor_sysfs_msm_perf`, `vendor_latency_device` and `vendor_sysfs_kgsl`.
+  `/proc/sys/walt/*` is labelled plain `proc`, so WALT scheduler tunings are
+  intentionally left out.
+
+The GPU floor is `min_pwrlevel` on kgsl, where a lower index means a higher
+clock: `0` is 1050 MHz, `2` is 895 MHz and `8` is 264 MHz, the idle floor. The
+JSON raises it to `2` for `INTERACTION` and `0` for `LAUNCH`, and returns to `8`
+when the hint ends. Verified on hardware that the knob clamps the clock: writing
+`0` moves `gpuclk` from 362 MHz to 1050 MHz, writing `2` to 895 MHz.
+
+`libqti-perfd-client` is not built from source here: the vendor image ships the
+real QTI client and the perf2 HAL behind it, and the stub in
+`hardware/qcom-caf/common` would collide with the same path.
 
 ### `props/`
 
@@ -126,6 +148,7 @@ Both are loaded by name from vendor blobs; renaming a module breaks the blob.
 | Change kernel handling | `BoardConfig.mk` (`# Kernel`) |
 | Add a SELinux rule | `sepolicy/vendor/*.te` |
 | Change a default setting | the matching `overlay/` |
+| Change what a power hint boosts | `configs/power/powerhint.json` |
 | Add/remove a blob | `proprietary-files.txt` + re-extract |
 | Update the firmware base | `docs/BLOBS.md` procedure |
 

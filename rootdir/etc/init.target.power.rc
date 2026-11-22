@@ -1,0 +1,5 @@
+# The libperfmgr power HAL parses powerhint.json at startup but only starts
+# applying hints once vendor.powerhal.init is 1. Nothing else in this device
+# sets it, so without this the HAL would come up and stay idle.
+on late-init
+    setprop vendor.powerhal.init 1

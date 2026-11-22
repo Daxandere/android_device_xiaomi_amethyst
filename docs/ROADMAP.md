@@ -41,8 +41,9 @@ Changes already known to be required (from the Android 17 ports):
 - [ ] `HWUI_COMPILE_FOR_PERF := true`, `TARGET_USES_VULKAN := true`.
 - [ ] `TARGET_USE_AOSP_SURFACEFLINGER := true`.
 - [ ] `DEVICE_MANIFEST_FILE +=` instead of `:=`.
-- [ ] Switch from QTI power to `android.hardware.power-service.lineage-libperfmgr`
-      and `libqti-perfd-client`.
+- [x] Switch from QTI power to `android.hardware.power-service.lineage-libperfmgr`
+      (done on 23.2 in `exp/libperfmgr-power`; `libqti-perfd-client` stays the
+      vendor blob, see `ARCHITECTURE.md`).
 - [ ] 8 GB Dalvik heap (`phone-xhdpi-8192-dalvik-heap.mk`).
 - [ ] GKI 6.1.138 prebuilt kernel (or a source-built GKI).
 - [ ] New/removed blobs from the newer firmware.
