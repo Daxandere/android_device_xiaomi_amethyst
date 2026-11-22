@@ -256,7 +256,7 @@ La secuencia en `logcat` es esta:
 
 La prueba se repitió dos veces más por ADB a las 18:24, con el teléfono quieto y sin toques del usuario en ese intervalo. En las dos rondas el `uiautomator dump` previo confirmó `1×` seleccionado y la actividad pasó al lanzador menos de 2 s después de inyectar el toque en `0.7×`. El log de ambas rondas repite la misma cadena (`18:24:18` y `18:24:55`) y en pantalla aparece el aviso de Aperture `There was an error while preparing the stream. Please report this to the …` antes de volver al lanzador. No es un cierre provocado por el usuario ni una muerte del proceso: la actividad se termina con `app-request`.
 
-El origen es el XML multimedia: `configs/media/media_profiles_volcano_amethyst_v0.xml` anunciaba para `cameraId="2"` los perfiles `high`, `4kdci` y `2160p` en 3840 o 4096 de ancho, además de `timelapse4kdci`, `timelapse2160p` y cuatro `highspeed`. CameraX construye la lista de calidades con esos perfiles de codificador, así que ofrecía 2160p en un sensor que no puede emitir ese flujo.
+La primera hipótesis fue que el XML multimedia causaba el fallo: `configs/media/media_profiles_volcano_amethyst_v0.xml` anuncia perfiles 4K para `cameraId="2"`. La prueba en caliente la refutó como solución: CameraX siguió ofreciendo UHD incluso al quitar los perfiles 4K de ambos XML multimedia, también al comprobar `1×`. No se debe volver a aplicar el límite de 1080p en el device tree basándose solo en esa hipótesis.
 
 Se probó en caliente el 21 de noviembre entre las 18:34 y las 18:37, sin compilar. `/vendor` está en un `dm-5` ext4 de solo lectura, así que no se puede remontar; se usó `mount --bind` desde `/data/local/tmp` sobre el archivo de destino, con la etiqueta `vendor_configs_file`, y se reinició `vendor.camera-provider` en cada intento. Se comprobó que el binario parcheado era visible para `init`, para el `cameraserver` y para Aperture (`/proc/<pid>/root/vendor/etc/...`).
 
@@ -266,9 +266,30 @@ Se probaron tres variantes y las tres fallaron igual:
 2. `media_profiles_V1_0.xml` con una sección `cameraId="2"` añadida y limitada a 1080p. Igual.
 3. `media_profiles_V1_0.xml` sin ningún `3840` ni `4096` en todo el archivo, incluida la principal. Aperture siguió anunciando UHD a `1×`, así que la lista de calidades no sale de estos XML: CameraX la construye con `Recorder.getVideoCapabilities`, que en este dispositivo no se alimenta de `/vendor/etc/media_profiles*.xml`.
 
-El cambio de perfiles se revirtió: no arregla el fallo y solo quitaba 4K real. La corrección tiene que ir en Aperture: filtrar las calidades que el sensor no puede emitir consultando `SCALER_STREAM_CONFIGURATION_MAP.getOutputSizes(MediaRecorder)` o, como mínimo, no terminar la actividad ante `ERROR_STREAM_CONFIG` y bajar a la siguiente calidad. Hasta entonces, el estado seguro es no elegir 2160p con el lente `0.7×`.
+El cambio de perfiles se revirtió: no arregló el fallo y habría quitado 4K real sin impedir que Aperture ofrezca UHD. La prueba no identificó todavía de dónde obtiene CameraX las calidades ni cuál es el punto correcto de corrección; filtrar tamaños por `SCALER_STREAM_CONFIGURATION_MAP` en Aperture queda como hipótesis para investigar, no como arreglo validado. Resultado experimental guardado en `diag/2026-11-22-4k/logcat-hotfix*.txt` y documentado en los commits `7760172` (intento) y `13ad3b3` (reversión y evidencia). No hay cambio activo de perfiles multimedia en `lineage-23.2`.
 
-El ID `3` (macro) sigue anunciando 2160p en esta rama, aunque su prueba de 720p se hizo en las ramas `amethyst-307-aperture-*`. Si se elige macro con el vídeo en 2160p cabe esperar el mismo cierre.
+Hasta encontrar una corrección, evitar 2160p con el lente `0.7×`: Camera2 rechaza la combinación, Aperture presenta el error de preparación del stream y cierra su actividad. El ID `3` (macro) también conserva perfiles 2160p en el XML, pero no se probó en esta rama; no asumir ni su comportamiento ni una corrección común sin repetir la prueba.
+
+El bug de croma EIS2 a 1080p queda como pendiente independiente. Se mantiene el EIS de terceros desactivado a 1080p como mitigación para conservar el color correcto; no es una solución. La evidencia y los clips están en la sección `Resultado de k307-eisstock-main60` y en `videos/2026-11-22-eisstock/`.
+
+## Diagnóstico inicial: retraso de interfaz y barra de notificaciones con blur
+
+El 22 de noviembre se hizo una lectura de solo lectura del Redmi Global (`1220×2712`, Adreno 810, Android 16/LineageOS 23.2), sin reiniciar contadores, abrir/cerrar la barra ni cambiar props o ajustes:
+
+| Dato observado | Valor |
+| --- | --- |
+| `ro.surface_flinger.supports_background_blur` | `1` |
+| Blur que eligió SurfaceFlinger | `KawaseDualFilterV2` |
+| Modo de pantalla activo en esa lectura | 60 Hz; el panel declara modos 60/90/120 Hz |
+| `config_defaultPeakRefreshRate` del overlay Frameworks | `60` |
+| `settings system peak_refresh_rate` | `Infinity`; sin `min_refresh_rate` ni `user_refresh_rate` establecidos |
+| `dumpsys gfxinfo com.android.systemui` acumulado | 13 454 frames, 1 330 janky (9,89 %); p90 24 ms, p95 36 ms, p99 77 ms |
+| `dumpsys SurfaceFlinger` acumulado | 4 503 HWC missed frames |
+| `ro.sf.blurs_are_expensive` | no está definido |
+
+Estos contadores son acumulados y **no demuestran por sí solos** que el blur o el gesto de bajar notificaciones causen el retraso. Aún falta una comparación controlada de la misma interacción con blur encendido/apagado y contadores reiniciados para cada pasada. La fuente AOSP Android 16 describe `ro.sf.blurs_are_expensive` como una señal para solicitar frecuencia GPU alta durante composición GPU con blur; no es un ajuste de downsampling ni de radio, y podría aumentar consumo. No añadirla sin medir primero.
+
+No se cambiaron props, tasa de refresco, servicios ni estado del teléfono en esta lectura. Siguiente prueba propuesta (requiere autorización para escribir estado runtime): repetir la apertura/cierre de Quick Settings con `wm disable-blur 0` y `wm disable-blur 1`, reiniciando `gfxinfo` antes de cada pasada; registrar jank y percentiles, y volver a dejar blur habilitado. El overlay fija un pico por defecto de 60 Hz aunque el panel soporte 120 Hz; estudiar ese límite como segunda variable, por separado del blur, después de establecer una línea base.
 
 ## Ramas, código y dependencias
 
