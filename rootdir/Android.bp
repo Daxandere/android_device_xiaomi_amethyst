@@ -100,7 +100,10 @@ prebuilt_etc {
 prebuilt_etc {
     name: "init.target.power.rc",
     src: "etc/init.target.power.rc",
-    sub_dir: "init/hw",
+    // init only auto-parses /vendor/etc/init/*.rc; files in init/hw are loaded
+    // solely as init.<hardware>.rc, so this rc was never read and
+    // vendor.powerhal.init stayed empty, leaving libperfmgr idle.
+    sub_dir: "init",
     vendor: true,
 }
 
