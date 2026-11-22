@@ -464,3 +464,77 @@ The default is now `1000000` (one second). Every real exit latency on the
 platform is far below one second, so the request keeps Qualcomm's intended
 meaning, "no DMA latency constraint", without the failed writes. `HoldFd` and
 the other two values are unchanged.
+## Jank A/B at 120 Hz: the power hints with and without the GPU, DDR and L3 boosts
+
+Measured on `lineage-23.2-20261122-UNOFFICIAL-refresh-range-amethyst.zip`
+(`post-build-incremental=1795376645`, SHA-256
+`3c3fc6d67693d6e6190d35e6c71d215171a9ddfcdcabb146954355a2f64d92e2`).
+
+The two configs are the same file except for the boost actions: the shipped
+`powerhint.json` (with the L3 value already corrected to 1708800) against the
+same file with every GPU, DDR and L3 action removed, seven in total:
+`INTERACTION` `kgslMinPwrlevel` 2; `LAUNCH` `ddrBoostFreq` 2092000,
+`l3BoostFreq` 1708800 and `kgslMinPwrlevel` 0; the three `EXPENSIVE_RENDERING`
+actions. Everything else stays identical, including the CPU frequency and
+scheduler actions. Both are loaded hot through the HAL debug path
+(`vendor.powerhal.config.debug` plus `/data/vendor/etc/powerhint.json`), so the
+comparison needs no rebuild and no reboot, and the only variable is the boost.
+
+Method:
+
+- Display locked at 120 Hz: `min_refresh_rate` and `peak_refresh_rate` both at
+  120, confirmed with `cmd display get-active-mode 0` (120.00 Hz).
+- Screen kept awake for the whole run (`svc power stayon true`,
+  `screen_off_timeout` at 30 minutes).
+- Workload per pass: launch Settings, then five scroll swipes
+  (`input swipe 610 2200 610 700 900`, 500 ms apart).
+- Trace: `docs/display-perfetto.pbtxt` with `duration_ms` shortened to 12000,
+  fed to the device on **stdin** (`perfetto --txt -c -`); Perfetto cannot read a
+  config from `/data/local/tmp` because of its SELinux domain (`EACCES`).
+- Three passes per config, interleaved as A/B/A/B/A/B.
+- Frames come from `Choreographer#doFrame*` in `com.android.settings`. One vsync
+  at 120 Hz is 8.33 ms; a *late* frame is an interval above 12.5 ms and
+  *dropped* counts the vsync periods lost between consecutive frames.
+
+| pass | frames | late | dropped | avg interval | worst |
+| --- | --- | --- | --- | --- | --- |
+| boost 1 | 770 | 1.2% | 10.5% | 9.32 ms | 184 ms |
+| boost 2 | 761 | 1.3% | 11.7% | 9.45 ms | 183 ms |
+| boost 3 | 759 | 1.3% | 11.4% | 9.42 ms | 175 ms |
+| no boost 1 | 760 | 1.3% | 11.4% | 9.41 ms | 183 ms |
+| no boost 2 | 819 | 2.7% | 26.4% | 11.26 ms | 1307 ms |
+| no boost 3 | 760 | 1.3% | 11.6% | 9.44 ms | 175 ms |
+
+Medians: 1.3% late, 11.4% dropped and 9.42 ms with the boosts; 1.3% late, 11.6%
+dropped and 9.44 ms without them. The difference is inside the noise. The second
+"no boost" pass carries a 1.3 s stall from some other system event (it also ran
+longer, 819 frames), not from the scroll.
+
+The average interval of about 9.4 ms means roughly 89% of the frames land on the
+8.33 ms cadence and 11% skip a vsync, which is exactly what the `dropped` column
+counts; the panel itself stays at 120 Hz.
+
+Reading: removing the GPU, DDR and L3 boosts changes nothing measurable while
+scrolling at 120 Hz, which matches what the HAL logs show. `EXPENSIVE_RENDERING`
+never reaches the HAL in normal use (dragging the shade, blurring Settings behind
+it, produced only `INTERACTION` hints), and the boosts that do fire are either
+short (`INTERACTION`, 80 ms) or irrelevant to this workload. The hint set of this
+power HAL is not buying scrolling performance, and the L3 action never showed up
+in the node even with a valid value.
+
+To reproduce, from a checkout with the harness next to it (the `jank/` directory
+of the working tree: `ab_probe.sh`, `probe.pbtxt`, `powerhint-l3fix.json`,
+`powerhint-noboost-all.json`), with `adb` root available:
+
+```
+bash jank/ab_probe.sh
+```
+
+It writes `jank/traces/{boost,noboost}[1-3].pftrace`, prints the trace size per
+pass and restores the phone at the end. A trace of only about 1.4 MB means the
+atrace categories did not apply and the pass has no frame data; the good ones are
+around 30 MB. Analysis with `trace_processor`:
+
+```
+trace_processor query -f jank/pacing_settings.sql jank/traces/boost1.pftrace
+```
