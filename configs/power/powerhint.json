@@ -166,6 +166,24 @@
             "Duration": 2000
         },
         {
+            "PowerHint": "EXPENSIVE_RENDERING",
+            "Node": "kgslMinPwrlevel",
+            "Value": "0",
+            "Duration": 0
+        },
+        {
+            "PowerHint": "EXPENSIVE_RENDERING",
+            "Node": "ddrBoostFreq",
+            "Value": "2092000",
+            "Duration": 0
+        },
+        {
+            "PowerHint": "EXPENSIVE_RENDERING",
+            "Node": "l3BoostFreq",
+            "Value": "2035200",
+            "Duration": 0
+        },
+        {
             "PowerHint": "SUSTAINED_PERFORMANCE",
             "Node": "msmPerfCpuMinFreq",
             "Value": "0:787200 1:787200 2:787200 3:787200 4:1056000 5:1056000 6:1056000 7:1209600",
