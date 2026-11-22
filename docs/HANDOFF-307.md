@@ -258,9 +258,17 @@ La prueba se repitió dos veces más por ADB a las 18:24, con el teléfono quiet
 
 El origen es el XML multimedia: `configs/media/media_profiles_volcano_amethyst_v0.xml` anunciaba para `cameraId="2"` los perfiles `high`, `4kdci` y `2160p` en 3840 o 4096 de ancho, además de `timelapse4kdci`, `timelapse2160p` y cuatro `highspeed`. CameraX construye la lista de calidades con esos perfiles de codificador, así que ofrecía 2160p en un sensor que no puede emitir ese flujo.
 
-Corrección aplicada en `lineage-23.2`: el bloque `cameraId="2"` queda limitado a 1080p30, con `high` y `timelapsehigh` en 1920×1080 a 20 Mbps y sin los perfiles 4K ni los `highspeed`. El parseo del XML confirma que el ID `2` ya no anuncia ningún tamaño mayor que 1920×1080, mientras el ID `0` conserva 2160p y `4kdci`, el ID `1` mantiene sus 1080p y el ID `3` queda como estaba. Es el mismo mecanismo con el que se limitó el macro a 720p en la rama Global: al cambiar de lente, Aperture descarta la calidad no soportada y graba en la mayor disponible.
+Se probó en caliente el 21 de noviembre entre las 18:34 y las 18:37, sin compilar. `/vendor` está en un `dm-5` ext4 de solo lectura, así que no se puede remontar; se usó `mount --bind` desde `/data/local/tmp` sobre el archivo de destino, con la etiqueta `vendor_configs_file`, y se reinició `vendor.camera-provider` en cada intento. Se comprobó que el binario parcheado era visible para `init`, para el `cameraserver` y para Aperture (`/proc/<pid>/root/vendor/etc/...`).
 
-El ID `3` (macro) sigue anunciando 2160p en esta rama, aunque su prueba de 720p se hizo en las ramas `amethyst-307-aperture-*`. Si se elige macro con el vídeo en 2160p cabe esperar el mismo cierre; no se toca en este cambio porque la petición era el lente `0.7×`. Pendiente de compilar y validar en el Redmi.
+Se probaron tres variantes y las tres fallaron igual:
+
+1. `media_profiles_volcano_amethyst_v0.xml` con el bloque `cameraId="2"` limitado a 1080p30 (sin `4kdci`, `2160p`, `timelapse4kdci`, `timelapse2160p` ni `highspeed`). Aperture siguió ofreciendo UHD y volvió a cerrar.
+2. `media_profiles_V1_0.xml` con una sección `cameraId="2"` añadida y limitada a 1080p. Igual.
+3. `media_profiles_V1_0.xml` sin ningún `3840` ni `4096` en todo el archivo, incluida la principal. Aperture siguió anunciando UHD a `1×`, así que la lista de calidades no sale de estos XML: CameraX la construye con `Recorder.getVideoCapabilities`, que en este dispositivo no se alimenta de `/vendor/etc/media_profiles*.xml`.
+
+El cambio de perfiles se revirtió: no arregla el fallo y solo quitaba 4K real. La corrección tiene que ir en Aperture: filtrar las calidades que el sensor no puede emitir consultando `SCALER_STREAM_CONFIGURATION_MAP.getOutputSizes(MediaRecorder)` o, como mínimo, no terminar la actividad ante `ERROR_STREAM_CONFIG` y bajar a la siguiente calidad. Hasta entonces, el estado seguro es no elegir 2160p con el lente `0.7×`.
+
+El ID `3` (macro) sigue anunciando 2160p en esta rama, aunque su prueba de 720p se hizo en las ramas `amethyst-307-aperture-*`. Si se elige macro con el vídeo en 2160p cabe esperar el mismo cierre.
 
 ## Ramas, código y dependencias
 
