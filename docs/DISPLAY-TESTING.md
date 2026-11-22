@@ -400,3 +400,53 @@ Verified on `lineage-23.2-20261122-UNOFFICIAL-refresh-switches-amethyst.zip`
 `avc: denied`. The earlier percent-of-janky-frames numbers came from the Perfetto
 harness described above, which is not part of this tree; the A/B for this hint
 still has to run through it.
+
+## Choosing the refresh rate range
+
+The AOSP "Smooth display" switch is `PeakRefreshRateSwitchPreference`, added by
+`DisplayScreen.kt` and gated on `config_show_smooth_display`. It only writes
+`Settings.System.PEAK_REFRESH_RATE`: off means 60 Hz, on means the highest panel
+mode. That duplicates the range choice, and turning it off also stops the
+automatic range. The device tree had the boolean set to `true`, which is what
+made the switch appear.
+
+`overlay/SettingsOverlayAmethyst` now sets it to `false`, so the switch is
+hidden. Nothing else on the screen depends on the value:
+`display_settings.xml` binds `max_refresh_rate` to
+`PeakRefreshRateListPreferenceController` (gated on
+`config_show_peak_refresh_rate_switch`) and `min_refresh_rate` to
+`MinRefreshRatePreferenceController` (gated on
+`config_show_min_refresh_rate_switch`). Both lists are built from the modes of
+the default display at 1220 x 2712, so the range is chosen as 60, 90 or 120 Hz
+and `peak_refresh_rate` keeps the value written by the list.
+
+State kept on the phone after the test: `window_animation_scale`,
+`transition_animation_scale` and `animator_duration_scale` at `1.0`,
+`min_refresh_rate=60.0`, `peak_refresh_rate=Infinity` and mode 1 at 120 Hz.
+Animations stay at their default 1.0. The 0.5x runs felt faster, but the scale
+is not a device property to change and navigation and the shade pull were
+already smooth at 1.0.
+
+## The cpu_dma_latency node
+
+`powerhint.json` carried Qualcomm's default `cpuDmaLatency` values, `1`, `44`
+and `2000000000` microseconds, with the last one as `DefaultIndex`. This kernel
+rejects `2000000000` with `ERANGE`. The HAL runs as `root` (its `.rc` declares
+`user root`) and writing the same value as root fails too, so this is not a
+permission problem: the value is out of range for the driver. The HAL therefore
+logged `Failed to write to node: /dev/cpu_dma_latency with value: 2000000000`
+whenever a hint expired, and the state the default was supposed to restore
+never landed. The 44 us `LAUNCH` and the 1 us `CAMERA_LAUNCH` constraints stayed
+on the file until something else wrote to it.
+
+Measured by writing into the node as root:
+
+| Value (us) | Result |
+| ---: | --- |
+| 1, 44, 1000000, 50000000 | accepted |
+| 80000000, 99999999, 500000000, 1000000000, 2000000000, 2147483647 | `ERANGE` |
+
+The default is now `1000000` (one second). Every real exit latency on the
+platform is far below one second, so the request keeps Qualcomm's intended
+meaning, "no DMA latency constraint", without the failed writes. `HoldFd` and
+the other two values are unchanged.
