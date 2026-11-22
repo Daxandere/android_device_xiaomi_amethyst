@@ -4,8 +4,10 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Whether to show Smooth Display feature in Settings Options -->
-    <bool name="config_show_smooth_display">true</bool>
+    <!-- The refresh rate range is chosen with the two switches at the end of
+         this file, so the AOSP Smooth Display toggle only duplicates them and
+         turning it off also stops the automatic range. Keep it hidden. -->
+    <bool name="config_show_smooth_display">false</bool>
 
     <!-- The number of vibration intensity levels supported by the device.
 
