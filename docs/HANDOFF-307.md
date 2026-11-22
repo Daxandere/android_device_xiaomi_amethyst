@@ -100,6 +100,8 @@ El formato (13), el stride, que coincide con el ancho, y el colorspace (260) son
 
 Interpretación: con la estabilización apagada el 1080p es correcto, así que el camino de 1080p en sí no está roto. El defecto exige EIS2 activo y aparece solo a 1080p. Como no existe ninguna clave por resolución en los 300 ajustes (verificado antes), no hay arreglo por configuración: `lineage-23.2` mantiene la estabilización desactivada, que es el estado con color correcto, y el defecto solo se corrige con tuning del vendor o cambiando la topología del `IPE14`.
 
+Medición de campo de visión entre el clip sin estabilización y el de 1080p con EIS: `diag/compare-fov.py` da `s = 1,000` con ZNCC 0,836, es decir sin desplazamiento neto. Con la escena quieta el EIS no llega a mover el encuadre, así que la comparación de FOV no sirve aquí para demostrar la estabilización; lo que sí la demuestra es el registro: `EISMode:1`, márgenes `480x360` publicados por `eisv2` y el `IPE14` dentro de `VideoEIS2PreviewEIS2Offline`.
+
 Dato pendiente y ya disponible: grabar 4K30 con EIS, porque la sesión ya configuró `VideoEIS2PreviewEIS2Offline` para 3840x2160 con entrada de 4800x3600. Si el 4K sale con color correcto, el fallo queda acotado al escalado de 1080p y no al EIS2 en general.
 
 ### Valores en ejecución de `EISv2OperationMode` y `EISv3OperationMode`
