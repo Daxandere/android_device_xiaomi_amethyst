@@ -41,7 +41,7 @@
             "Path": "/sys/devices/system/cpu/bus_dcvs/L3/boost_freq",
             "Values": [
                 "364800",
-                "2035200"
+                "1708800"
             ],
             "DefaultIndex": 0
         },
@@ -150,7 +150,7 @@
         {
             "PowerHint": "LAUNCH",
             "Node": "l3BoostFreq",
-            "Value": "2035200",
+            "Value": "1708800",
             "Duration": 2000
         },
         {
@@ -180,7 +180,7 @@
         {
             "PowerHint": "EXPENSIVE_RENDERING",
             "Node": "l3BoostFreq",
-            "Value": "2035200",
+            "Value": "1708800",
             "Duration": 0
         },
         {

@@ -381,8 +381,22 @@ boost that a touch triggers.
 
 `exp/perf-hints` adds three actions held while the mode stays set
 (`Duration: 0`): `kgslMinPwrlevel` 0, `ddrBoostFreq` 2092000 and `l3BoostFreq`
-2035200. `EndHint` runs when SurfaceFlinger stops composing expensive content,
+1708800. `EndHint` runs when SurfaceFlinger stops composing expensive content,
 so the node returns to its default.
+
+The L3 node only takes the frequencies listed in
+`/sys/devices/system/cpu/bus_dcvs/L3/available_frequencies` (364800 to 1708800,
+thirteen steps). Anything above that, including the 2035200 the first cut used,
+is rejected with `EINVAL` and the HAL logs `Failed to write to node:
+/sys/devices/system/cpu/bus_dcvs/L3/boost_freq`, so the boost silently did
+nothing there; the DDR node has no such limit at 2092000, its own maximum. The
+boost value is now 1708800, the top of the L3 table.
+
+Checked without a new build: the HAL honours `vendor.powerhal.config.debug`,
+loading `/data/vendor/etc/powerhint.json` instead of `/vendor/etc/powerhint.json`
+(the binary aborts with `Invalid debug config` when that file is missing). With a
+patched copy there, sampling the two nodes during a `LAUNCH` showed 1708800 and
+2092000 and a return to 364800 and 547000, with no write failures.
 
 Verified on `lineage-23.2-20261122-UNOFFICIAL-refresh-switches-amethyst.zip`
 (`post-build-incremental=1795373782`, SHA-256
