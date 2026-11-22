@@ -1,0 +1,187 @@
+{
+    "Nodes": [
+        {
+            "Name": "msmPerfCpuMinFreq",
+            "Path": "/sys/kernel/msm_performance/parameters/cpu_min_freq",
+            "Values": [
+                "0:0 1:0 2:0 3:0 4:0 5:0 6:0 7:0",
+                "0:787200 1:787200 2:787200 3:787200 4:1056000 5:1056000 6:1056000 7:1209600",
+                "0:1036800 1:1036800 2:1036800 3:1036800 4:1190400 5:1190400 6:1190400 7:1459200",
+                "0:1344000 1:1344000 2:1344000 3:1344000 4:1190400 5:1190400 6:1190400 7:1459200",
+                "0:1804800 1:1804800 2:1804800 3:1804800 4:2400000 5:2400000 6:2400000 7:2496000"
+            ],
+            "DefaultIndex": 0,
+            "ResetOnInit": true
+        },
+        {
+            "Name": "msmPerfCpuMaxFreq",
+            "Path": "/sys/kernel/msm_performance/parameters/cpu_max_freq",
+            "Values": [
+                "0:9999999 1:9999999 2:9999999 3:9999999 4:9999999 5:9999999 6:9999999 7:9999999",
+                "0:1017600 1:1017600 2:1017600 3:1017600 4:1190400 5:1190400 6:1190400 7:1459200",
+                "0:1497600 1:1497600 2:1497600 3:1497600 4:2016000 5:2016000 6:2016000 7:2208000",
+                "0:1804800 1:1804800 2:1804800 3:1804800 4:2400000 5:2400000 6:2400000 7:2496000",
+                "4:2016000 5:2016000 6:2016000 7:2016000"
+            ],
+            "DefaultIndex": 0,
+            "ResetOnInit": true
+        },
+        {
+            "Name": "ddrBoostFreq",
+            "Path": "/sys/devices/system/cpu/bus_dcvs/DDR/boost_freq",
+            "Values": [
+                "547000",
+                "1555000",
+                "2092000"
+            ],
+            "DefaultIndex": 0
+        },
+        {
+            "Name": "l3BoostFreq",
+            "Path": "/sys/devices/system/cpu/bus_dcvs/L3/boost_freq",
+            "Values": [
+                "364800",
+                "1708800"
+            ],
+            "DefaultIndex": 0
+        },
+        {
+            "Name": "kgslMinPwrlevel",
+            "Path": "/sys/class/kgsl/kgsl-3d0/min_pwrlevel",
+            "Values": [
+                "0",
+                "2",
+                "8"
+            ],
+            "DefaultIndex": 2,
+            "ResetOnInit": true
+        },
+        {
+            "Name": "cpuDmaLatency",
+            "Path": "/dev/cpu_dma_latency",
+            "Values": [
+                "1",
+                "44",
+                "1000000"
+            ],
+            "DefaultIndex": 2,
+            "HoldFd": true
+        },
+        {
+            "Name": "adaptiveHighFreqSilver",
+            "Path": "/sys/devices/system/cpu/cpufreq/policy0/walt/adaptive_high_freq",
+            "Values": [
+                "0",
+                "1708800"
+            ],
+            "DefaultIndex": 0,
+            "ResetOnInit": true
+        },
+        {
+            "Name": "adaptiveHighFreqGold",
+            "Path": "/sys/devices/system/cpu/cpufreq/policy4/walt/adaptive_high_freq",
+            "Values": [
+                "0",
+                "1612800"
+            ],
+            "DefaultIndex": 0,
+            "ResetOnInit": true
+        },
+        {
+            "Name": "adaptiveHighFreqPrime",
+            "Path": "/sys/devices/system/cpu/cpufreq/policy7/walt/adaptive_high_freq",
+            "Values": [
+                "0",
+                "1766400"
+            ],
+            "DefaultIndex": 0,
+            "ResetOnInit": true
+        }
+    ],
+    "Actions": [
+        {
+            "PowerHint": "INTERACTION",
+            "Node": "msmPerfCpuMinFreq",
+            "Value": "0:1344000 1:1344000 2:1344000 3:1344000 4:1190400 5:1190400 6:1190400 7:1459200",
+            "Duration": 80
+        },
+        {
+            "PowerHint": "LAUNCH",
+            "Node": "msmPerfCpuMaxFreq",
+            "Value": "0:1804800 1:1804800 2:1804800 3:1804800 4:2400000 5:2400000 6:2400000 7:2496000",
+            "Duration": 2000
+        },
+        {
+            "PowerHint": "LAUNCH",
+            "Node": "msmPerfCpuMinFreq",
+            "Value": "0:1804800 1:1804800 2:1804800 3:1804800 4:2400000 5:2400000 6:2400000 7:2496000",
+            "Duration": 2000
+        },
+        {
+            "PowerHint": "LAUNCH",
+            "Node": "adaptiveHighFreqSilver",
+            "Value": "1708800",
+            "Duration": 2000
+        },
+        {
+            "PowerHint": "LAUNCH",
+            "Node": "adaptiveHighFreqGold",
+            "Value": "1612800",
+            "Duration": 2000
+        },
+        {
+            "PowerHint": "LAUNCH",
+            "Node": "adaptiveHighFreqPrime",
+            "Value": "1766400",
+            "Duration": 2000
+        },
+        {
+            "PowerHint": "LAUNCH",
+            "Node": "cpuDmaLatency",
+            "Value": "44",
+            "Duration": 1000
+        },
+        {
+            "PowerHint": "SUSTAINED_PERFORMANCE",
+            "Node": "msmPerfCpuMinFreq",
+            "Value": "0:787200 1:787200 2:787200 3:787200 4:1056000 5:1056000 6:1056000 7:1209600",
+            "Duration": 0
+        },
+        {
+            "PowerHint": "SUSTAINED_PERFORMANCE",
+            "Node": "msmPerfCpuMaxFreq",
+            "Value": "0:1497600 1:1497600 2:1497600 3:1497600 4:2016000 5:2016000 6:2016000 7:2208000",
+            "Duration": 0
+        },
+        {
+            "PowerHint": "DISPLAY_INACTIVE",
+            "Node": "msmPerfCpuMaxFreq",
+            "Value": "0:1497600 1:1497600 2:1497600 3:1497600 4:2016000 5:2016000 6:2016000 7:2208000",
+            "Duration": 0
+        },
+        {
+            "PowerHint": "DEVICE_IDLE",
+            "Node": "msmPerfCpuMaxFreq",
+            "Value": "0:1017600 1:1017600 2:1017600 3:1017600 4:1190400 5:1190400 6:1190400 7:1459200",
+            "Duration": 0
+        },
+        {
+            "PowerHint": "CAMERA_LAUNCH",
+            "Node": "cpuDmaLatency",
+            "Value": "1",
+            "Duration": 1000
+        },
+        {
+            "PowerHint": "CAMERA_LAUNCH",
+            "Node": "msmPerfCpuMaxFreq",
+            "Value": "0:1804800 1:1804800 2:1804800 3:1804800 4:2400000 5:2400000 6:2400000 7:2496000",
+            "Duration": 1000
+        },
+        {
+            "PowerHint": "CAMERA_LAUNCH",
+            "Node": "msmPerfCpuMinFreq",
+            "Value": "0:1804800 1:1804800 2:1804800 3:1804800 4:2400000 5:2400000 6:2400000 7:2496000",
+            "Duration": 1000
+        }
+    ]
+}

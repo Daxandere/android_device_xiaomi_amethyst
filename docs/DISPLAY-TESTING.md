@@ -522,19 +522,19 @@ short (`INTERACTION`, 80 ms) or irrelevant to this workload. The hint set of thi
 power HAL is not buying scrolling performance, and the L3 action never showed up
 in the node even with a valid value.
 
-To reproduce, from a checkout with the harness next to it (the `jank/` directory
-of the working tree: `ab_probe.sh`, `probe.pbtxt`, `powerhint-l3fix.json`,
-`powerhint-noboost-all.json`), with `adb` root available:
+To reproduce, from the device tree with `adb` root available (the harness lives
+in `docs/jank/`: `ab_probe.sh`, `probe.pbtxt`, `pacing_settings.sql`,
+`powerhint-with-boost.json` and `powerhint-without-boost.json`):
 
 ```
-bash jank/ab_probe.sh
+bash docs/jank/ab_probe.sh
 ```
 
-It writes `jank/traces/{boost,noboost}[1-3].pftrace`, prints the trace size per
-pass and restores the phone at the end. A trace of only about 1.4 MB means the
+It writes `docs/jank/traces/{boost,noboost}[1-3].pftrace`, prints the trace size
+per pass and restores the phone at the end. A trace of only about 1.4 MB means the
 atrace categories did not apply and the pass has no frame data; the good ones are
 around 30 MB. Analysis with `trace_processor`:
 
 ```
-trace_processor query -f jank/pacing_settings.sql jank/traces/boost1.pftrace
+trace_processor query -f docs/jank/pacing_settings.sql docs/jank/traces/boost1.pftrace
 ```
