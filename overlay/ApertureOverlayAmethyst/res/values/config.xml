@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <bool name="config_enableAuxCameras">true</bool>
+    <string-array name="config_additionalVideoConfigurations" translatable="false">
+        <!-- Main rear camera, 1920x1080, 60 fps. -->
+        <item>0</item>
+        <item>fhd</item>
+        <item>60</item>
+        <!-- Front camera, 1920x1080, 60 fps. -->
+        <item>1</item>
+        <item>fhd</item>
+        <item>60</item>
+    </string-array>
+</resources>

@@ -272,6 +272,7 @@ PRODUCT_COPY_FILES += \
 
 # Overlay
 PRODUCT_PACKAGES += \
+    ApertureOverlayAmethyst \
     CarrierConfigOverlayAmethyst \
     FrameworksOverlayAmethyst \
     LineageSDKOverlayAmethyst \
