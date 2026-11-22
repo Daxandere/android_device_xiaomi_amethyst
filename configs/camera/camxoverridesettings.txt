@@ -406,7 +406,7 @@ enableMotionCapture=0x0919
 # Video EIS
 iseispreviewSupported=TRUE
 #Res1@FPS1|Res2@FPS2 ...,5--720P,6--1080P,8--4K,3001--8K
-vsquality=5@30|8@30|8@60|3001@24
+vsquality=5@30|6@30|6@60|8@30|8@60|3001@24
 isFrontVHdrSupported=TRUE
 EISv3DisableAccel=1
 EISv2DisableAccel=1
@@ -430,7 +430,7 @@ isZoomEISPipSupported=1
 enableDMEbasedMCTF=1
 
 #For 3rdEISV2
-is3rdEISV2Enabled=FALSE
+is3rdEISV2Enabled=TRUE
 
 # Mimotion
 isMiMotionSupported=TRUE
