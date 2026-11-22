@@ -1,6 +1,6 @@
 # Relevo de amethyst con HyperOS Global 307
 
-Actualizado el 21 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro+ 5G Global, modelo `24115RA8EG`, producto Fastboot `amethyst`, bootloader desbloqueado. Base HyperOS `OS3.0.307.0.WOPMIXM` y LineageOS 23.2.
+Actualizado el 22 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro+ 5G Global, modelo `24115RA8EG`, producto Fastboot `amethyst`, bootloader desbloqueado. Base HyperOS `OS3.0.307.0.WOPMIXM` y LineageOS 23.2.
 
 ## Qué se comprobó
 
@@ -76,6 +76,16 @@ El ZIP reconstruido en el PC y el recovery coincidieron con las sumas del servid
 La inspección de los binarios del vendor acota dónde está la decisión. `com.qti.chi.override.so` contiene `UsecaseSelector::IsVideoEISV2Enabled()` y `UsecaseSelector::IsVideoEISV3Enabled()`; ambas escriben `control.videoStabilizationMode=1` en la sesión cuando el modo interno vale `2`, y leen el mismo campo de un objeto global (`0x623000+0xa98`): la rama V2 se elige con `1` o `2`, la rama V3 solo con `0`, y V3 exige además un flujo de vídeo cuyo formato no sea `0x1004`. La selección es un entero de tres estados, no un booleano, e `is3rdEISV2Enabled` solo puede valer `0` o `1`. El binario incluye además las rutas de cliente `isGL3rdVideoAPK`, `CheckThirdPartyModeHint` y `xiaomi.thirdparty`, lo que encaja con un modelo en el que el tipo de cliente fija ese campo: la app de primera parte llega a V3, una app de terceros con `is3rdEISV2Enabled=TRUE` cae en V2 y con `FALSE` se queda sin estabilización. Ese modelo explica las tres mediciones y está pendiente de confirmar en el código que escribe el campo. `com.qti.settings.milos.so` reconoce claves con nombre de modo (`EISv2OperationMode`, `EISv3OperationMode`) y otras como `overrideForceEISSupport` o `enableEISAllPhysicalStream`, ninguna ligada todavía a ese campo. Los binarios inspeccionados son los del vendor del build: `/serverhive5/daxandere/amethyst_ota/vendor/lib64/hw/com.qti.chi.override.so` y `/serverhive5/daxandere/amethyst_ota/vendor/lib64/com.qti.settings.milos.so`.
 
 Con eso queda descartado el candidato `k307-eis3b`: repetir `EISV3Enable=1` junto a `is3rdEISV2Enabled=TRUE` no puede mover el selector a V3 y su resultado previsible es `EISMode:0` otra vez. Las opciones que quedan: (1) confirmar el modelo y buscar la clave que fije ese campo en `0` para apps de terceros, probando `EISv3OperationMode` con `0`, `1` y `2` en los dos perfiles, con `vsquality` completo e `is3rdEISV2Enabled=FALSE`; el riesgo es volver a la ruta V2 y al croma si el valor cae en `1` o `2`, con datos descartables; (2) comparar valores en ejecución, porque `com.qti.settings.milos.so` imprime cada clave con su valor (`%*s<clave> (0x<hash>) = %d`): un registro de stock y otro de LineageOS en el mismo modo de vídeo mostrarían qué valor toma `EISv2OperationMode`/`EISv3OperationMode` en cada sistema; (3) corregir la ruta V2 (`VideoEIS2PreviewEIS2Offline_IPE14`, crop `2400x1800` sobre `1920x1440`), que sigue siendo el arreglo real y necesita datos de tuning del vendor. Ninguna se ha ejecutado.
+
+### Resultado de `k307-eisstock-main60` en el Redmi
+
+Con el candidato ya instalado, el propietario grabó los tres clips previstos con la principal a 1×: 1080p30 con la estabilización apagada, 1080p30 con la estabilización encendida y 720p30 con la estabilización encendida. El color a 1080p30 sigue corrupto.
+
+Eso cierra la última hipótesis de configuración: con los dos perfiles CamX byte a byte como HyperOS Global 307, incluidos `is3rdEISV2Enabled=TRUE` y `vsquality=5@30|6@30|6@60|8@30|8@60|3001@24`, el defecto persiste. Restaurar el perfil de stock no basta y la causa queda confinada al procesado de la ruta EIS2 (`VideoEIS2PreviewEIS2Offline_IPE14`) a 1080p, no a los archivos de anulación.
+
+Queda por precisar en qué clip aparece. En la respuesta no se distinguió si el croma corrupto afecta solo al de 1080p30 con la estabilización encendida o también al que la tiene apagada; si el segundo también sale mal, el fallo no depende de EIS y apunta al propio camino de 1080p. Tampoco se guardó la captura de `logcat` de esta sesión, así que no hay confirmación de `EISMode:1` ni del pipeline elegido en estos tres clips, ni el MP4 medido con FFmpeg.
+
+Siguiente paso: repetir 1080p30 con la estabilización apagada y encendida más 720p30 como control, con `adb logcat -b all` capturado en paralelo, y comparar en `IPE14` el formato, el stride, el dataspace y el `Final dim` de los puertos de salida entre 720p y 1080p. El teléfono no estaba conectado por ADB al cerrar este registro, así que esa captura queda pendiente.
 
 ### Valores en ejecución de `EISv2OperationMode` y `EISv3OperationMode`
 
