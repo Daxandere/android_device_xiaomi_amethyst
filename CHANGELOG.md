@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-11-22 — Release candidate 1
+
+- Integrate the `android.hardware.power-service.lineage-libperfmgr` power HAL
+  with the GPU, DDR and L3 boosts, the `cpu_dma_latency` default the kernel
+  accepts and the L3 frequency the node accepts.
+- Expose the 60–120 Hz refresh range in Display settings, hide the smooth
+  display switch and record the 120 Hz jank A/B in
+  [DISPLAY-TESTING.md](docs/DISPLAY-TESTING.md).
+- Camera: restore the Aperture overlay (auxiliary lenses, main and front
+  1080p60), enable the third-party EIS2 with the stock CamX profiles and cap
+  the macro sensor's video profiles at 720p.
+- Known issues: 2160p video with the 0.7× lens still closes Aperture, and
+  1080p recording with stabilization active can show corrupted chroma. The
+  branch inventory and the pending tests are in
+  [BRANCHES.md](docs/BRANCHES.md).
+
 ## 2026-11-20 — Integrated Global 307 build
 
 - Sync the Global 307 kernel, DTBs, DTBO and matching modules through the

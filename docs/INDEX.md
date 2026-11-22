@@ -15,6 +15,7 @@ from scratch.
 | 8 | [ROADMAP.md](ROADMAP.md) | You want to know what comes next. |
 | 9 | [OFFICIAL.md](OFFICIAL.md) | You want to submit the device to LineageOS. |
 | 10 | [DECISIONS.md](DECISIONS.md) | You want to know why something is done this way. |
+| 11 | [BRANCHES.md](BRANCHES.md) | You are resuming an experiment or checking what is still pending. |
 
 ## Conventions
 
