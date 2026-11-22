@@ -79,13 +79,28 @@ Con eso queda descartado el candidato `k307-eis3b`: repetir `EISV3Enable=1` junt
 
 ### Resultado de `k307-eisstock-main60` en el Redmi
 
-Con el candidato ya instalado, el propietario grabó los tres clips previstos con la principal a 1×: 1080p30 con la estabilización apagada, 1080p30 con la estabilización encendida y 720p30 con la estabilización encendida. El color a 1080p30 sigue corrupto.
+Con el candidato instalado y los dos perfiles CamX byte a byte como HyperOS Global 307, el propietario grabó tres clips con la principal a 1× en Aperture: 1080p30 con la estabilización apagada, 1080p30 con la estabilización encendida y 720p30 con la estabilización encendida. El `logcat` de la sesión permite asignar cada archivo a su modo sin ambigüedad.
 
-Eso cierra la última hipótesis de configuración: con los dos perfiles CamX byte a byte como HyperOS Global 307, incluidos `is3rdEISV2Enabled=TRUE` y `vsquality=5@30|6@30|6@60|8@30|8@60|3001@24`, el defecto persiste. Restaurar el perfil de stock no basta y la causa queda confinada al procesado de la ruta EIS2 (`VideoEIS2PreviewEIS2Offline_IPE14`) a 1080p, no a los archivos de anulación.
+| Clip | Hora | Formato | `EISMode` | Resultado |
+| --- | --- | --- | --- | --- |
+| `2026-11-21-17-46-42-962.mp4` | 17:46:42 | 1920x1080, 253 fotogramas, 8,46 s | 0 | Color correcto y campo de visión completo |
+| `2026-11-21-17-46-58-217.mp4` | 17:46:58 | 1920x1080, 256 fotogramas, 8,55 s | 1 | Croma corrupto: magenta y flecos cian, bordes duplicados |
+| `2026-11-21-17-47-23-127.mp4` | 17:47:23 | 1280x720, 265 fotogramas, 8,89 s | 1 | Color correcto |
 
-Queda por precisar en qué clip aparece. En la respuesta no se distinguió si el croma corrupto afecta solo al de 1080p30 con la estabilización encendida o también al que la tiene apagada; si el segundo también sale mal, el fallo no depende de EIS y apunta al propio camino de 1080p. Tampoco se guardó la captura de `logcat` de esta sesión, así que no hay confirmación de `EISMode:1` ni del pipeline elegido en estos tres clips, ni el MP4 medido con FFmpeg.
+Los tres clips comparten escena: pared verde, plancha roja y blanca sobre una cómoda y bolsa amarilla. En los fotogramas de 3 s extraídos con FFmpeg, el clip con la estabilización apagada conserva el rojo de la plancha y el amarillo de la bolsa, y el de 1080p con EIS desplaza el rojo hacia magenta con franjas cian en el hierro y en su sombra, además de bordes duplicados. La media de croma no separa los clips (U ≈ 125,3 en los tres; V 108,9 en el control frente a 112,2 y 111,9 en los dos con EIS), así que el defecto es espacial y no un viraje global de color. Los archivos quedaron en `videos/2026-11-22-eisstock/` y los fotogramas en su subdirectorio `frames/`.
 
-Siguiente paso: repetir 1080p30 con la estabilización apagada y encendida más 720p30 como control, con `adb logcat -b all` capturado en paralelo, y comparar en `IPE14` el formato, el stride, el dataspace y el `Final dim` de los puertos de salida entre 720p y 1080p. El teléfono no estaba conectado por ADB al cerrar este registro, así que esa captura queda pendiente.
+Configuración de puertos leída del mismo registro:
+
+| Sesión | Entrada EISv2 | Márgenes EISv2 | Salida `IPE14` puerto 9 | Stride / scanline | Colorspace |
+| --- | --- | --- | --- | --- | --- |
+| 1080p30 con EIS | 2400x1800 | 480x360 | 1920x1080 | 1920 / 1088 | 260 |
+| 720p30 con EIS | 2000x1500 | 400x300 | 1280x720 | 1280 / 736 | 260 |
+
+El formato (13), el stride, que coincide con el ancho, y el colorspace (260) son idénticos en las dos resoluciones, y los márgenes son el mismo 20 % de la entrada. La comparación de puertos que pedía la guía no arroja ninguna diferencia, de modo que el fallo no está en la descripción del puerto ni en el dataspace: está en el procesado del `IPE14` cuando el escalado de 1800 a 1080 sustituye al de 1500 a 720. Ambas rutas escalan de forma no uniforme, porque la entrada es 4:3 y la salida 16:9.
+
+Interpretación: con la estabilización apagada el 1080p es correcto, así que el camino de 1080p en sí no está roto. El defecto exige EIS2 activo y aparece solo a 1080p. Como no existe ninguna clave por resolución en los 300 ajustes (verificado antes), no hay arreglo por configuración: `lineage-23.2` mantiene la estabilización desactivada, que es el estado con color correcto, y el defecto solo se corrige con tuning del vendor o cambiando la topología del `IPE14`.
+
+Dato pendiente y ya disponible: grabar 4K30 con EIS, porque la sesión ya configuró `VideoEIS2PreviewEIS2Offline` para 3840x2160 con entrada de 4800x3600. Si el 4K sale con color correcto, el fallo queda acotado al escalado de 1080p y no al EIS2 en general.
 
 ### Valores en ejecución de `EISv2OperationMode` y `EISv3OperationMode`
 
