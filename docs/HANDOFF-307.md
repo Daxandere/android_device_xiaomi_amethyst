@@ -289,7 +289,18 @@ El 22 de noviembre se hizo una lectura de solo lectura del Redmi Global (`1220×
 
 Estos contadores son acumulados y **no demuestran por sí solos** que el blur o el gesto de bajar notificaciones causen el retraso. Aún falta una comparación controlada de la misma interacción con blur encendido/apagado y contadores reiniciados para cada pasada. La fuente AOSP Android 16 describe `ro.sf.blurs_are_expensive` como una señal para solicitar frecuencia GPU alta durante composición GPU con blur; no es un ajuste de downsampling ni de radio, y podría aumentar consumo. No añadirla sin medir primero.
 
-No se cambiaron props, tasa de refresco, servicios ni estado del teléfono en esta lectura. Siguiente prueba propuesta (requiere autorización para escribir estado runtime): repetir la apertura/cierre de Quick Settings con `wm disable-blur 0` y `wm disable-blur 1`, reiniciando `gfxinfo` antes de cada pasada; registrar jank y percentiles, y volver a dejar blur habilitado. El overlay fija un pico por defecto de 60 Hz aunque el panel soporte 120 Hz; estudiar ese límite como segunda variable, por separado del blur, después de establecer una línea base.
+Se hizo una prueba A/B runtime autorizada el 22 de noviembre. Cada pasada tuvo ocho ciclos ADB de arrastrar hacia abajo y hacia arriba (`input swipe 610 100 610 1900 450`, espera de 1 s, swipe de vuelta, espera de 1 s), con `dumpsys gfxinfo com.android.systemui reset` antes de medir y la lectura oficial `wm disable-blur` antes y después:
+
+| Condición | Estado blur confirmado antes/después | Modo inicial → final | Frames | Janky | p90 / p95 / p99 |
+| --- | --- | --- | ---: | ---: | --- |
+| Desactivado | false / false | 60 → 120 Hz | 1 467 | 42 (2,86 %) | 17 / 20 / 34 ms |
+| Activado | true / true | 60 → 120 Hz | 1 034 | 408 (39,46 %) | 38 / 40 / 46 ms |
+
+En otra primera pasada, con blur activado, hubo 1 023 frames, 397 janky (38,81 %) y p90 38 ms; también terminó a 120 Hz. Los contadores GPU de esa pasada registraron p90 10 ms, p95 12 ms y p99 16 ms. Las trazas están en `diag/2026-11-22-4k/blur-ab-enabled.txt` y `blur-ab-disabled.txt`.
+
+El resultado es una señal fuerte de que el blur participa en el retraso de SystemUI durante este gesto, coherente con el uso de `KawaseDualFilterV2`; **no se declara causalidad exclusiva ni mejora absoluta todavía**, porque el modo dinámico de refresco saltó de 60 a 120 Hz durante cada serie y la condición de blur afectó a una cantidad distinta de frames. El siguiente ensayo debe mantener fija la tasa de refresco en ambas condiciones (con autorización), o instrumentar y separar las ventanas de 60/120 Hz, antes de cambiar el overlay permanentemente. No añadir `ro.sf.blurs_are_expensive`: AOSP Android 16 lo usa para solicitar boost de frecuencia GPU al componer blur, no para reducir radio/pases; podría gastar más batería y todavía no se midió.
+
+Al terminar se restauró y verificó `wm disable-blur false`: `Blur enabled: true`, `settings global disable_window_blurs=0`. El refresco regresó a 60 Hz. No se modificaron props, overlay, servicios ni preferencias de cámara. El overlay fija un pico por defecto de 60 Hz aunque el panel soporta 120 Hz; estudiar ese límite como segunda variable, aislada del blur.
 
 ## Ramas, código y dependencias
 
