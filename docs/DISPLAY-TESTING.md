@@ -369,3 +369,34 @@ inspect the first delayed gesture. [Perfetto FrameTimeline reference](https://pe
 - If the trace shows repeated scheduling delays at the first touch, check the
   interaction hints and frequency ramp before changing the Qualcomm performance
   blobs or the Volcano `powerhint.xml` selected by `device.mk`.
+
+## GPU boost while SurfaceFlinger composites blur
+
+SurfaceFlinger already reports `EXPENSIVE_RENDERING` through `IPower::setMode`
+whenever it composites expensive content, and the LineageOS libperfmgr HAL turns
+that mode into `HintManager::DoHint("EXPENSIVE_RENDERING")`. The amethyst
+`powerhint.json` attached no node to that hint, so the HAL received the call and
+did nothing with it; the GPU only left `min_pwrlevel 8` on the 80 ms INTERACTION
+boost that a touch triggers.
+
+`exp/perf-hints` adds three actions held while the mode stays set
+(`Duration: 0`): `kgslMinPwrlevel` 0, `ddrBoostFreq` 2092000 and `l3BoostFreq`
+2035200. `EndHint` runs when SurfaceFlinger stops composing expensive content,
+so the node returns to its default.
+
+Verified on `lineage-23.2-20261122-UNOFFICIAL-refresh-switches-amethyst.zip`
+(`post-build-incremental=1795373782`, SHA-256
+`e6c1d383dd47d3a1c6ced7bd1c799f06d747acc11796e5ff31ee07a805c255ad`), sampling
+`/sys/class/kgsl/kgsl-3d0` while injecting a shade pull:
+
+| State | min_pwrlevel | gpu clock |
+| --- | ---: | ---: |
+| Shade closed | 8 | 362 MHz |
+| Pulling the shade | 0 | 960 MHz |
+| Shade open, settled | 2 | 895 MHz |
+| Shade closed again | 8 | 362 MHz |
+
+`init.svc.vendor.power-hal-aidl=running` and `vendor.powerhal.init=1` without an
+`avc: denied`. The earlier percent-of-janky-frames numbers came from the Perfetto
+harness described above, which is not part of this tree; the A/B for this hint
+still has to run through it.
