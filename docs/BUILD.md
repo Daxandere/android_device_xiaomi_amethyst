@@ -106,13 +106,15 @@ kernel kit against its checksums, run the following from the source root.
 cd ~/android/lineage-23.2
 unset OUT_DIR OUT_DIR_COMMON_BASE
 . build/envsetup.sh
-breakfast amethyst
+breakfast amethyst user
 m -j16 bacon
 ```
 
 `breakfast` is the LineageOS wrapper: it sets `TARGET_RELEASE` from
 `vendor/lineage/vars/aosp_target_release` and calls
-`lunch lineage_amethyst-<release>-userdebug`. On Android 16 the two-part
+`lunch lineage_amethyst-<release>-<variant>`. The variant is the second
+argument and defaults to `userdebug`; release builds use `user`, so the phone
+reports a user build with `ro.debuggable=0`. On Android 16 the two-part
 `lunch lineage_amethyst-userdebug` form is rejected with
 `Invalid lunch combo`, and calling `lunch` without a release makes the build
 fail with `No release config set for target`.
@@ -180,13 +182,16 @@ faster.
 
 ## 5. Signing
 
-`m bacon` signs the default unofficial build with AOSP **test keys**.
-The device accepts updates signed with the same keys. A change of signing
-keys requires preparing the migration separately.
+Out of the box `m bacon` signs the build with the AOSP **test keys**, which
+Settings reports as a build signed with public keys and which Play Protect does
+not trust. Published ZIPs are built as `user` and signed with the owner's own
+release keys, which are read from `vendor/lineage-priv/keys` (outside the device
+tree, never committed).
 
-For personal release keys, create `vendor/lineage-priv/keys` (outside the
-device tree) and follow the LineageOS signing guide. Never commit the keys.
-Official LineageOS builds are signed by the LineageOS infrastructure.
+[SIGNING.md](SIGNING.md) covers generating the seven keys, verifying the result
+(`ro.build.tags=release-keys`, the APK and OTA fingerprints) and moving an
+installed phone to the new certificate. Official LineageOS builds are signed by
+the LineageOS infrastructure instead.
 
 ## 6. Common build problems
 

@@ -82,6 +82,10 @@ ZIP, no su contenido.
 Ese ZIP y el de la variante microG están publicados en el docroot de `ferrari`:
 ver [DOWNLOAD.md](DOWNLOAD.md).
 
+El RC se compiló como `userdebug` y con las claves de prueba de AOSP. Los builds
+siguientes van como `user` y con claves propias; el procedimiento, la
+verificación y la migración del teléfono están en [SIGNING.md](SIGNING.md).
+
 El rango de arranque ya no se ajusta a mano: `config_defaultPeakRefreshRate`
 ships 120, así que un dispositivo recién borrado arranca en 60–120 Hz. No subir
 `config_defaultRefreshRate` por encima de 0: ese valor se convierte en un tope de

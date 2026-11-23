@@ -35,9 +35,14 @@ git checkout amethyst-23.2-rc1
 ./microg/fetch-prebuilts.sh
 cd $SRC
 . build/envsetup.sh
-WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd1-microg breakfast amethyst
+WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd1-microg breakfast amethyst userdebug
 WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd1-microg m -j32 bacon
 ```
+
+La variante de compilación es `userdebug` a propósito (ver
+[Por qué este build es *debuggable*](#por-qué-este-build-es-debuggable)); el
+build vanilla sale `user` y las dos van firmadas con las claves propias, como
+describe [SIGNING.md](SIGNING.md).
 
 `WITH_MICROG` tiene que estar en el entorno de las dos órdenes: la configuración
 de producto se lee en `breakfast` y se vuelve a leer en `m`.
@@ -143,6 +148,12 @@ El resultado es que en la variante microG:
 
 - `adb root` funciona en la variante microG (consecuencia de `ro.debuggable=1`).
 - ADB sigue pidiendo autorización al conectar, como en el vanilla.
+
+Por eso la variante microG se queda en `userdebug` mientras el build vanilla va
+`user`: la puerta `isDebuggable()` está en el framework, no en el árbol del
+dispositivo, y un build `user` dejaría el Self-Check sin *System spoofs
+signature*. Las firmas no se ven afectadas: las dos variantes usan las mismas
+claves propias.
 
 La alternativa limpia sería parchear `isMicrogSigned()` para que mire una
 propiedad propia en vez de `isDebuggable()`, pero eso obliga a mantener un parche
