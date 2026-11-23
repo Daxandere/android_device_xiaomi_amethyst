@@ -423,7 +423,10 @@ p90 4 ms of GPU per frame against the 8.3 ms budget at 120 Hz, and the frames
 still miss on `SurfaceFlinger GPU Deadline Missed`. That means holding
 `kgslMinPwrlevel` at 0 for `INTERACTION` changes nothing while the shade is being
 composited, and only pins the top GPU clock for touches that do not blur. Numbers
-and caveats in `diag/2026-11-23-qs-rcd1/README.md`.
+and caveats in `diag/2026-11-23-qs-rcd1/README.md`. Stock gives no reference for
+that pin either: its `vendor/etc/powerhint.xml` carries no `INTERACTION` and no
+`EXPENSIVE_RENDERING` config, so `8311f5b` restores `INTERACTION` at `"2"` and
+leaves the GPU boosts to `LAUNCH` and to the blur mode.
 
 ## Choosing the refresh rate range
 

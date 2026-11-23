@@ -11,8 +11,9 @@ Este informe es el registro de avance del proyecto: qué builds existen, qué se
 | `rcd1` (2 083 623 970 B) | `userdebug` | claves de prueba AOSP | Release en GitHub; probado en el teléfono: arranque, cámara, pantalla, batería |
 | `rcd2` (2 076 253 458 B) | `user` | claves propias del árbol | Instalado en limpio por *sideload*; es el build que corre ahora en el teléfono |
 | `rcd3-test` (2 083 630 861 B) | `userdebug` | claves propias del árbol | Compilado y verificado en el paquete; pendiente de flashear |
+| `rcd4-testkeys` (2 083 623 794 B) | `userdebug` | claves de prueba AOSP | Compilado y publicado; `INTERACTION` vuelve a `kgslMinPwrlevel "2"`; pendiente de *sideload* sobre `rcd1` |
 
-- Publicados en `https://ferrari.serverhive.in/daxandere/`, en `rc1/`, `rcd2/` y `rcd3-test/`, cada carpeta con su `SHA256SUMS.txt`. Descargas y procedimiento en [DOWNLOAD.md](DOWNLOAD.md).
+- Publicados en `https://ferrari.serverhive.in/daxandere/`, en `rc1/`, `rcd2/`, `rcd3-test/` y `rcd4-testkeys/`, cada carpeta con su `SHA256SUMS.txt`. Descargas y procedimiento en [DOWNLOAD.md](DOWNLOAD.md).
 - Un único producto: LineageOS vanilla, sin servicios de Google preinstalados ni añadidos de terceros. MindTheGapps queda como ZIP opcional aparte, fuera del ROM.
 - `rcd3-test` es la comprobación de que el árbol actual compila y produce el mismo comportamiento que `rcd2`; las builds de lanzamiento se compilan en `user`.
 
@@ -29,10 +30,10 @@ Qué se verificó en el paquete `rcd3-test` el 23 de noviembre:
 
 Lo que sigue abierto, en orden práctico:
 
-1. Flashear `rcd3-test` sobre el teléfono (mismas claves, sin borrar datos) y confirmar que se comporta como `rcd2`: barra de notificaciones, gestos y cámara.
+1. Flashear `rcd4-testkeys` sobre el teléfono (claves de prueba, las mismas de la `rcd1` instalada: sin borrar datos ni recovery nuevo) y confirmar que se comporta como `rcd1`: barra de notificaciones, gestos y cámara. `rcd3-test` queda superado para esta prueba porque lleva `INTERACTION → kgslMinPwrlevel "0"`; las cuatro caídas de `zygote64` que se vieron en su sesión siguen sin explicación y hay que mirarlas aparte.
 2. Croma corrupto a 1080p con EIS2, con la mitigación actual de EIS de terceros desactivado a 1080p (*Resultado de `k307-eisstock-main60`*).
 3. 2160p con el lente 0.7× cierra Aperture (*2160p con el lente 0.7× cierra Aperture*).
-4. Boost de blur sin emisor: `EXPENSIVE_RENDERING` existe pero SurfaceFlinger no lo emite, y el arnés de jank no encontró diferencia (*Diagnóstico inicial: retraso de interfaz…*).
+4. Boost de blur: `EXPENSIVE_RENDERING` ya lo emite SurfaceFlinger (en `rcd1` el nodo pasa de 8 a 0 con el panel abierto) y el HAL lo aplica, pero el GPU no es el cuello de botella: los frames se pierden por deadline de GPU en SurfaceFlinger con p50 3 ms de 8,3 ms. El `INTERACTION` vuelve a `2` en `8311f5b` (*Boost de blur sin efecto medible*).
 5. Matriz de pruebas incompleta: MMS, VoLTE, VoWiFi, GPS, NFC, eSIM, OTG, cifrado y consumo en reposo ([TESTING.md](TESTING.md)).
 
 ## Secciones de este informe
@@ -57,6 +58,44 @@ La cadena de publicación quedó cerrada en tres pasos. `rcd1` fue el primer RC,
 Publicado en `https://ferrari.serverhive.in/daxandere/rcd3-test/` con `SHA256SUMS.txt`; la comprobación `HEAD` devolvió 200 con `Content-Length: 2083630861`. El ZIP no se ha flasheado todavía. Al compartir claves con `rcd2` se instala encima por *sideload* sin borrar datos, y la prueba que toca es confirmar que todo sigue como en `rcd2`.
 
 El boost del nivel superior de GPU al interactuar entra por primera vez en este build: `rcd1` y `rcd2` se compilaron antes de ese cambio de `configs/power/powerhint.json` (`INTERACTION` pasa `kgslMinPwrlevel` de `"2"` a `"0"`). Las builds de lanzamiento seguirán saliendo en `user`, con estas mismas claves.
+
+### `rcd4-testkeys`: el boost de interacción vuelve a pwrlevel 2
+
+La medida de `rcd1` desmintió el motivo del cambio `8517b36`: con `INTERACTION`
+en `"2"`, el nodo ya estaba en 0 mientras SurfaceFlinger componía el blur
+(`EXPENSIVE_RENDERING`), y el GPU de SystemUI iba a p50 3 ms de los 8,3 ms de
+presupuesto a 120 Hz; los frames se perdían por deadline de GPU, no por falta de
+reloj. Stock tampoco fija un nivel de GPU en la interacción: su
+`vendor/etc/powerhint.xml` (`SHA-256` `bed8895e…21d3f8`, guardado en
+`diag/stock-vendor-etc-powerhint.xml`) no tiene configuración de `INTERACTION` ni
+de `EXPENSIVE_RENDERING`; sus únicos usos de `pwrlevel` son los modos QVR y el
+snapshot de cámara. `8311f5b` devuelve el `2`, que es además el `DefaultIndex`
+del nodo, y deja intactos los boosts de `LAUNCH` y `EXPENSIVE_RENDERING`.
+
+`rcd4-testkeys` es `userdebug` con las claves de prueba AOSP, las mismas de la
+`rcd1` que corre ahora en el teléfono (su `otacert` es
+`A4:0D:A8:0A:…:1B:F5:DC` en las dos), así que entra por *sideload* encima sin
+borrar datos y sin recovery nuevo. Se compiló sobre `8311f5b` con
+`tools/build.sh` (`VARIANT=userdebug`, `JOBS=32`,
+`TARGET_UNOFFICIAL_BUILD_ID=rcd4-testkeys`, `m installclean` antes): 7 min 33 s,
+`#### build completed successfully` y ningún `FAILED:`; el registro está en
+`/serverhive5/daxandere/build-logs/rcd4-testkeys-20261123-213044.log`. Para firmar
+con claves de prueba se apartó `vendor/lineage-priv/keys/keys.mk` durante el
+build y se restauró después (`SHA-256`
+`3ef94a5fdaf4edee12d8bf6b553ec5d7d88dadf2345c036b2b42a3b0b64260d2`).
+
+| Archivo | Tamaño | SHA-256 |
+|---|---|---|
+| `lineage-23.2-20261123-UNOFFICIAL-rcd4-testkeys-amethyst.zip` | 2 083 623 794 B | `c9cc6fa5a101d48cd3100b9d4cd97694ec12b66751588abca4901f0a943e3664` |
+| `recovery.img` | 104 857 600 B | `cd0aa47ac70b8ced6a41ca9019bf8975321be7e7071081a03d4d9ad02e1c1a5b` |
+
+Publicado en `https://ferrari.serverhive.in/daxandere/rcd4-testkeys/` con
+`SHA256SUMS.txt`; las comprobaciones `HEAD` devolvieron 200 con 2 083 623 794 B y
+104 857 600 B. En el paquete: `ro.build.type=userdebug`,
+`ro.build.tags=test-keys`, `ro.build.version.incremental=1795469459`,
+`vendor/etc/powerhint.json` con `INTERACTION → kgslMinPwrlevel "2"` y
+`EXPENSIVE_RENDERING` en 0, y los 121 APK del staging firmados con claves de
+prueba AOSP (ninguno con las claves propias del árbol). El ZIP no se ha flasheado.
 
 ## Qué se comprobó
 

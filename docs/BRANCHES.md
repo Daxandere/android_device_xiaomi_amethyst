@@ -156,6 +156,11 @@ fue de 3 ms (p90 4 ms) y los frames se siguen perdiendo por deadline de GPU en
 SurfaceFlinger, no por falta de reloj. La comparación completa está en
 `diag/2026-11-23-qs-rcd1/README.md`.
 
+Por eso `8311f5b` devuelve `INTERACTION → kgslMinPwrlevel` a `"2"` (el valor de
+`rcd1` y el `DefaultIndex` del nodo) y deja los boosts de GPU sólo en `LAUNCH` y
+en el blur. Stock tampoco fija un nivel de GPU en la interacción: su
+`powerhint.xml` no define `INTERACTION` ni `EXPENSIVE_RENDERING`.
+
 ### 4. Arnés de jank
 
 `docs/jank/ab_probe.sh` con `probe.pbtxt` y `pacing_settings.sql` mide la
