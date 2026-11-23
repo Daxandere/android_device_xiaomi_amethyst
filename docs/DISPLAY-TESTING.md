@@ -538,3 +538,43 @@ around 30 MB. Analysis with `trace_processor`:
 ```
 trace_processor query -f docs/jank/pacing_settings.sql docs/jank/traces/boost1.pftrace
 ```
+
+## QS shade blur cost and the boot refresh range
+
+Measured on the release candidate build (`ro.build.version.incremental=1795387604`,
+24 dp shade blur). The display was kept awake (`svc power stayon true`) and each
+pass reset `dumpsys gfxinfo com.android.systemui`, then opened and closed the shade
+six times with `input swipe` over the home screen.
+
+| Condition | SystemUI frames | Janky | 50th | 95th |
+|---|---:|---:|---:|---:|
+| Blur on (24 dp shade) | 297 | 30.0% | 20 ms | 40 ms |
+| Blur off (`wm disable-blur 1`) | 303 | 5.9% | 9 ms | 21 ms |
+
+The same run sequence with the shade blur left on and the rest of the stack
+unchanged ruled out the cheaper fixes:
+
+| Change | Result |
+|---|---|
+| Skia Vulkan render engine (`debug.renderengine.backend=skiavkthreaded`) | 39.8% janky, 27 ms median - worse, reverted |
+| Skia Vulkan for HWUI only (`debug.hwui.renderer=skiavk`) | 27.8% janky, 26 ms median - within noise |
+| GPU pinned at the top level | No effect: `kgsl` was already at 1050 MHz, `pwrlevel 0`, for the whole gesture |
+
+The blur itself is not the shader: `BlurFilter::kInputScale` already runs the blur
+at a quarter resolution and the engine already picked `KawaseDualFilterV2`, the
+fastest of the four algorithms. The cost is the full-screen GPU composition the
+blur forces on a 1220 x 2712 panel at 120 Hz, about 11 ms per frame, which no
+property or overlay can remove. A frame budget of 8.33 ms therefore cannot be met
+with window blur enabled; turning window blur off in Developer options is the only
+way to get the 5.9% figure, and lowering the blur radius does not help because the
+composition, not the radius, dominates. That switch is global, so it also removes
+the blur from the lock screen and the recents overview.
+
+The refresh range a clean install boots with comes from the framework overlay,
+not from the vendor display config: `/vendor/etc/displayconfig` carries no
+`refreshRate` block, so `DisplayModeDirector` takes `defaultPeakRefreshRate` from
+`config_defaultPeakRefreshRate`. The overlay shipped the stock 60, so a wiped
+device stayed locked to the 60 Hz mode until the range was raised by hand. The
+overlay now ships 120, which gives a 60-120 Hz boot range because the panel has no
+mode below 60. `config_defaultRefreshRate` must stay at 0: a non-zero value there
+becomes a render frame rate cap vote at that value.
