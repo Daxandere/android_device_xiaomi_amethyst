@@ -35,6 +35,24 @@ Cada carpeta publica además un `SHA256SUMS.txt` con esos valores.
   Store preinstalados, con *signature spoofing* activo porque el build es
   `debuggable`. Detalles, límites y por qué se hace así en [MICROG.md](MICROG.md).
 
+## Requisitos
+
+- HyperOS Global `OS3.0.307.0.WOPMIXM` (HyperOS 3.0 sobre Android 16) instalado
+  en el teléfono antes de flashear, o una versión posterior de la misma región.
+  Los blobs, el kernel y el firmware del árbol son de esa base: no mezclar
+  regiones (`WOPMIXM` / `WOPINXM` / `WOPCNXM`) ni bajar de versión. El detalle
+  está en [FIRMWARE.md](FIRMWARE.md).
+- Comprobar la base antes de seguir:
+
+  ```bash
+  adb shell getprop ro.build.version.incremental   # OS3.0.307.0.WOPMIXM
+  adb shell getprop ro.product.model               # 24115RA8EG
+  ```
+
+  En el teléfono: *Ajustes → Acerca del teléfono → versión de HyperOS*.
+- Bootloader desbloqueado y recovery de LineageOS para `amethyst`; el del RC
+  sirve para las dos variantes.
+
 ## Instalar
 
 El teléfono es A/B y el ZIP es un OTA completo: se instala con *sideload* desde
