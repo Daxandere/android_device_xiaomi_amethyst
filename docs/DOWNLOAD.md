@@ -92,3 +92,36 @@ La lista completa de comprobaciones de la variante microG está en
 sha256sum lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip
 # 676c8c068716ccc0daa9489778533273cd31b9b4c76534ef0cad9210231016b7
 ```
+
+## Builds firmados (`rcd2`)
+
+Compilados el 23 de noviembre de 2026 desde `d64de35` con las claves propias
+del árbol (`releasekey` con huella SHA-256
+`73:25:A3:54:F9:BF:6E:63:D6:25:D6:DA:AD:EA:EF:2E:33:43:1C:4D:28:42:EE:0F:B3:D6:12:00:01:61:1C:4E`)
+y `ro.build.tags=release-keys`, así que Ajustes ya no marca el ROM como firmado
+con claves públicas. El procedimiento y la migración están en
+[SIGNING.md](SIGNING.md).
+
+| Variante | ZIP | Tamaño | SHA-256 | Variante de build |
+|---|---|---|---|---|
+| Vanilla | [`lineage-23.2-20261123-UNOFFICIAL-rcd2-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd2/lineage-23.2-20261123-UNOFFICIAL-rcd2-amethyst.zip) | 2 076 253 458 B | `cf1ce5567f7edb7437bb4350caf2b8b33fd0f8b49af5771210c0028fb0c29e00` | `user` |
+| microG + Aurora Store | [`lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd2-microg/lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip) | 2 173 379 812 B | `6b07619d46d3a83e4407af95d077bdd0f25e3c7acc9f1fe6f0683ce0ab4d61e4` | `userdebug` |
+
+Recovery de cada variante, extraído de su propio `payload.bin`:
+
+| Variante | Recovery | Tamaño | SHA-256 |
+|---|---|---|---|
+| Vanilla | [`recovery-rcd2.img`](https://ferrari.serverhive.in/daxandere/rcd2/recovery-rcd2.img) | 104 857 600 B | `70b350323435f1f627f81708d1eb631e8f3048083ce0719fd46d2d6f709ccb8a` |
+| microG | [`recovery-rcd2-microg.img`](https://ferrari.serverhive.in/daxandere/rcd2-microg/recovery-rcd2-microg.img) | 109 051 904 B | `d120a5fd035d01977b70253bbde35de7a500c7f0e2dbf8ccaaf6fe4068d91344` |
+
+Las dos carpetas publican su `SHA256SUMS.txt`. La variante microG sigue en
+`userdebug` porque el *signature spoofing* de LineageOS exige
+`ro.debuggable=1` ([MICROG.md](MICROG.md)); el vanilla es `user` y no expone
+root.
+
+Cambiar de las claves de prueba a las propias cambia el certificado de
+plataforma: para pasar de `rcd1` a `rcd2` hay que flashear el recovery nuevo y
+borrar datos, como describe [SIGNING.md](SIGNING.md#4-moving-an-installed-phone-to-the-new-keys).
+
+Estos ZIP están compilados y verificados por firma, pero **no se han flasheado
+todavía** en el teléfono; el build probado sigue siendo `rcd1`.
