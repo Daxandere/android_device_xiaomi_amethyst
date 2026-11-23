@@ -15,7 +15,8 @@ Keys and build variant are independent: `user` decides what the system exposes
 LineageOS already includes `vendor/lineage-priv/keys/keys.mk` from
 `vendor/lineage/config/common.mk`, so the keys live next to the source tree
 instead of inside the device repository, and no device tree change is needed.
-Eight keys are used on Android 16:
+Soong and `keys.conf` look every certificate up in the directory of
+`PRODUCT_DEFAULT_DEV_CERTIFICATE`, so the directory needs the full set below:
 
 | Key | Signs |
 |---|---|
@@ -27,6 +28,7 @@ Eight keys are used on Android 16:
 | `sdk_sandbox` | SDK sandbox packages (Android 14 and newer). |
 | `bluetooth` | Bluetooth stack modules (Android 15 and newer). |
 | `nfc` | `NfcNci` and the NFC apex. |
+| `testkey`, `release` | Referenced by `system/sepolicy/private/keys.conf` when `mac_permissions.xml` is built. |
 
 Generate them once, on the build host, and keep the directory backed up:
 
@@ -34,7 +36,8 @@ Generate them once, on the build host, and keep the directory backed up:
 cd $SRC
 mkdir -p vendor/lineage-priv/keys
 cd vendor/lineage-priv/keys
-for c in releasekey platform shared media networkstack sdk_sandbox bluetooth nfc; do
+for c in releasekey platform shared media networkstack sdk_sandbox bluetooth nfc \
+         testkey release; do
     ../../../development/tools/make_key "$c" \
         '/C=ES/ST=Madrid/L=Madrid/O=Amethyst/OU=LineageOS/CN=Amethyst/' </dev/null
 done
@@ -62,9 +65,8 @@ breakfast amethyst user
 TARGET_UNOFFICIAL_BUILD_ID=<tag> m -j32 bacon
 ```
 
-Soong looks every certificate up in the directory of
-`PRODUCT_DEFAULT_DEV_CERTIFICATE`, which is why all eight have to exist there:
-a missing one fails the build with `FAILED: ninja: 'vendor/lineage-priv/keys/<name>.x509.pem'`.
+All of them have to exist in that directory: a missing one fails the build with
+`FAILED: ninja: 'vendor/lineage-priv/keys/<name>.x509.pem', needed by …`.
 
 `tools/build.sh` does the same and defaults to `VARIANT=user`; pass
 `VARIANT=userdebug` for a debugging build. `breakfast amethyst` without a second
