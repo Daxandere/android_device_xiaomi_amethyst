@@ -1,6 +1,6 @@
 # Relevo de amethyst con HyperOS Global 307
 
-Actualizado el 22 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro+ 5G Global, modelo `24115RA8EG`, producto Fastboot `amethyst`, bootloader desbloqueado. Base HyperOS `OS3.0.307.0.WOPMIXM` y LineageOS 23.2.
+Actualizado el 22 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro+ 5G Global, modelo `24115RA8EG`, producto Fastboot `amethyst`, bootloader desbloqueado. Base HyperOS `OS3.0.307.0.WOPMIXM` y LineageOS 23.2; las reglas de versión y región de esa base están en [FIRMWARE.md](FIRMWARE.md).
 
 ## Qué se comprobó
 
@@ -339,7 +339,7 @@ Clona el manifiesto local en `.repo/local_manifests` después de `repo init` y a
 
 1. Comprueba pantalla y conexión USB. Usa `adb devices -l` y `fastboot devices -l`. Si Fastboot enumera el dispositivo, registra `product`, `unlocked`, `current-slot`, `slot-successful:a`, `slot-successful:b`, `slot-retry-count:a`, `slot-retry-count:b` y `snapshot-update-status`. Una transferencia ADB exitosa se corrobora con `/tmp/recovery.log`, `status: 0` y el slot de destino.
 2. Si arranca recovery tras el fallo, habilita ADB desde su menú avanzado. Copia `/tmp/recovery.log`, `/sys/fs/pstore` cuando haya registros y `/dev/block/by-name/oops` a la máquina de diagnóstico. En `oops`, busca el registro cuyo identificador de build y modo `normal` correspondan al intento. El registro anterior del fallo de `keystore2` estaba en `Boot_Index 1407`.
-3. Si hace falta restablecer la base, el procedimiento de instalación limpia acordado para este teléfono es MiFlash **Clean all** con la imagen Global 307 exacta y el bootloader desbloqueado. Verifica que HyperOS llegue a Android. Usa el ZIP candidato verificado y recovery de su payload. El operador confirma los borrados y las escrituras en el dispositivo. Consulta los datos de slot y las consecuencias del fallback de Virtual A/B antes de intentar volver a otra ranura. [Guía de instalación](FLASH.md).
+3. Si hace falta restablecer la base, el procedimiento de instalación limpia acordado para este teléfono es MiFlash **Clean all** con la imagen Global 307 exacta (`OS3.0.307.0.WOPMIXM`) y el bootloader desbloqueado. Verifica que HyperOS llegue a Android. Usa el ZIP candidato verificado y recovery de su payload. El operador confirma los borrados y las escrituras en el dispositivo. Consulta los datos de slot y las consecuencias del fallback de Virtual A/B antes de intentar volver a otra ranura. [Guía de instalación](FLASH.md).
 4. Confirma `ro.lineage.version`, `ro.boot.slot_suffix`, `sys.boot_completed=1` y un segundo arranque. Registra si Fastboot marca la ranura como exitosa cuando se consulte. Para huella, valida la confirmación del PIN, que empieza la captura y que una huella registrada puede desbloquear después del primer desbloqueo con PIN tras un reinicio. Si hay un fallo, guarda logs de Gatekeeper, Weaver, StrongBox y huella.
 5. Para recuperar EIS a 1080p, compara el crop, el tamaño de entrada, el stride y el formato en IPE14 con una grabación equivalente de HyperOS 307. Usa `k307-eisfix-global` como referencia que reproduce el fallo y `k307-eis2diag` como control con el color correcto. Registra la solicitud de estabilización, el modo aplicado por CamX y el resultado del MP4 en cada sensor. Usa 720p y 4K como controles al probar cambios.
 
