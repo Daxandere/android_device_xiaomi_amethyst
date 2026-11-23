@@ -15,7 +15,7 @@ Keys and build variant are independent: `user` decides what the system exposes
 LineageOS already includes `vendor/lineage-priv/keys/keys.mk` from
 `vendor/lineage/config/common.mk`, so the keys live next to the source tree
 instead of inside the device repository, and no device tree change is needed.
-Seven keys are used on Android 16:
+Eight keys are used on Android 16:
 
 | Key | Signs |
 |---|---|
@@ -26,6 +26,7 @@ Seven keys are used on Android 16:
 | `networkstack` | `NetworkStack` and its updatable modules. |
 | `sdk_sandbox` | SDK sandbox packages (Android 14 and newer). |
 | `bluetooth` | Bluetooth stack modules (Android 15 and newer). |
+| `nfc` | `NfcNci` and the NFC apex. |
 
 Generate them once, on the build host, and keep the directory backed up:
 
@@ -33,7 +34,7 @@ Generate them once, on the build host, and keep the directory backed up:
 cd $SRC
 mkdir -p vendor/lineage-priv/keys
 cd vendor/lineage-priv/keys
-for c in releasekey platform shared media networkstack sdk_sandbox bluetooth; do
+for c in releasekey platform shared media networkstack sdk_sandbox bluetooth nfc; do
     ../../../development/tools/make_key "$c" \
         '/C=ES/ST=Madrid/L=Madrid/O=Amethyst/OU=LineageOS/CN=Amethyst/' </dev/null
 done
@@ -60,6 +61,10 @@ cd $SRC
 breakfast amethyst user
 TARGET_UNOFFICIAL_BUILD_ID=<tag> m -j32 bacon
 ```
+
+Soong looks every certificate up in the directory of
+`PRODUCT_DEFAULT_DEV_CERTIFICATE`, which is why all eight have to exist there:
+a missing one fails the build with `FAILED: ninja: 'vendor/lineage-priv/keys/<name>.x509.pem'`.
 
 `tools/build.sh` does the same and defaults to `VARIANT=user`; pass
 `VARIANT=userdebug` for a debugging build. `breakfast amethyst` without a second

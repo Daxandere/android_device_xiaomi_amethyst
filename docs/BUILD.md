@@ -188,7 +188,7 @@ not trust. Published ZIPs are built as `user` and signed with the owner's own
 release keys, which are read from `vendor/lineage-priv/keys` (outside the device
 tree, never committed).
 
-[SIGNING.md](SIGNING.md) covers generating the seven keys, verifying the result
+[SIGNING.md](SIGNING.md) covers generating the eight keys, verifying the result
 (`ro.build.tags=release-keys`, the APK and OTA fingerprints) and moving an
 installed phone to the new certificate. Official LineageOS builds are signed by
 the LineageOS infrastructure instead.
