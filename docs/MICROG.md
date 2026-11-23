@@ -57,12 +57,41 @@ incremental `1795399981`:
 | SHA-256 | `6bbbe660d0c3209766122b072ad5346831968563f0b75d12101762f28080ea07` |
 | `recovery.img` | SHA-256 `8df725bb8ba4dc3386c1f1fb9c04d17990b98eea80957f0a197d24cb554fa6e9` |
 | `ro.debuggable` / `ro.adb.secure` | `1` / `1` |
+| Instalado y probado en el teléfono | sí, 23 de noviembre de 2026 |
 
 Comprobado en `out/target/product/amethyst/`: los cuatro APK están en
 `product/priv-app/MicrogGmsCore`, `product/priv-app/MicrogCompanion`,
 `product/app/MicrogGsfProxy` y `product/app/AuroraStore`, y los cinco XML en
 `product/etc/{permissions,default-permissions,sysconfig}` con su extensión
-`.xml`. Falta la prueba en el teléfono.
+`.xml`.
+
+### Verificación en el teléfono
+
+Instalado con *sideload* sobre datos borrados y arrancado en el slot `_a`:
+
+| Comprobación | Resultado |
+|---|---|
+| Build | `ro.build.type=userdebug`, `ro.debuggable=1`, `ro.adb.secure=1`, incremental `1795399981` |
+| Paquetes | los cuatro se cargan desde `/product` (`MicrogGmsCore.apk`, `MicrogCompanion.apk`, `MicrogGsfProxy.apk`, `AuroraStore.apk`) con las versiones de la tabla de arriba |
+| Permisos de runtime | concedidos de fábrica por los XML: ubicación fina y gruesa, ubicación en segundo plano, contactos, SMS, estado del teléfono, cámara, notificaciones, almacenamiento |
+| microG Self-Check | todas las filas en verde: *System spoofs signature*, firmas de Services/Companion y GsfProxy, permisos de ubicación, almacenamiento, contactos, SMS, notificaciones y batería |
+| Servicios de sistema | GmsCore registrado como proveedor de ubicación (`FusedLocationProviderService`, `NetworkLocationProviderService`, `GeocodeProviderService`) |
+| Registro de dispositivo | activado; el *check-in* completa y emite `androidId`, `securityToken` y `versionInfo` |
+| Cloud Messaging | activado (`gcm_enable_mcs_service=true`) |
+| Aurora Store | arranca en su asistente de bienvenida y ofrece sesión anónima o cuenta |
+
+La única casilla que no sale verde de fábrica es **«This app can appear on top
+of other apps»**: `SYSTEM_ALERT_WINDOW` es un *app-op*, no un permiso de
+runtime, así que ni `default-permissions` ni `privapp-permissions` lo conceden.
+Se resuelve con un toque en el propio Self-Check o por ADB:
+
+```bash
+adb shell appops set com.google.android.gms SYSTEM_ALERT_WINDOW allow
+```
+
+El registro de dispositivo y Cloud Messaging vienen **apagados** a propósito: son
+decisiones del usuario (ver [Primer arranque](#primer-arranque)). En el
+dispositivo de referencia se activaron a mano para esta prueba.
 
 ### Tamaño y GitHub
 
@@ -72,8 +101,8 @@ sino Soong: `android_app_import` instala el APK con todas sus entradas sin
 comprimir, y `MicrogGmsCore.apk` pasa de 108 MB a 265 MB (lleva libs `x86` y
 `x86_64` de OpenCV y Mapbox que el teléfono no usa). No se recortan: cualquier
 modificación del APK invalida la firma oficial de microG y con ella el
-signature spoofing. Alternativas: publicar esta variante fuera de las releases
-de GitHub (el docroot de `ferrari`) o partir el ZIP en dos assets.
+signature spoofing. Por eso esta variante se publica en el docroot de `ferrari`
+y no como asset de una release: ver [DOWNLOAD.md](DOWNLOAD.md).
 
 ## Por qué este build es *debuggable*
 

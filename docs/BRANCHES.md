@@ -79,6 +79,9 @@ build probado en el dispositivo (`ro.build.version.incremental=1795395067`). Un
 `out/` limpio exige la compilación completa. La etiqueta cambia el nombre del
 ZIP, no su contenido.
 
+Ese ZIP y el de la variante microG están publicados en el docroot de `ferrari`:
+ver [DOWNLOAD.md](DOWNLOAD.md).
+
 El rango de arranque ya no se ajusta a mano: `config_defaultPeakRefreshRate`
 ships 120, así que un dispositivo recién borrado arranca en 60–120 Hz. No subir
 `config_defaultRefreshRate` por encima de 0: ese valor se convierte en un tope de
@@ -97,7 +100,8 @@ WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd1-microg m -j32 bacon
 ```
 
 El detalle —versiones, permisos, el motivo de `ro.debuggable=1` y lo que no
-funciona— está en [MICROG.md](MICROG.md).
+funciona— está en [MICROG.md](MICROG.md). Los dos ZIP publicados, con sus
+checksums y el procedimiento de flash, están en [DOWNLOAD.md](DOWNLOAD.md).
 
 ## Pendientes abiertos
 

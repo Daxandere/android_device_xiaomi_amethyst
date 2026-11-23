@@ -17,6 +17,7 @@ from scratch.
 | 10 | [DECISIONS.md](DECISIONS.md) | You want to know why something is done this way. |
 | 11 | [BRANCHES.md](BRANCHES.md) | You are resuming an experiment or checking what is still pending. |
 | 12 | [MICROG.md](MICROG.md) | You want the microG + Aurora Store variant instead of the vanilla RC. |
+| 13 | [DOWNLOAD.md](DOWNLOAD.md) | You want the published ZIPs, their checksums or how to flash them. |
 
 ## Conventions
 
