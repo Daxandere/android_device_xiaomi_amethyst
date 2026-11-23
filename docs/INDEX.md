@@ -18,6 +18,7 @@ from scratch.
 | 11 | [BRANCHES.md](BRANCHES.md) | You are resuming an experiment or checking what is still pending. |
 | 12 | [MICROG.md](MICROG.md) | You want the microG + Aurora Store variant instead of the vanilla RC. |
 | 13 | [DOWNLOAD.md](DOWNLOAD.md) | You want the published ZIPs, their checksums or how to flash them. |
+| 14 | [releases/rcd1.md](releases/rcd1.md) | You want the release notes of the published RC, or the base for the next one. |
 
 ## Conventions
 
