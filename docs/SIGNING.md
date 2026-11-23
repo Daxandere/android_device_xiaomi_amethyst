@@ -50,6 +50,11 @@ without a password, which is what the build expects. Change the subject to your
 own before running it, and keep the whole directory out of git: `vendor/` is a
 separate project and the keys must never be pushed anywhere.
 
+A copy of this tree's keys is kept outside the device repository, in the
+project's `signing-keys/` backup folder (never committed). Its `README.md` lists
+the certificate fingerprints, the `SHA256SUMS.txt` used to verify the copy and
+the commands that restore the directory to a build host.
+
 **Losing the keys means no more updates.** A build signed with a new platform
 certificate cannot be installed over the old one without wiping data (§4), and
 keys cannot be recovered from a build.
