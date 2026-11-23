@@ -8,7 +8,7 @@ LineageOS source root (`$SRC`), not from the device tree directory.
 | `check-host.sh` | Verify OS, RAM, disk, tools and repository paths before building. |
 | `sync.sh` | `repo init` + `repo sync` + local manifest, in one idempotent command. |
 | `build.sh` | `envsetup`, `breakfast`, `m bacon` with a configurable job count; `user` builds by default. |
-| `check-microg-patch.sh` | Fail if `frameworks/base` lost the microG signature-spoofing patch; `build.sh` runs it for `WITH_MICROG=true`. |
+| `check-microg-patch.sh` | Fail if `frameworks/base` lost the microG signature-spoofing patch; run by `build.sh` and by `microg/microg.mk` for `WITH_MICROG=true`. |
 | `extract-blobs.sh` | Refresh `vendor/xiaomi/amethyst` from a full OTA or dump. |
 | `collect-logs.sh` | Pull `logcat`, `dmesg`, `pstore`, `dumpsys` and a bug report. |
 

@@ -177,11 +177,19 @@ y no depende de ninguna propiedad, así que sobrevive a `repo sync` mientras el
 commit siga en el árbol; si un `sync` reescribe `frameworks/base`, se reaplica
 con `git am`.
 
-`tools/build.sh` no confía en que eso haya pasado: antes de cada build con
-`WITH_MICROG=true` ejecuta `tools/check-microg-patch.sh`, que lee
-`isMicrogSigned()` en `frameworks/base` y aborta si vuelve a depender de
+Que eso haya pasado lo comprueba `tools/check-microg-patch.sh`, que lee
+`isMicrogSigned()` en `frameworks/base` y falla si vuelve a depender de
 `isDebuggable()` o si perdió el certificado real o la allowlist de paquetes. Se
-puede lanzar a mano con `SRC=$SRC device/xiaomi/amethyst/tools/check-microg-patch.sh`.
+ejecuta en dos sitios, así que el camino manual (`breakfast` + `m` de arriba)
+también está cubierto:
+
+- `tools/build.sh`, antes de `envsetup` y `breakfast`, cuando `WITH_MICROG=true`.
+- `microg/microg.mk`, que sólo se lee con `WITH_MICROG=true`: un `$(error)` en la
+  configuración de producto aborta `breakfast` y `m` aunque se lancen a mano,
+  sin depender de que alguien use el script.
+
+Suelto, para ver el detalle de qué falla:
+`SRC=$SRC device/xiaomi/amethyst/tools/check-microg-patch.sh`.
 
 Consecuencias en el teléfono: `ro.build.type=user`, `ro.debuggable=0`, `adb root`
 ya no existe (tampoco en la variante microG) y las apps no pueden leer `/data`
