@@ -29,25 +29,14 @@ Primer candidato de la rama `amethyst-23.2-rc1`: OTA completo A/B, compilado des
 
 | Asset | Qué es | Tamaño | SHA-256 |
 |---|---|---|---|
-| [`lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip`](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/download/amethyst-23.2-rcd1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) | OTA completo A/B de LineageOS 23.2 vanilla, sin servicios de Google ni microG | 2 083 623 970 B | `676c8c068716ccc0daa9489778533273cd31b9b4c76534ef0cad9210231016b7` |
+| [`lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip`](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/download/amethyst-23.2-rcd1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) | OTA completo A/B de LineageOS 23.2 vanilla, sin servicios de Google | 2 083 623 970 B | `676c8c068716ccc0daa9489778533273cd31b9b4c76534ef0cad9210231016b7` |
 | [`MindTheGapps-16.0.0-arm64-20261023_034858.zip`](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/download/amethyst-23.2-rcd1/MindTheGapps-16.0.0-arm64-20261023_034858.zip) | MindTheGapps para Android 16 arm64: opcional, se flashea después del ROM si querés Play Store | 523 923 293 B | `6929593937cd85541228e4e5db9cbb5455338bf33c75eabf610de632ac155810` |
-
-### Variante con microG
-
-Este OTA pasa de 2 GiB, el máximo por archivo de una release de GitHub, así que se publica en el servidor de builds en lugar de como asset. Se descarga desde acá:
-
-**[lineage-23.2-20261123-UNOFFICIAL-rcd1-microg-amethyst.zip](https://ferrari.serverhive.in/daxandere/rc1-microg/lineage-23.2-20261123-UNOFFICIAL-rcd1-microg-amethyst.zip)** · 2 173 371 156 B
-
-Es el mismo árbol que el vanilla, más microG Services, microG Companion, GsfProxy y Aurora Store preinstalados. Límites, *signature spoofing* y la verificación completa en el teléfono: [`docs/MICROG.md`](https://github.com/Daxandere/android_device_xiaomi_amethyst/blob/amethyst-23.2-rc1/docs/MICROG.md).
-
-SHA-256: `6bbbe660d0c3209766122b072ad5346831968563f0b75d12101762f28080ea07`
 
 ## Requisitos
 
 - HyperOS Global `OS3.0.307.0.WOPMIXM` (HyperOS 3.0, Android 16) o posterior de la misma región, instalado antes de flashear. Comprobalo con `adb shell getprop ro.build.version.incremental`, que tiene que devolver `OS3.0.307.0.WOPMIXM`, o en *Ajustes → Acerca del teléfono → versión de HyperOS*. Regiones y versiones admitidas: [`docs/FIRMWARE.md`](https://github.com/Daxandere/android_device_xiaomi_amethyst/blob/amethyst-23.2-rc1/docs/FIRMWARE.md).
-- Bootloader desbloqueado y recovery de LineageOS para `amethyst` (el del RC sirve para las dos variantes).
+- Bootloader desbloqueado y recovery de LineageOS para `amethyst`.
 - El teléfono es A/B: la instalación es por *sideload* del OTA completo, no con `fastboot flash`.
-- La variante con microG exige borrar datos; la vanilla, no.
 
 ## Instalar
 
@@ -89,8 +78,7 @@ Probado en el dispositivo el 23 de noviembre de 2026.
 
 | Build | Incremental | Probado |
 |---|---|---|
-| Vanilla `rcd1` | `1795395067` | arranque, cámara, pantalla, batería |
-| microG `rcd1-microg` | `1795399981` | instalación limpia, Self-Check completo, registro de dispositivo, Cloud Messaging, Aurora Store |
+| `rcd1` | `1795395067` | arranque, cámara, pantalla, batería |
 
 ## Problemas conocidos
 
@@ -101,7 +89,6 @@ Probado en el dispositivo el 23 de noviembre de 2026.
 
 - [`docs/DOWNLOAD.md`](https://github.com/Daxandere/android_device_xiaomi_amethyst/blob/amethyst-23.2-rc1/docs/DOWNLOAD.md) — descargas, variantes y cuándo borrar datos.
 - [`docs/FLASH.md`](https://github.com/Daxandere/android_device_xiaomi_amethyst/blob/amethyst-23.2-rc1/docs/FLASH.md) — instalación paso a paso.
-- [`docs/MICROG.md`](https://github.com/Daxandere/android_device_xiaomi_amethyst/blob/amethyst-23.2-rc1/docs/MICROG.md) — variante con microG.
 - [`docs/BRANCHES.md`](https://github.com/Daxandere/android_device_xiaomi_amethyst/blob/amethyst-23.2-rc1/docs/BRANCHES.md) — inventario de ramas, pruebas pendientes y detalle de cada fallo.
 
 ---

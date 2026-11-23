@@ -1,18 +1,16 @@
-# Descarga e instalación del RC
+# Descarga e instalación
 
-Un solo árbol, dos ZIP del mismo código. Se diferencian sólo en los paquetes
-que llevan dentro; comportamiento, cámara, pantalla y batería son idénticos.
-
-La publicación principal es la release
+Un único ZIP por build, sin variantes: LineageOS limpio, sin servicios de Google
+preinstalados. La publicación principal es la release
 [`amethyst-23.2-rcd1`](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/tag/amethyst-23.2-rcd1)
 en GitHub, con las notas del build y los dos archivos que caben bajo el límite
-de 2 GiB por asset. El servidor de builds queda como espejo de las dos
-variantes.
+de 2 GiB por asset. El servidor de builds queda como espejo.
 
-| Variante | ZIP | Tamaño | SHA-256 |
-|---|---|---|---|
-| Vanilla | [GitHub](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/download/amethyst-23.2-rcd1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) · [espejo](https://ferrari.serverhive.in/daxandere/rc1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) | 2 083 623 970 B | `676c8c068716ccc0daa9489778533273cd31b9b4c76534ef0cad9210231016b7` |
-| microG + Aurora Store | [`lineage-23.2-20261123-UNOFFICIAL-rcd1-microg-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rc1-microg/lineage-23.2-20261123-UNOFFICIAL-rcd1-microg-amethyst.zip) | 2 173 371 156 B | `6bbbe660d0c3209766122b072ad5346831968563f0b75d12101762f28080ea07` |
+## RC1 (`rcd1`)
+
+| ZIP | Tamaño | SHA-256 |
+|---|---|---|
+| [GitHub](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/download/amethyst-23.2-rcd1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) · [espejo](https://ferrari.serverhive.in/daxandere/rc1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) | 2 083 623 970 B | `676c8c068716ccc0daa9489778533273cd31b9b4c76534ef0cad9210231016b7` |
 
 MindTheGapps para Android 16 arm64 (opcional, se flashea después del ROM) es el
 segundo asset de esa release:
@@ -20,20 +18,7 @@ segundo asset de esa release:
 523 923 293 B, SHA-256
 `6929593937cd85541228e4e5db9cbb5455338bf33c75eabf610de632ac155810`.
 
-Recovery del RC (idéntica para las dos variantes):
-[`recovery-rcd1-microg.img`](https://ferrari.serverhive.in/daxandere/rc1-microg/recovery-rcd1-microg.img),
-104 857 600 B, SHA-256
-`8df725bb8ba4dc3386c1f1fb9c04d17990b98eea80957f0a197d24cb554fa6e9`.
-
 Cada carpeta publica además un `SHA256SUMS.txt` con esos valores.
-
-## Elegir variante
-
-- **Vanilla**: LineageOS limpio, sin servicios de Google ni microG. Es el build
-  de referencia para todo lo demás.
-- **microG**: lo mismo más microG Services, microG Companion, GsfProxy y Aurora
-  Store preinstalados, con *signature spoofing* activo porque el build es
-  `debuggable`. Detalles, límites y por qué se hace así en [MICROG.md](MICROG.md).
 
 ## Requisitos
 
@@ -42,8 +27,7 @@ Cada carpeta publica además un `SHA256SUMS.txt` con esos valores.
   `adb shell getprop ro.build.version.incremental`, que tiene que devolver
   `OS3.0.307.0.WOPMIXM`, o en *Ajustes → Acerca del teléfono → versión de
   HyperOS*. Regiones y versiones admitidas: [FIRMWARE.md](FIRMWARE.md).
-- Bootloader desbloqueado y recovery de LineageOS para `amethyst`; el del RC
-  sirve para las dos variantes.
+- Bootloader desbloqueado y recovery de LineageOS para `amethyst`.
 
 ## Instalar
 
@@ -60,11 +44,8 @@ para el siguiente arranque.
 
 ### Cuándo borrar datos
 
-- **microG**: obligatorio. `com.google.android.gms` no puede aparecer a mitad de
-  vida del sistema; si el teléfono ya arrancó sin él, hay que borrar datos antes
-  del primer arranque de esta variante.
-- **Vanilla**: no hace falta si vienes de un build de esta misma rama; conviene
-  si vienes de otra ROM o quieres el estado de fábrica.
+No hace falta si vienes de un build de esta misma rama; conviene si vienes de
+otra ROM o quieres el estado de fábrica.
 
 Con el teléfono en el bootloader:
 
@@ -75,16 +56,12 @@ fastboot reboot
 
 ## Qué está verificado
 
-Las dos variantes salen del mismo árbol y se probaron en el teléfono
-(Redmi Note 14 Pro+ 5G Global, `amethyst`) el 23 de noviembre de 2026:
+Probado en el teléfono (Redmi Note 14 Pro+ 5G Global, `amethyst`) el 23 de
+noviembre de 2026:
 
 | Build | Incremental | Probado |
 |---|---|---|
-| Vanilla `rcd1` | `1795395067` | arranque, cámara, pantalla, batería |
-| microG `rcd1-microg` | `1795399981` | instalación limpia, Self-Check completo, registro de dispositivo, Cloud Messaging, Aurora Store |
-
-La lista completa de comprobaciones de la variante microG está en
-[MICROG.md](MICROG.md#verificación-en-el-teléfono).
+| `rcd1` | `1795395067` | arranque, cámara, pantalla, batería |
 
 ## Verificar la descarga
 
@@ -102,25 +79,21 @@ y `ro.build.tags=release-keys`, así que Ajustes ya no marca el ROM como firmado
 con claves públicas. El procedimiento y la migración están en
 [SIGNING.md](SIGNING.md).
 
-| Variante | ZIP | Tamaño | SHA-256 | Variante de build |
-|---|---|---|---|---|
-| Vanilla | [`lineage-23.2-20261123-UNOFFICIAL-rcd2-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd2/lineage-23.2-20261123-UNOFFICIAL-rcd2-amethyst.zip) | 2 076 253 458 B | `cf1ce5567f7edb7437bb4350caf2b8b33fd0f8b49af5771210c0028fb0c29e00` | `user` |
-| microG + Aurora Store | [`lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd2-microg/lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip) | 2 165 953 467 B | `f0cee5dab62511fdb2a87157394d129598ff7114c9a88c724b6cdef34a3e29ca` | `user` |
-
-Recovery de cada variante, extraído de su propio `payload.bin`:
-
-| Variante | Recovery | Tamaño | SHA-256 |
+| ZIP | Tamaño | SHA-256 | Variante de build |
 |---|---|---|---|
-| Vanilla | [`recovery-rcd2.img`](https://ferrari.serverhive.in/daxandere/rcd2/recovery-rcd2.img) | 104 857 600 B | `70b350323435f1f627f81708d1eb631e8f3048083ce0719fd46d2d6f709ccb8a` |
-| microG | [`recovery-rcd2-microg.img`](https://ferrari.serverhive.in/daxandere/rcd2-microg/recovery-rcd2-microg.img) | 104 857 600 B | `a95f6c6f7a875da1527f1f096924bdf71e7b08f25f8c9ba1bb23c5a0f9015258` |
+| [`lineage-23.2-20261123-UNOFFICIAL-rcd2-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd2/lineage-23.2-20261123-UNOFFICIAL-rcd2-amethyst.zip) | 2 076 253 458 B | `cf1ce5567f7edb7437bb4350caf2b8b33fd0f8b49af5771210c0028fb0c29e00` | `user` |
 
-Las dos carpetas publican su `SHA256SUMS.txt`. Las dos variantes son `user` y
-ninguna expone root: la de microG usa el parche de `frameworks/base` descrito en
-[MICROG.md](MICROG.md) para falsificar firmas sin `ro.debuggable`.
+Recovery, extraído de su propio `payload.bin`:
+
+| Recovery | Tamaño | SHA-256 |
+|---|---|---|
+| [`recovery-rcd2.img`](https://ferrari.serverhive.in/daxandere/rcd2/recovery-rcd2.img) | 104 857 600 B | `70b350323435f1f627f81708d1eb631e8f3048083ce0719fd46d2d6f709ccb8a` |
+
+La carpeta publica su `SHA256SUMS.txt`. El build es `user` y no expone root.
 
 Cambiar de las claves de prueba a las propias cambia el certificado de
 plataforma: para pasar de `rcd1` a `rcd2` hay que flashear el recovery nuevo y
 borrar datos, como describe [SIGNING.md](SIGNING.md#4-moving-an-installed-phone-to-the-new-keys).
 
-Estos ZIP están compilados y verificados por firma, pero **no se han flasheado
-todavía** en el teléfono; el build probado sigue siendo `rcd1`.
+El `rcd2` vanilla es el build que corre ahora en el teléfono (incremental
+`1795442392`), instalado en limpio por *sideload* el 23 de noviembre de 2026.

@@ -77,10 +77,6 @@ All of them have to exist in that directory: a missing one fails the build with
 `VARIANT=userdebug` for a debugging build. `breakfast amethyst` without a second
 argument still means `userdebug`.
 
-The microG variant is also `user`: the frameworks/base patch described in
-[MICROG.md](MICROG.md) lets microG spoof signatures without `ro.debuggable`.
-Both variants use the same keys and the same verification below.
-
 ## 3. Verify a build
 
 ```bash

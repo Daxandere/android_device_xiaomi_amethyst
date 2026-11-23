@@ -453,8 +453,3 @@ PRODUCT_COPY_FILES += \
 
 # Inherit the proprietary files
 $(call inherit-product, vendor/xiaomi/amethyst/amethyst-vendor.mk)
-
-# Optional microG + Aurora Store variant, built with WITH_MICROG=true
-ifeq ($(WITH_MICROG),true)
-$(call inherit-product, device/xiaomi/amethyst/microg/microg.mk)
-endif

@@ -13,10 +13,6 @@ $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 # Inherit from amethyst device
 $(call inherit-product, device/xiaomi/amethyst/device.mk)
 
-# The microG variant no longer needs ro.debuggable=1: the frameworks/base patch
-# in tools/patches/ allows the fake signature on release builds, so microG and
-# vanilla share the same variant (`user`) and the same hardened debug props.
-
 PRODUCT_NAME := lineage_amethyst
 PRODUCT_DEVICE := amethyst
 PRODUCT_MANUFACTURER := Xiaomi

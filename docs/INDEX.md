@@ -16,10 +16,9 @@ from scratch.
 | 9 | [OFFICIAL.md](OFFICIAL.md) | You want to submit the device to LineageOS. |
 | 10 | [DECISIONS.md](DECISIONS.md) | You want to know why something is done this way. |
 | 11 | [BRANCHES.md](BRANCHES.md) | You are resuming an experiment or checking what is still pending. |
-| 12 | [MICROG.md](MICROG.md) | You want the microG + Aurora Store variant instead of the vanilla RC. |
-| 13 | [DOWNLOAD.md](DOWNLOAD.md) | You want the published ZIPs, their checksums or how to flash them. |
-| 14 | [releases/rcd1.md](releases/rcd1.md) | You want the release notes of the published RC, or the base for the next one. |
-| 15 | [SIGNING.md](SIGNING.md) | You are building a release ZIP and need your own keys, or you are moving a phone to them. |
+| 12 | [DOWNLOAD.md](DOWNLOAD.md) | You want the published ZIPs, their checksums or how to flash them. |
+| 13 | [releases/rcd1.md](releases/rcd1.md) | You want the release notes of the published RC, or the base for the next one. |
+| 14 | [SIGNING.md](SIGNING.md) | You are building a release ZIP and need your own keys, or you are moving a phone to them. |
 
 ## Conventions
 
