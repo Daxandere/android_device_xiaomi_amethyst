@@ -73,6 +73,26 @@ Comprobado en `out/target/product/amethyst/`: los cuatro APK están en
 `product/etc/{permissions,default-permissions,sysconfig}` con su extensión
 `.xml`.
 
+### Build rcd2-microg (`user`)
+
+Compilado el 23 de noviembre de 2026 sobre `amethyst-23.2-rc1` con el parche de
+`frameworks/base` (`2bff5998bcc5`). Sustituye al `rcd1-microg` y al
+`rcd2-microg` que salió `userdebug`:
+
+| Dato | Valor |
+|---|---|
+| ZIP | `lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip`, 2 165 953 467 B |
+| SHA-256 | `f0cee5dab62511fdb2a87157394d129598ff7114c9a88c724b6cdef34a3e29ca` |
+| `recovery-rcd2-microg.img` | SHA-256 `a95f6c6f7a875da1527f1f096924bdf71e7b08f25f8c9ba1bb23c5a0f9015258`, 104 857 600 B |
+| Props | `ro.build.type=user`, `ro.debuggable=0`, `ro.adb.secure=1`, `ro.build.tags=release-keys` |
+| Firma | `otacert` == `releasekey` (`73:25:A3:54:…:61:1C:4E`) |
+| Instalado en el teléfono | no, pendiente de flashear |
+
+Comprobado en la salida del build: los cuatro APK en `product/priv-app/MicrogGmsCore`,
+`product/priv-app/MicrogCompanion`, `product/app/MicrogGsfProxy` y
+`product/app/AuroraStore`, y en el bytecode de `services.jar` el método
+`ComputerEngine.isMicrogSigned` ya no invoca `isDebuggable()`.
+
 ### Verificación en el teléfono
 
 Instalado con *sideload* sobre datos borrados y arrancado en el slot `_a`:

@@ -105,19 +105,18 @@ con claves públicas. El procedimiento y la migración están en
 | Variante | ZIP | Tamaño | SHA-256 | Variante de build |
 |---|---|---|---|---|
 | Vanilla | [`lineage-23.2-20261123-UNOFFICIAL-rcd2-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd2/lineage-23.2-20261123-UNOFFICIAL-rcd2-amethyst.zip) | 2 076 253 458 B | `cf1ce5567f7edb7437bb4350caf2b8b33fd0f8b49af5771210c0028fb0c29e00` | `user` |
-| microG + Aurora Store | [`lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd2-microg/lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip) | 2 173 379 812 B | `6b07619d46d3a83e4407af95d077bdd0f25e3c7acc9f1fe6f0683ce0ab4d61e4` | `userdebug` |
+| microG + Aurora Store | [`lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd2-microg/lineage-23.2-20261123-UNOFFICIAL-rcd2-microg-amethyst.zip) | 2 165 953 467 B | `f0cee5dab62511fdb2a87157394d129598ff7114c9a88c724b6cdef34a3e29ca` | `user` |
 
 Recovery de cada variante, extraído de su propio `payload.bin`:
 
 | Variante | Recovery | Tamaño | SHA-256 |
 |---|---|---|---|
 | Vanilla | [`recovery-rcd2.img`](https://ferrari.serverhive.in/daxandere/rcd2/recovery-rcd2.img) | 104 857 600 B | `70b350323435f1f627f81708d1eb631e8f3048083ce0719fd46d2d6f709ccb8a` |
-| microG | [`recovery-rcd2-microg.img`](https://ferrari.serverhive.in/daxandere/rcd2-microg/recovery-rcd2-microg.img) | 109 051 904 B | `d120a5fd035d01977b70253bbde35de7a500c7f0e2dbf8ccaaf6fe4068d91344` |
+| microG | [`recovery-rcd2-microg.img`](https://ferrari.serverhive.in/daxandere/rcd2-microg/recovery-rcd2-microg.img) | 104 857 600 B | `a95f6c6f7a875da1527f1f096924bdf71e7b08f25f8c9ba1bb23c5a0f9015258` |
 
-Las dos carpetas publican su `SHA256SUMS.txt`. La variante microG sigue en
-`userdebug` porque el *signature spoofing* de LineageOS exige
-`ro.debuggable=1` ([MICROG.md](MICROG.md)); el vanilla es `user` y no expone
-root.
+Las dos carpetas publican su `SHA256SUMS.txt`. Las dos variantes son `user` y
+ninguna expone root: la de microG usa el parche de `frameworks/base` descrito en
+[MICROG.md](MICROG.md) para falsificar firmas sin `ro.debuggable`.
 
 Cambiar de las claves de prueba a las propias cambia el certificado de
 plataforma: para pasar de `rcd1` a `rcd2` hay que flashear el recovery nuevo y
