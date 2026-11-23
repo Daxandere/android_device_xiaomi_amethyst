@@ -7,6 +7,7 @@
 #
 # Usage:
 #   tools/build.sh                  # user build (m -j16 bacon)
+#   WITH_MICROG=true tools/build.sh # microG variant, also user
 #   VARIANT=userdebug tools/build.sh  # debugging build
 #   JOBS=12 tools/build.sh         # m -j12 bacon
 #   TARGET=installclean tools/build.sh
@@ -24,7 +25,8 @@ JOBS="${JOBS:-16}"
 TARGET="${TARGET:-bacon}"
 DEVICE="${DEVICE:-amethyst}"
 # Release builds are `user`: no root, ro.debuggable=0. The microG variant is
-# the exception, because LineageOS gates signature spoofing on ro.debuggable.
+# also `user`; signature spoofing comes from the frameworks/base patch in
+# tools/patches/ (docs/MICROG.md), not from a debug build.
 VARIANT="${VARIANT:-user}"
 
 if [[ ! -f "$SRC/build/envsetup.sh" ]]; then
@@ -33,11 +35,6 @@ if [[ ! -f "$SRC/build/envsetup.sh" ]]; then
 fi
 
 cd "$SRC" || exit 1
-
-if [[ "$VARIANT" == "user" && -n "$WITH_MICROG" ]]; then
-    echo "error: the microG variant needs ro.debuggable=1; use VARIANT=userdebug (docs/MICROG.md)" >&2
-    exit 1
-fi
 
 # The published header and boot-image configuration uses the standard out dir.
 unset OUT_DIR OUT_DIR_COMMON_BASE

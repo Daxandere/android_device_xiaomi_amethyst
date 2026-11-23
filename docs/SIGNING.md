@@ -72,9 +72,9 @@ All of them have to exist in that directory: a missing one fails the build with
 `VARIANT=userdebug` for a debugging build. `breakfast amethyst` without a second
 argument still means `userdebug`.
 
-The microG variant keeps `userdebug` on purpose: LineageOS only enables
-signature spoofing when `ro.debuggable=1`, and a `user` build would break microG.
-See [MICROG.md](MICROG.md); the variant is signed like the others.
+The microG variant is also `user`: the frameworks/base patch described in
+[MICROG.md](MICROG.md) lets microG spoof signatures without `ro.debuggable`.
+Both variants use the same keys and the same verification below.
 
 ## 3. Verify a build
 
@@ -96,7 +96,7 @@ unzip -p "$product"/lineage-23.2-*-UNOFFICIAL-*-amethyst.zip META-INF/com/androi
 sha256sum "$product"/lineage-23.2-*-UNOFFICIAL-*-amethyst.zip "$product/recovery.img"
 ```
 
-Expected: `ro.build.type=user` (or `userdebug` for microG), `ro.build.tags=release-keys`
+Expected: `ro.build.type=user` and `ro.build.tags=release-keys` in both variants,
 and the same SHA-256 fingerprint from `apksigner`, the release key and the OTA
 certificate.
 

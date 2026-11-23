@@ -34,15 +34,18 @@ cd $DEVICE
 git checkout amethyst-23.2-rc1
 ./microg/fetch-prebuilts.sh
 cd $SRC
+git -C $SRC/frameworks/base am \
+  $SRC/device/xiaomi/amethyst/tools/patches/microg-user-spoofing.patch
 . build/envsetup.sh
-WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd1-microg breakfast amethyst userdebug
-WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd1-microg m -j32 bacon
+WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd2-microg breakfast amethyst user
+WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd2-microg m -j32 bacon
 ```
 
-La variante de compilación es `userdebug` a propósito (ver
-[Por qué este build es *debuggable*](#por-qué-este-build-es-debuggable)); el
-build vanilla sale `user` y las dos van firmadas con las claves propias, como
-describe [SIGNING.md](SIGNING.md).
+Las dos variantes se compilan igual: `user`, sin root y con `ro.debuggable=0`,
+y firmadas con las claves propias como describe [SIGNING.md](SIGNING.md). La
+diferencia es sólo `WITH_MICROG`. El `git am` del parche se hace una vez por
+árbol (o después de cada `repo sync` que toque `frameworks/base`); el parche
+vive en `tools/patches/microg-user-spoofing.patch`.
 
 `WITH_MICROG` tiene que estar en el entorno de las dos órdenes: la configuración
 de producto se lee en `breakfast` y se vuelve a leer en `m`.
@@ -109,10 +112,10 @@ modificación del APK invalida la firma oficial de microG y con ella el
 signature spoofing. Por eso esta variante se publica en el docroot de `ferrari`
 y no como asset de una release: ver [DOWNLOAD.md](DOWNLOAD.md).
 
-## Por qué este build es *debuggable*
+## Signature spoofing en un build `user`
 
 El soporte de microG de LineageOS vive en `ComputerEngine.isMicrogSigned()` y
-empieza con:
+empezaba con:
 
 ```java
 if (!isDebuggable()) {
@@ -120,44 +123,51 @@ if (!isDebuggable()) {
 }
 ```
 
-Es decir, el *signature spoofing* sólo existe si `ro.debuggable=1`. A su vez,
-`vendor/lineage/config/common.mk` hace:
+Es decir, el *signature spoofing* sólo existía con `ro.debuggable=1`, que en
+LineageOS sólo se consigue compilando `userdebug`. Por eso las primeras
+variantes microG salían `userdebug`.
 
-```makefile
-ifdef WITH_ADB_INSECURE
-PRODUCT_SYSTEM_EXT_PROPERTIES += ro.adb.secure=0
-else
-PRODUCT_SYSTEM_EXT_PROPERTIES += ro.adb.secure=1
-PRODUCT_NOT_DEBUGGABLE_IN_USERDEBUG := true
-endif
+Desde la variante `rcd2-microg` se compila `user` con un parche sobre
+`frameworks/base` que quita esa puerta y deja intactas las dos condiciones que
+importan:
+
+```java
+// Allowlist the following apps:
+// * com.android.vending - microG Companion
+// * com.google.android.gms - microG Services
+...
+return Signature.areExactMatch(
+        p.getSigningDetails(), new Signature[]{MICROG_REAL_SIGNATURE});
 ```
 
-O sea: la única palanca que ofrece LineageOS para dejar `ro.debuggable=1` en un
-build `userdebug` es `WITH_ADB_INSECURE`, que además apaga la autenticación de
-ADB.
+O sea: sólo los dos paquetes de microG y sólo si están firmados con el
+certificado real de microG pueden recibir la firma falsa de Google, y la única
+firma que se puede falsificar es `MICROG_FAKE_SIGNATURE`. Un build `user` de
+LineageOS ya no permite instalar nada como `com.google.android.gms` sin la clave
+de microG, así que la superficie es la misma que en `userdebug` sin la puerta.
 
-Despejar `PRODUCT_NOT_DEBUGGABLE_IN_USERDEBUG` no funciona desde
-`microg/microg.mk`: es una variable de producto de **valor único**, y al
-fusionar el DAG de herencias el sistema sólo acepta el valor de una rama cuando
-no está vacío (`_expand-inherited-values` en `build/make/core/node_fns.mk`).
-Como `common.mk` la pone a `true` y `microg.mk` la dejaría vacía, gana `true`
-siempre, sin importar el orden. Por eso se limpia en `lineage_amethyst.mk`,
-después de la última herencia, donde ya no compite con nadie.
+| Dato | Valor |
+|---|---|
+| Parche | `device/xiaomi/amethyst/tools/patches/microg-user-spoofing.patch` |
+| Commit en `frameworks/base` | `2bff5998bcc5` (*Allow the microG fake signature on release builds*) |
+| Aplicar | `git -C $SRC/frameworks/base am $SRC/device/xiaomi/amethyst/tools/patches/microg-user-spoofing.patch` |
 
-El resultado es que en la variante microG:
+El parche toca un solo fichero (`services/core/java/com/android/server/pm/ComputerEngine.java`)
+y no depende de ninguna propiedad, así que sobrevive a `repo sync` mientras el
+commit siga en el árbol; si un `sync` reescribe `frameworks/base`, se reaplica
+con `git am`.
 
-- `adb root` funciona en la variante microG (consecuencia de `ro.debuggable=1`).
-- ADB sigue pidiendo autorización al conectar, como en el vanilla.
+Consecuencias en el teléfono: `ro.build.type=user`, `ro.debuggable=0`, `adb root`
+ya no existe (tampoco en la variante microG) y las apps no pueden leer `/data`
+ni ejecutar `su`. El Self-Check sigue dando *System spoofs signature* en verde
+porque la comprobación es la firma falsa, no `ro.debuggable`.
 
-Por eso la variante microG se queda en `userdebug` mientras el build vanilla va
-`user`: la puerta `isDebuggable()` está en el framework, no en el árbol del
-dispositivo, y un build `user` dejaría el Self-Check sin *System spoofs
-signature*. Las firmas no se ven afectadas: las dos variantes usan las mismas
-claves propias.
-
-La alternativa limpia sería parchear `isMicrogSigned()` para que mire una
-propiedad propia en vez de `isDebuggable()`, pero eso obliga a mantener un parche
-sobre `frameworks/base` en cada sincronización. No se hace.
+El *allowlist* de permisos privilegiados se comprobó antes de cambiar de
+variante: `privapp-permissions-com.google.android.gms.xml` y
+`privapp-permissions-com.android.vending.xml` cubren todos los permisos
+`signature|privileged` que piden `GmsCore.apk` (14) y `FakeStore.apk` (3). En un
+build `user` esos XML se aplican en modo *enforce*, así que un permiso sin
+allowlist habría dejado el sistema sin arrancar.
 
 ## Primer arranque
 
