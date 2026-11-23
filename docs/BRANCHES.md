@@ -9,17 +9,26 @@ cámara. Las ramas de experimentación se conservan tal cual para retomarlas.
 
 | Rama | Último commit | Contenido | Estado |
 |---|---|---|---|
-| `amethyst-23.2-rc1` | `04b45b7` | `lineage-23.2` + power HAL con boosts + rango de refresco 60–120 Hz por defecto + cámara/EIS + macro 720p + overlay de Aperture + boost de GPU al interactuar | **estable, compilar aquí** |
+| `amethyst-23.2-rc1` | `HEAD` de la rama | `lineage-23.2` + power HAL con boosts + rango de refresco 60–120 Hz por defecto + cámara/EIS + macro 720p + overlay de Aperture + boost de GPU al interactuar | **estable, compilar aquí** |
 | `exp/refresh-rate-switches` | `76029f1` | Base del RC: power HAL, rango 60–120 Hz, A/B de jank a 120 Hz | integrada en el RC; se conserva como historial de la medición |
 | `exp/perf-hints` | `4a66a91` | Primer intento del boost de GPU al componer blur | absorbida por el RC |
 | `build-shade24-power` | `5073da7` | Primer build con barra de 24 dp y `libperfmgr` | superada por el RC |
 | `lineage-23.2` (`mine/lineage-23.2`) | `5febb8c` | Base estable anterior, sin power HAL ni RC | sólo como referencia |
 
-Los cinco commits de la rama local (`154d279`, `4eab7b2`, `edc6273`, `8517b36`,
-`04b45b7`) todavía no están en `origin/amethyst-23.2-rc1`: la rama va cinco
-commits por delante y el push queda pendiente. `8517b36` es el boost de GPU al
-interactuar, que entra por primera vez en `rcd3-test`; `04b45b7` deja un único
-producto vanilla y limpia la documentación que citaba variantes.
+La rama local tiene commits que solo existen en el PC y en `waffle`: todo lo
+que esté por delante de `origin/amethyst-23.2-rc1` sigue sin subir. La lista
+exacta la da el propio Git, y los propios commits de documentación cuentan:
+
+```bash
+git log --oneline origin/amethyst-23.2-rc1..HEAD
+```
+
+No anotes aquí el número ni la lista de hashes: cambian con cada commit, que es
+justo lo que desfasó esta nota. Si el comando no devuelve nada, la rama está
+publicada; mientras devuelva algo, el push queda pendiente de autorización. De
+los cambios descritos en este documento, los que entran en esa lista son el
+boost de GPU al interactuar (el que estrena `rcd3-test`) y el commit que deja un
+único producto vanilla y limpia la documentación que citaba variantes.
 
 ## Ramas experimentales de cámara (no borrar)
 
