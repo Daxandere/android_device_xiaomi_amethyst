@@ -10,20 +10,20 @@ be submitted to LineageOS.
 - [x] Add `lineage.dependencies` for roomservice.
 - [x] Add build, blob, flash and test guides.
 - [x] Add helper scripts.
-- [ ] Add a test matrix with real results.
-- [ ] Publish the repository.
+- [x] Add a test matrix with real results ([TESTING.md](TESTING.md)).
+- [x] Publish the repository.
 
 ## Phase 1 — First boot on LineageOS 23.2
 
-- [ ] Build against `lineage-23.2` with the prebuilt kernel.
-- [ ] Flash on a global `24115RA8EG` running `OS3.0.307.0.WOPMIXM`.
-- [ ] Boot to the launcher.
-- [ ] Collect logs and fix build/boot blockers.
-- [ ] Tag the first working build.
+- [x] Build against `lineage-23.2` with the prebuilt kernel.
+- [x] Flash on a global `24115RA8EG` running `OS3.0.307.0.WOPMIXM`.
+- [x] Boot to the launcher.
+- [x] Collect logs and fix build/boot blockers.
+- [x] Tag the first working build (`amethyst-23.2-rcd1`).
 
 ## Phase 2 — Blob refresh and stabilization
 
-- [ ] Extract blobs from `OS3.0.307.0.WOPMIXM`.
+- [x] Extract blobs from `OS3.0.307.0.WOPMIXM`.
 - [ ] Update `VENDOR_SECURITY_PATCH`.
 - [ ] Rebuild and compare against Phase 1.
 - [ ] Fix camera, audio, fingerprint, NFC, eSIM and calls.
