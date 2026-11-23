@@ -1,7 +1,7 @@
 # Ramas del árbol y pendientes
 
 Estado de este documento: rama `amethyst-23.2-rc1` (candidato de publicación 1,
-22 de noviembre de 2026). El árbol estable para compilar y probar es esa rama:
+23 de noviembre de 2026). El árbol estable para compilar y probar es esa rama:
 une el power HAL `libperfmgr`, los ajustes de pantalla y las correcciones de
 cámara. Las ramas de experimentación se conservan tal cual para retomarlas.
 
@@ -9,7 +9,7 @@ cámara. Las ramas de experimentación se conservan tal cual para retomarlas.
 
 | Rama | Último commit | Contenido | Estado |
 |---|---|---|---|
-| `amethyst-23.2-rc1` | cabecera del RC | `lineage-23.2` + power HAL con boosts + rango de refresco + cámara/EIS + macro 720p + overlay de Aperture | **estable, compilar aquí** |
+| `amethyst-23.2-rc1` | `23b71bf` | `lineage-23.2` + power HAL con boosts + rango de refresco 60–120 Hz por defecto + cámara/EIS + macro 720p + overlay de Aperture | **estable, compilar aquí** |
 | `exp/refresh-rate-switches` | `76029f1` | Base del RC: power HAL, rango 60–120 Hz, A/B de jank a 120 Hz | integrada en el RC; se conserva como historial de la medición |
 | `exp/perf-hints` | `4a66a91` | Primer intento del boost de GPU al componer blur | absorbida por el RC |
 | `build-shade24-power` | `5073da7` | Primer build con barra de 24 dp y `libperfmgr` | superada por el RC |
@@ -58,6 +58,31 @@ El detalle de cada prueba de hardware está en [HANDOFF-307.md](HANDOFF-307.md)
 (cámara, arranque, StrongBox) y en
 [DISPLAY-TESTING.md](DISPLAY-TESTING.md) (refresco, blur, nodos de rendimiento).
 El arnés de medición de jank vive en `docs/jank/`.
+
+## Compilar el RC
+
+```bash
+cd /serverhive5/daxandere/android/lineage-23.2/device/xiaomi/amethyst
+git checkout amethyst-23.2-rc1
+cd /serverhive5/daxandere/android/lineage-23.2
+. build/envsetup.sh
+breakfast amethyst
+TARGET_UNOFFICIAL_BUILD_ID=rcd1 m -j32 bacon
+```
+
+Con el `out/` de un build anterior, la compilación incremental tarda menos de
+seis minutos. Produce
+`out/target/product/amethyst/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip`,
+2 083 623 970 B, SHA-256
+`676c8c068716ccc0daa9489778533273cd31b9b4c76534ef0cad9210231016b7`, que es el
+build probado en el dispositivo (`ro.build.version.incremental=1795395067`). Un
+`out/` limpio exige la compilación completa. La etiqueta cambia el nombre del
+ZIP, no su contenido.
+
+El rango de arranque ya no se ajusta a mano: `config_defaultPeakRefreshRate`
+ships 120, así que un dispositivo recién borrado arranca en 60–120 Hz. No subir
+`config_defaultRefreshRate` por encima de 0: ese valor se convierte en un tope de
+render a esa frecuencia.
 
 ## Pendientes abiertos
 
