@@ -6,9 +6,12 @@ submission.
 
 ## Status matrix
 
-Results for the Global `24115RA8EG` on HyperOS Global 307 firmware and
-the `k307-eis2diag` configuration. The device owner confirmed everyday
-hardware use. ADB and the original camera clips cover the checks noted below.
+Results for the Global `24115RA8EG` on HyperOS Global 307 firmware, the
+`k307-eis2diag` configuration and the owner's daily use of `rcd2`. The current
+test build `rcd3-test` (`userdebug`, own release keys) has been compiled and
+checked in the package but not flashed yet, so it is not in this table. The
+device owner confirmed everyday hardware use. ADB and the original camera clips
+cover the checks noted below.
 
 | Area | Status | Notes |
 |---|---|---|

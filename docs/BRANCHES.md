@@ -9,11 +9,17 @@ cámara. Las ramas de experimentación se conservan tal cual para retomarlas.
 
 | Rama | Último commit | Contenido | Estado |
 |---|---|---|---|
-| `amethyst-23.2-rc1` | `0dcc7b0` | `lineage-23.2` + power HAL con boosts + rango de refresco 60–120 Hz por defecto + cámara/EIS + macro 720p + overlay de Aperture | **estable, compilar aquí** |
+| `amethyst-23.2-rc1` | `04b45b7` | `lineage-23.2` + power HAL con boosts + rango de refresco 60–120 Hz por defecto + cámara/EIS + macro 720p + overlay de Aperture + boost de GPU al interactuar | **estable, compilar aquí** |
 | `exp/refresh-rate-switches` | `76029f1` | Base del RC: power HAL, rango 60–120 Hz, A/B de jank a 120 Hz | integrada en el RC; se conserva como historial de la medición |
 | `exp/perf-hints` | `4a66a91` | Primer intento del boost de GPU al componer blur | absorbida por el RC |
 | `build-shade24-power` | `5073da7` | Primer build con barra de 24 dp y `libperfmgr` | superada por el RC |
 | `lineage-23.2` (`mine/lineage-23.2`) | `5febb8c` | Base estable anterior, sin power HAL ni RC | sólo como referencia |
+
+Los cinco commits de la rama local (`154d279`, `4eab7b2`, `edc6273`, `8517b36`,
+`04b45b7`) todavía no están en `origin/amethyst-23.2-rc1`: la rama va cinco
+commits por delante y el push queda pendiente. `8517b36` es el boost de GPU al
+interactuar, que entra por primera vez en `rcd3-test`; `04b45b7` deja un único
+producto vanilla y limpia la documentación que citaba variantes.
 
 ## Ramas experimentales de cámara (no borrar)
 
@@ -84,6 +90,20 @@ Ese ZIP está publicado en el docroot de `ferrari`: ver [DOWNLOAD.md](DOWNLOAD.m
 El RC se compiló como `userdebug` y con las claves de prueba de AOSP. Los builds
 siguientes van como `user` y con claves propias; el procedimiento, la
 verificación y la migración del teléfono están en [SIGNING.md](SIGNING.md).
+
+Para una build de prueba con root disponible y las claves propias:
+
+```bash
+cd /serverhive5/daxandere/android/lineage-23.2
+VARIANT=userdebug JOBS=32 TARGET_UNOFFICIAL_BUILD_ID=rcd3-test \
+    device/xiaomi/amethyst/tools/build.sh
+```
+
+`tools/build.sh` compila `user` por defecto y `userdebug` solo cuando se pide
+explícitamente; es el camino con el que se hizo `rcd3-test` (unos diez minutos
+sobre un `out/` existente). Los ZIP y recovery de cada build publicado están en
+[DOWNLOAD.md](DOWNLOAD.md) y el detalle de lo verificado en
+[HANDOFF-307.md](HANDOFF-307.md).
 
 El rango de arranque ya no se ajusta a mano: `config_defaultPeakRefreshRate`
 ships 120, así que un dispositivo recién borrado arranca en 60–120 Hz. No subir

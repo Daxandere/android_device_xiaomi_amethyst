@@ -148,6 +148,10 @@ were also checked directly.
 | USB | ✅ Verified | USB connection and ADB. |
 | USB OTG | ⬜ Untested | |
 
+Published builds: `rcd1` (GitHub release), `rcd2` (`user`, own release keys,
+running on the phone) and the `rcd3-test` validation build. Downloads, checksums
+and installation are in [docs/DOWNLOAD.md](docs/DOWNLOAD.md).
+
 Update this table after each hardware test. The full matrix lives in
 [docs/TESTING.md](docs/TESTING.md).
 

@@ -1,6 +1,62 @@
 # Relevo de amethyst con HyperOS Global 307
 
-Actualizado el 22 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro+ 5G Global, modelo `24115RA8EG`, producto Fastboot `amethyst`, bootloader desbloqueado. Base HyperOS `OS3.0.307.0.WOPMIXM` y LineageOS 23.2; las reglas de versión y región de esa base están en [FIRMWARE.md](FIRMWARE.md).
+Actualizado el 23 de noviembre de 2026. Dispositivo de pruebas Redmi Note 14 Pro+ 5G Global, modelo `24115RA8EG`, producto Fastboot `amethyst`, bootloader desbloqueado. Base HyperOS `OS3.0.307.0.WOPMIXM` y LineageOS 23.2; las reglas de versión y región de esa base están en [FIRMWARE.md](FIRMWARE.md).
+
+Este informe es el registro de avance del proyecto: qué builds existen, qué se ha medido en el teléfono y qué queda abierto. Cada afirmación lleva la evidencia con la que se obtuvo, y lo que no se midió se dice explícitamente.
+
+## Estado actual
+
+| Build | Variante | Firma | Estado |
+| --- | --- | --- | --- |
+| `rcd1` (2 083 623 970 B) | `userdebug` | claves de prueba AOSP | Release en GitHub; probado en el teléfono: arranque, cámara, pantalla, batería |
+| `rcd2` (2 076 253 458 B) | `user` | claves propias del árbol | Instalado en limpio por *sideload*; es el build que corre ahora en el teléfono |
+| `rcd3-test` (2 083 630 861 B) | `userdebug` | claves propias del árbol | Compilado y verificado en el paquete; pendiente de flashear |
+
+- Publicados en `https://ferrari.serverhive.in/daxandere/`, en `rc1/`, `rcd2/` y `rcd3-test/`, cada carpeta con su `SHA256SUMS.txt`. Descargas y procedimiento en [DOWNLOAD.md](DOWNLOAD.md).
+- Un único producto: LineageOS vanilla, sin servicios de Google preinstalados ni añadidos de terceros. MindTheGapps queda como ZIP opcional aparte, fuera del ROM.
+- `rcd3-test` es la comprobación de que el árbol actual compila y produce el mismo comportamiento que `rcd2`; las builds de lanzamiento se compilan en `user`.
+
+Qué se verificó en el paquete `rcd3-test` el 23 de noviembre:
+
+| Comprobación | Resultado |
+| --- | --- |
+| `ro.build.type` | `userdebug` |
+| `ro.build.tags` | `release-keys` |
+| `ro.build.version.incremental` | `1795459283` |
+| Certificado de la OTA (`otacert`) | releasekey propio, huella `73:25:A3:54:F9:BF:6E:63:D6:25:D6:DA:AD:EA:EF:2E:33:43:1C:4D:28:42:EE:0F:B3:D6:12:00:01:61:1C:4E` |
+| `/system` | sin GApps ni paquetes de terceros |
+| `vendor/etc/powerhint.json` | `INTERACTION → kgslMinPwrlevel "0"` presente; `EXPENSIVE_RENDERING` intacto |
+
+Lo que sigue abierto, en orden práctico:
+
+1. Flashear `rcd3-test` sobre el teléfono (mismas claves, sin borrar datos) y confirmar que se comporta como `rcd2`: barra de notificaciones, gestos y cámara.
+2. Croma corrupto a 1080p con EIS2, con la mitigación actual de EIS de terceros desactivado a 1080p (*Resultado de `k307-eisstock-main60`*).
+3. 2160p con el lente 0.7× cierra Aperture (*2160p con el lente 0.7× cierra Aperture*).
+4. Boost de blur sin emisor: `EXPENSIVE_RENDERING` existe pero SurfaceFlinger no lo emite, y el arnés de jank no encontró diferencia (*Diagnóstico inicial: retraso de interfaz…*).
+5. Matriz de pruebas incompleta: MMS, VoLTE, VoWiFi, GPS, NFC, eSIM, OTG, cifrado y consumo en reposo ([TESTING.md](TESTING.md)).
+
+## Secciones de este informe
+
+- **Estado actual** y **Builds del 23 de noviembre**: qué está publicado, con qué firma y qué falta.
+- **Qué se comprobó**: tabla de los builds de bring-up y el trabajo de cámara, EIS, lentes y 2160p.
+- **Diagnóstico inicial: retraso de interfaz y barra de notificaciones con blur**: A/B de blur y cifras de jank.
+- **Ramas, código y dependencias** y **Reproducir el build**: de dónde sale cada input.
+- **Próxima prueba en el Redmi**: pasos de recuperación y de verificación.
+
+## Builds del 23 de noviembre: firma propia y `rcd3-test`
+
+La cadena de publicación quedó cerrada en tres pasos. `rcd1` fue el primer RC, compilado como `userdebug` y firmado con las claves de prueba de AOSP. `rcd2` es el primer build `user` firmado con las ocho claves propias del árbol, guardadas en `vendor/lineage-priv/keys` fuera del repositorio: de ahí `ro.build.tags=release-keys` y el `otacert` con la huella releasekey de la tabla anterior. Cambiar de claves cambia el certificado de plataforma, así que el paso de `rcd1` a `rcd2` exigió recovery nuevo y borrado de datos; el procedimiento y la verificación están en [SIGNING.md](SIGNING.md). `rcd2`, incremental `1795442392`, es el build que corre ahora en el teléfono, instalado en limpio por *sideload*.
+
+`rcd3-test` se compiló después sobre el mismo árbol, como `userdebug` y con las claves propias, para comprobar que la limpieza de producto y de documentación no cambió el comportamiento ni perdió mejoras. Se lanzó con `device/xiaomi/amethyst/tools/build.sh` (`VARIANT=userdebug`, `JOBS=32`, `TARGET_UNOFFICIAL_BUILD_ID=rcd3-test`) sobre el `out/` existente: unos diez minutos, `#### build completed successfully` y ningún `FAILED:`. El registro completo está en `/serverhive5/daxandere/build-logs/rcd3-test-20261123-184119.log`.
+
+| Archivo del `rcd3-test` | Tamaño | SHA-256 |
+| --- | --- | --- |
+| `lineage-23.2-20261123-UNOFFICIAL-rcd3-test-amethyst.zip` | 2 083 630 861 B | `c32831024080698ebab280962fbb9fe0ecdb7ad61b143ab78dddd818b152f948` |
+| `recovery.img` extraído de su propio payload | 104 857 600 B | `4c0309c8de5fde422ce66831c358ec8c7e596c5c1a7e0bbe6d50cc734a5bf6b7` |
+
+Publicado en `https://ferrari.serverhive.in/daxandere/rcd3-test/` con `SHA256SUMS.txt`; la comprobación `HEAD` devolvió 200 con `Content-Length: 2083630861`. El ZIP no se ha flasheado todavía. Al compartir claves con `rcd2` se instala encima por *sideload* sin borrar datos, y la prueba que toca es confirmar que todo sigue como en `rcd2`.
+
+El boost del nivel superior de GPU al interactuar entra por primera vez en este build: `rcd1` y `rcd2` se compilaron antes de ese cambio de `configs/power/powerhint.json` (`INTERACTION` pasa `kgslMinPwrlevel` de `"2"` a `"0"`). Las builds de lanzamiento seguirán saliendo en `user`, con estas mismas claves.
 
 ## Qué se comprobó
 

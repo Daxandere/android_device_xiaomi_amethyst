@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-11-23 — Signed release, `rcd3-test` and a single product
+
+- Ship one product only: plain LineageOS, without preinstalled Google or
+  third-party services. The product makefiles, the build helper and the
+  documentation now describe that single configuration.
+- Publish `rcd2`, the first `user` build signed with the tree's own release
+  keys, and record the move off the AOSP test keys in
+  [SIGNING.md](docs/SIGNING.md).
+- Build and publish `rcd3-test`, a `userdebug` build with the same keys, to
+  confirm the tree still behaves as before. Release builds stay `user`; see
+  [DOWNLOAD.md](docs/DOWNLOAD.md).
+- Hold the top GPU pwrlevel while the device is being interacted with
+  (`INTERACTION → kgslMinPwrlevel`), which `rcd1` and `rcd2` predate.
+
 ## 2026-11-22 — Release candidate 1
 
 - Integrate the `android.hardware.power-service.lineage-libperfmgr` power HAL

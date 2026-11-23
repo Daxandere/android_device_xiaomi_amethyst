@@ -6,6 +6,11 @@ preinstalados. La publicación principal es la release
 en GitHub, con las notas del build y los dos archivos que caben bajo el límite
 de 2 GiB por asset. El servidor de builds queda como espejo.
 
+Hay tres builds publicados y un único producto: `rcd1` (el RC de GitHub), `rcd2`
+(release `user` firmada con las claves propias, la que corre en el teléfono) y
+`rcd3-test` (validación `userdebug` con esas mismas claves). Ninguno lleva
+variantes ni servicios preinstalados.
+
 ## RC1 (`rcd1`)
 
 | ZIP | Tamaño | SHA-256 |
@@ -62,6 +67,8 @@ noviembre de 2026:
 | Build | Incremental | Probado |
 |---|---|---|
 | `rcd1` | `1795395067` | arranque, cámara, pantalla, batería |
+| `rcd2` | `1795442392` | instalación limpia por *sideload* y uso diario |
+| `rcd3-test` | `1795459283` | compilado y verificado en el paquete; pendiente de flashear |
 
 ## Verificar la descarga
 
@@ -97,3 +104,28 @@ borrar datos, como describe [SIGNING.md](SIGNING.md#4-moving-an-installed-phone-
 
 El `rcd2` vanilla es el build que corre ahora en el teléfono (incremental
 `1795442392`), instalado en limpio por *sideload* el 23 de noviembre de 2026.
+
+## Build de prueba (`rcd3-test`)
+
+Compilado el 23 de noviembre de 2026 desde el árbol actual, como `userdebug` y
+con las mismas claves propias, para comprobar que las mejoras siguen intactas
+tras la limpieza de producto y documentación. Es `userdebug` a propósito:
+permite `adb root`, que es lo que necesitan los diagnósticos de cámara. Las
+builds de lanzamiento se compilan en `user`.
+
+| ZIP | Tamaño | SHA-256 |
+|---|---|---|
+| [`lineage-23.2-20261123-UNOFFICIAL-rcd3-test-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd3-test/lineage-23.2-20261123-UNOFFICIAL-rcd3-test-amethyst.zip) | 2 083 630 861 B | `c32831024080698ebab280962fbb9fe0ecdb7ad61b143ab78dddd818b152f948` |
+
+Recovery, extraído de su propio `payload.bin`:
+
+| Recovery | Tamaño | SHA-256 |
+|---|---|---|
+| `recovery.img` | 104 857 600 B | `4c0309c8de5fde422ce66831c358ec8c7e596c5c1a7e0bbe6d50cc734a5bf6b7` |
+
+Incremental `1795459283`, `ro.build.type=userdebug` y `ro.build.tags=release-keys`.
+No es una release: valida el árbol de trabajo. Al compartir claves con `rcd2` se
+instala encima por *sideload* sin borrar datos. Cuando se confirme en el
+teléfono, el siguiente RC sale en `user` con estas mismas claves, así que
+tampoco exigirá borrar datos. Los detalles de la compilación y lo verificado en
+el paquete están en [HANDOFF-307.md](HANDOFF-307.md).
