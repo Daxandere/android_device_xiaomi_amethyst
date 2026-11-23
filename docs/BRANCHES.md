@@ -9,7 +9,7 @@ cámara. Las ramas de experimentación se conservan tal cual para retomarlas.
 
 | Rama | Último commit | Contenido | Estado |
 |---|---|---|---|
-| `amethyst-23.2-rc1` | `23b71bf` | `lineage-23.2` + power HAL con boosts + rango de refresco 60–120 Hz por defecto + cámara/EIS + macro 720p + overlay de Aperture | **estable, compilar aquí** |
+| `amethyst-23.2-rc1` | `0dcc7b0` | `lineage-23.2` + power HAL con boosts + rango de refresco 60–120 Hz por defecto + cámara/EIS + macro 720p + overlay de Aperture | **estable, compilar aquí** |
 | `exp/refresh-rate-switches` | `76029f1` | Base del RC: power HAL, rango 60–120 Hz, A/B de jank a 120 Hz | integrada en el RC; se conserva como historial de la medición |
 | `exp/perf-hints` | `4a66a91` | Primer intento del boost de GPU al componer blur | absorbida por el RC |
 | `build-shade24-power` | `5073da7` | Primer build con barra de 24 dp y `libperfmgr` | superada por el RC |
