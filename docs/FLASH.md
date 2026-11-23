@@ -5,6 +5,11 @@
 
 ## 1. Prerequisites
 
+- HyperOS Global `OS3.0.307.0.WOPMIXM` (HyperOS 3.0 on Android 16) in place
+  before flashing, or a newer build for the same region. The blobs, kernel and
+  firmware in this tree come from that base: do not mix regions (`WOPMIXM` /
+  `WOPINXM` / `WOPCNXM`) and do not downgrade. Details in
+  [FIRMWARE.md](FIRMWARE.md).
 - Bootloader unlocked (Xiaomi's unlock tool, with the waiting period).
 - `adb` and `fastboot` from Android platform-tools.
 - The LineageOS zip built by this tree.
@@ -22,6 +27,17 @@ fastboot getvar product
 ```
 
 `product` must be `amethyst`. If it is not, stop.
+
+Check the base build next, before touching anything:
+
+```bash
+adb shell getprop ro.build.version.incremental   # OS3.0.307.0.WOPMIXM
+adb shell getprop ro.product.model               # 24115RA8EG
+```
+
+On the phone: **Settings → About phone → HyperOS version**. A newer build of
+`OS3.0.307.0` for the same region is fine; a different region or a downgrade is
+not.
 
 ## 2. Back up
 
