@@ -3,10 +3,22 @@
 Un solo árbol, dos ZIP del mismo código. Se diferencian sólo en los paquetes
 que llevan dentro; comportamiento, cámara, pantalla y batería son idénticos.
 
+La publicación principal es la release
+[`amethyst-23.2-rcd1`](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/tag/amethyst-23.2-rcd1)
+en GitHub, con las notas del build y los dos archivos que caben bajo el límite
+de 2 GiB por asset. El servidor de builds queda como espejo de las dos
+variantes.
+
 | Variante | ZIP | Tamaño | SHA-256 |
 |---|---|---|---|
-| Vanilla | [`lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rc1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) | 2 083 623 970 B | `676c8c068716ccc0daa9489778533273cd31b9b4c76534ef0cad9210231016b7` |
+| Vanilla | [GitHub](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/download/amethyst-23.2-rcd1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) · [espejo](https://ferrari.serverhive.in/daxandere/rc1/lineage-23.2-20261123-UNOFFICIAL-rcd1-amethyst.zip) | 2 083 623 970 B | `676c8c068716ccc0daa9489778533273cd31b9b4c76534ef0cad9210231016b7` |
 | microG + Aurora Store | [`lineage-23.2-20261123-UNOFFICIAL-rcd1-microg-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rc1-microg/lineage-23.2-20261123-UNOFFICIAL-rcd1-microg-amethyst.zip) | 2 173 371 156 B | `6bbbe660d0c3209766122b072ad5346831968563f0b75d12101762f28080ea07` |
+
+MindTheGapps para Android 16 arm64 (opcional, se flashea después del ROM) es el
+segundo asset de esa release:
+[`MindTheGapps-16.0.0-arm64-20261023_034858.zip`](https://github.com/Daxandere/android_device_xiaomi_amethyst/releases/download/amethyst-23.2-rcd1/MindTheGapps-16.0.0-arm64-20261023_034858.zip),
+523 923 293 B, SHA-256
+`6929593937cd85541228e4e5db9cbb5455338bf33c75eabf610de632ac155810`.
 
 Recovery del RC (idéntica para las dos variantes):
 [`recovery-rcd1-microg.img`](https://ferrari.serverhive.in/daxandere/rc1-microg/recovery-rcd1-microg.img),
