@@ -4,9 +4,11 @@ These instructions assume a **Linux build host**. Windows is not supported for
 the build itself (WSL2 may work, but it is not the supported path).
 
 The local manifest retrieves the kernel, DTBs, DTBO, modules, headers and
-vendor blobs for HyperOS Global 307. The versioned device configuration uses
-them directly. Use the standard `out` directory. The [Global 307 handoff](HANDOFF-307.md)
-records the tests and the current EIS limitation.
+vendor blobs for HyperOS Global `OS3.0.307.0.WOPMIXM`, the base the tree
+declares; [FIRMWARE.md](FIRMWARE.md) records the version and region rules. The
+versioned device configuration uses the blobs directly. Use the standard `out`
+directory. The [Global 307 handoff](HANDOFF-307.md) records the tests and the
+current EIS limitation.
 
 ## 1. Host requirements
 

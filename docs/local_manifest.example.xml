@@ -9,7 +9,9 @@
       https://github.com/Daxandere/android_device_xiaomi_amethyst
 
   Daxandere maintains the matching device, kernel and vendor trees for
-  HyperOS Global 307. Xiaomi hardware support uses the tested upstream revision.
+  HyperOS Global 307 (`OS3.0.307.0.WOPMIXM`). Xiaomi hardware support uses the
+  tested upstream revision. The base version and the region rules are in
+  docs/FIRMWARE.md of the device tree.
 
   The Qualcomm pieces are NOT listed here on purpose: LineageOS already
   provides them in snippets/lineage.xml, including
