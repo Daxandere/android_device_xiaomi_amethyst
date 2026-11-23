@@ -46,6 +46,35 @@ El resultado es `out/target/product/amethyst/lineage-23.2-<fecha>-UNOFFICIAL-rcd
 Sin `WITH_MICROG=true` el build es idéntico al RC vanilla: los módulos de
 `microg/Android.bp` ni siquiera se incluyen en el producto.
 
+### Build de referencia
+
+Compilado el 23 de noviembre de 2026 sobre `amethyst-23.2-rc1` (`9c41cc2`),
+incremental `1795399981`:
+
+| Dato | Valor |
+|---|---|
+| ZIP | `lineage-23.2-20261123-UNOFFICIAL-rcd1-microg-amethyst.zip`, 2 173 371 156 B |
+| SHA-256 | `6bbbe660d0c3209766122b072ad5346831968563f0b75d12101762f28080ea07` |
+| `recovery.img` | SHA-256 `8df725bb8ba4dc3386c1f1fb9c04d17990b98eea80957f0a197d24cb554fa6e9` |
+| `ro.debuggable` / `ro.adb.secure` | `1` / `1` |
+
+Comprobado en `out/target/product/amethyst/`: los cuatro APK están en
+`product/priv-app/MicrogGmsCore`, `product/priv-app/MicrogCompanion`,
+`product/app/MicrogGsfProxy` y `product/app/AuroraStore`, y los cinco XML en
+`product/etc/{permissions,default-permissions,sysconfig}` con su extensión
+`.xml`. Falta la prueba en el teléfono.
+
+### Tamaño y GitHub
+
+El ZIP pasa de 2 GiB (2 147 483 648 B), el máximo por archivo de una release de
+GitHub, así que no se puede subir como asset único. La causa no es microG en sí
+sino Soong: `android_app_import` instala el APK con todas sus entradas sin
+comprimir, y `MicrogGmsCore.apk` pasa de 108 MB a 265 MB (lleva libs `x86` y
+`x86_64` de OpenCV y Mapbox que el teléfono no usa). No se recortan: cualquier
+modificación del APK invalida la firma oficial de microG y con ella el
+signature spoofing. Alternativas: publicar esta variante fuera de las releases
+de GitHub (el docroot de `ferrari`) o partir el ZIP en dos assets.
+
 ## Por qué este build es *debuggable*
 
 El soporte de microG de LineageOS vive en `ComputerEngine.isMicrogSigned()` y
