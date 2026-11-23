@@ -6,7 +6,8 @@
 # Build LineageOS for amethyst with a sane default job count.
 #
 # Usage:
-#   tools/build.sh                 # m -j16 bacon
+#   tools/build.sh                  # user build (m -j16 bacon)
+#   VARIANT=userdebug tools/build.sh  # debugging build
 #   JOBS=12 tools/build.sh         # m -j12 bacon
 #   TARGET=installclean tools/build.sh
 #   TARGET=bootimage tools/build.sh
@@ -22,6 +23,9 @@ SRC="${SRC:-$(pwd)}"
 JOBS="${JOBS:-16}"
 TARGET="${TARGET:-bacon}"
 DEVICE="${DEVICE:-amethyst}"
+# Release builds are `user`: no root, ro.debuggable=0. The microG variant is
+# the exception, because LineageOS gates signature spoofing on ro.debuggable.
+VARIANT="${VARIANT:-user}"
 
 if [[ ! -f "$SRC/build/envsetup.sh" ]]; then
     echo "error: $SRC is not a LineageOS source tree" >&2
@@ -29,6 +33,11 @@ if [[ ! -f "$SRC/build/envsetup.sh" ]]; then
 fi
 
 cd "$SRC" || exit 1
+
+if [[ "$VARIANT" == "user" && -n "$WITH_MICROG" ]]; then
+    echo "error: the microG variant needs ro.debuggable=1; use VARIANT=userdebug (docs/MICROG.md)" >&2
+    exit 1
+fi
 
 # The published header and boot-image configuration uses the standard out dir.
 unset OUT_DIR OUT_DIR_COMMON_BASE
@@ -38,8 +47,8 @@ unset OUT_DIR OUT_DIR_COMMON_BASE
 
 # breakfast sets TARGET_RELEASE and calls lunch with the three-part form.
 # The two-part `lunch lineage_amethyst-userdebug` is rejected on Android 16.
-breakfast "$DEVICE" || {
-    echo "error: breakfast $DEVICE failed; see docs/TROUBLESHOOTING.md" >&2
+breakfast "$DEVICE" "$VARIANT" || {
+    echo "error: breakfast $DEVICE $VARIANT failed; see docs/TROUBLESHOOTING.md" >&2
     exit 1
 }
 
@@ -49,5 +58,5 @@ m -j"$JOBS" "$TARGET" || {
 }
 
 echo
-echo "Build finished. Artifacts:"
+echo "$VARIANT build finished. Artifacts:"
 ls -lh "out/target/product/amethyst/"*.zip 2>/dev/null || true
