@@ -7,7 +7,8 @@
 #
 # Usage:
 #   tools/build.sh                  # user build (m -j16 bacon)
-#   WITH_MICROG=true tools/build.sh # microG variant, also user
+#   WITH_MICROG=true tools/build.sh # microG variant, also user (checks the
+#                                   #   frameworks/base patch first)
 #   VARIANT=userdebug tools/build.sh  # debugging build
 #   JOBS=12 tools/build.sh         # m -j12 bacon
 #   TARGET=installclean tools/build.sh
@@ -29,12 +30,26 @@ DEVICE="${DEVICE:-amethyst}"
 # tools/patches/ (docs/MICROG.md), not from a debug build.
 VARIANT="${VARIANT:-user}"
 
+# Resolved before cd: BASH_SOURCE is relative when the script is called by a
+# relative path, and the guard below needs it from inside $SRC.
+HERE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
 if [[ ! -f "$SRC/build/envsetup.sh" ]]; then
     echo "error: $SRC is not a LineageOS source tree" >&2
     exit 1
 fi
 
 cd "$SRC" || exit 1
+
+# A repo sync can revert frameworks/base and still produce a microG build that
+# compiles and boots, with the fake signature silently gone. Refuse to build
+# instead of shipping that.
+if [[ "${WITH_MICROG:-false}" == "true" ]]; then
+    "$HERE/check-microg-patch.sh" || {
+        echo "error: WITH_MICROG=true needs the frameworks/base patch; see docs/MICROG.md" >&2
+        exit 1
+    }
+fi
 
 # The published header and boot-image configuration uses the standard out dir.
 unset OUT_DIR OUT_DIR_COMMON_BASE

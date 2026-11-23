@@ -177,6 +177,12 @@ y no depende de ninguna propiedad, así que sobrevive a `repo sync` mientras el
 commit siga en el árbol; si un `sync` reescribe `frameworks/base`, se reaplica
 con `git am`.
 
+`tools/build.sh` no confía en que eso haya pasado: antes de cada build con
+`WITH_MICROG=true` ejecuta `tools/check-microg-patch.sh`, que lee
+`isMicrogSigned()` en `frameworks/base` y aborta si vuelve a depender de
+`isDebuggable()` o si perdió el certificado real o la allowlist de paquetes. Se
+puede lanzar a mano con `SRC=$SRC device/xiaomi/amethyst/tools/check-microg-patch.sh`.
+
 Consecuencias en el teléfono: `ro.build.type=user`, `ro.debuggable=0`, `adb root`
 ya no existe (tampoco en la variante microG) y las apps no pueden leer `/data`
 ni ejecutar `su`. El Self-Check sigue dando *System spoofs signature* en verde
