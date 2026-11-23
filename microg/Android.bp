@@ -77,9 +77,12 @@ android_app_import {
     ],
 }
 
+// The filename property matters: package manager only reads *.xml files from
+// these directories, and without it the module name is used verbatim.
 prebuilt_etc {
     name: "microg-gms-privapp-permissions",
     src: "etc/privapp-permissions-com.google.android.gms.xml",
+    filename: "privapp-permissions-com.google.android.gms.xml",
     product_specific: true,
     sub_dir: "permissions",
 }
@@ -87,6 +90,7 @@ prebuilt_etc {
 prebuilt_etc {
     name: "microg-gms-default-permissions",
     src: "etc/default-permissions-com.google.android.gms.xml",
+    filename: "default-permissions-com.google.android.gms.xml",
     product_specific: true,
     sub_dir: "default-permissions",
 }
@@ -94,6 +98,7 @@ prebuilt_etc {
 prebuilt_etc {
     name: "microg-gms-sysconfig",
     src: "etc/sysconfig-com.google.android.gms.xml",
+    filename: "sysconfig-com.google.android.gms.xml",
     product_specific: true,
     sub_dir: "sysconfig",
 }
@@ -101,6 +106,7 @@ prebuilt_etc {
 prebuilt_etc {
     name: "microg-vending-privapp-permissions",
     src: "etc/privapp-permissions-com.android.vending.xml",
+    filename: "privapp-permissions-com.android.vending.xml",
     product_specific: true,
     sub_dir: "permissions",
 }
@@ -108,6 +114,7 @@ prebuilt_etc {
 prebuilt_etc {
     name: "microg-vending-default-permissions",
     src: "etc/default-permissions-com.android.vending.xml",
+    filename: "default-permissions-com.android.vending.xml",
     product_specific: true,
     sub_dir: "default-permissions",
 }
