@@ -144,11 +144,17 @@ activa y revisar el color. Si el croma falla, desactivar la estabilización en
 Aperture devuelve el color correcto (EIS sólo a 720p y 4K). Pista abierta: el
 `IPE14` mantiene `m_previewDimension` en `1600x1200` durante la sesión de 1080p.
 
-### 3. Boost de blur sin emisor
+### 3. Boost de blur sin efecto medible
 
-`configs/power/powerhint.json` incluye la acción `EXPENSIVE_RENDERING`, pero
-SurfaceFlinger nunca emite ese hint en este build, así que el boost no se
-ejecuta nunca. No hay nada que medir hasta que SF lo emita.
+`configs/power/powerhint.json` incluye las tres acciones `EXPENSIVE_RENDERING`
+(`kgslMinPwrlevel` 0, `ddrBoostFreq` 2092000, `l3BoostFreq` 1708800).
+SurfaceFlinger **sí** emite el hint: en `rcd1` el móvil pasó `kgslMinPwrlevel` de
+8 a 0 mientras el panel de QS estaba abierto, y el HAL de `rcd3-test` contó 28
+`EXPENSIVE_RENDERING` adicionales en una sesión de 31 s. Lo que falta no es el
+emisor sino el efecto: con el boost puesto, el p50 de GPU por frame del shade
+fue de 3 ms (p90 4 ms) y los frames se siguen perdiendo por deadline de GPU en
+SurfaceFlinger, no por falta de reloj. La comparación completa está en
+`diag/2026-11-23-qs-rcd1/README.md`.
 
 ### 4. Arnés de jank
 

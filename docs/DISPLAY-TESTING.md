@@ -415,6 +415,16 @@ Verified on `lineage-23.2-20261122-UNOFFICIAL-refresh-switches-amethyst.zip`
 harness described above, which is not part of this tree; the A/B for this hint
 still has to run through it.
 
+Measured later on `rcd1` with the 8-cycle shade script (`diag/qs5-run.sh`): while
+the shade is composed, `kgslMinPwrlevel` sits at 0 because of
+`EXPENSIVE_RENDERING`, and the only 2s that appear are the 80 ms `INTERACTION`
+windows of each touch. With the boost on, SystemUI is not GPU bound: p50 3 ms and
+p90 4 ms of GPU per frame against the 8.3 ms budget at 120 Hz, and the frames
+still miss on `SurfaceFlinger GPU Deadline Missed`. That means holding
+`kgslMinPwrlevel` at 0 for `INTERACTION` changes nothing while the shade is being
+composited, and only pins the top GPU clock for touches that do not blur. Numbers
+and caveats in `diag/2026-11-23-qs-rcd1/README.md`.
+
 ## Choosing the refresh rate range
 
 The AOSP "Smooth display" switch is `PeakRefreshRateSwitchPreference`, added by
