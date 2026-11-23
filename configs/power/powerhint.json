@@ -108,7 +108,7 @@
         {
             "PowerHint": "INTERACTION",
             "Node": "kgslMinPwrlevel",
-            "Value": "2",
+            "Value": "0",
             "Duration": 80
         },
         {
