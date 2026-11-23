@@ -25,8 +25,7 @@ PRODUCT_PACKAGES += \
     microg-vending-privapp-permissions \
     microg-vending-default-permissions
 
-# LineageOS gates its native signature spoofing on Build.isDebuggable(), and
-# vendor/lineage/config/common.mk forces ro.debuggable=0 on userdebug builds
-# unless WITH_ADB_INSECURE is set. Clearing the flag is the only way to keep
-# ro.debuggable=1 without also disabling ADB authentication.
-PRODUCT_NOT_DEBUGGABLE_IN_USERDEBUG :=
+# ro.debuggable=1, which LineageOS needs for its native signature spoofing, is
+# arranged in lineage_amethyst.mk rather than here: the flag is a single-value
+# product variable and an empty value inherited from this node loses against
+# vendor/lineage/config/common.mk's non-empty one.

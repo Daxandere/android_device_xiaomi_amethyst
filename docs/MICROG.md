@@ -14,9 +14,9 @@ No son dos ramas ni dos árboles: es el mismo `device/xiaomi/amethyst` con
 
 | Paquete | Versión | Ruta en la imagen | Origen |
 |---|---|---|---|
-| `com.google.android.gms` (microG Services) | 0.3.18.252432 | `/product/priv-app/GmsCore` | [microG GmsCore](https://github.com/microg/GmsCore/releases/tag/v0.3.18.252432) |
-| `com.android.vending` (microG Companion) | 0.3.18.40226 | `/product/priv-app/FakeStore` | misma release |
-| `com.google.android.gsf` (GsfProxy) | v0.1.0 | `/product/app/GsfProxy` | [microG GsfProxy](https://github.com/microg/GsfProxy/releases/tag/v0.1.0) |
+| `com.google.android.gms` (microG Services) | 0.3.18.252432 | `/product/priv-app/MicrogGmsCore` | [microG GmsCore](https://github.com/microg/GmsCore/releases/tag/v0.3.18.252432) |
+| `com.android.vending` (microG Companion) | 0.3.18.40226 | `/product/priv-app/MicrogCompanion` | misma release |
+| `com.google.android.gsf` (GsfProxy) | v0.1.0 | `/product/app/MicrogGsfProxy` | [microG GsfProxy](https://github.com/microg/GsfProxy/releases/tag/v0.1.0) |
 | `com.aurora.store` (Aurora Store) | 4.8.4 (76) | `/product/app/AuroraStore` | [Aurora OSS, build oficial firmado](https://gitlab.com/AuroraOSS/AuroraStore/-/releases/4.8.4) |
 
 Con ellos van los XML de permisos en `/product/etc/{permissions,default-permissions,sysconfig}`:
@@ -71,8 +71,17 @@ endif
 
 O sea: la única palanca que ofrece LineageOS para dejar `ro.debuggable=1` en un
 build `userdebug` es `WITH_ADB_INSECURE`, que además apaga la autenticación de
-ADB. `microg/microg.mk` limpia `PRODUCT_NOT_DEBUGGABLE_IN_USERDEBUG` y conserva
-`ro.adb.secure=1`, así que:
+ADB.
+
+Despejar `PRODUCT_NOT_DEBUGGABLE_IN_USERDEBUG` no funciona desde
+`microg/microg.mk`: es una variable de producto de **valor único**, y al
+fusionar el DAG de herencias el sistema sólo acepta el valor de una rama cuando
+no está vacío (`_expand-inherited-values` en `build/make/core/node_fns.mk`).
+Como `common.mk` la pone a `true` y `microg.mk` la dejaría vacía, gana `true`
+siempre, sin importar el orden. Por eso se limpia en `lineage_amethyst.mk`,
+después de la última herencia, donde ya no compite con nadie.
+
+El resultado es que en la variante microG:
 
 - `adb root` funciona en la variante microG (consecuencia de `ro.debuggable=1`).
 - ADB sigue pidiendo autorización al conectar, como en el vanilla.
