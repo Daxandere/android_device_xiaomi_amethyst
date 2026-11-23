@@ -20,7 +20,9 @@ can still differ.
 | Region | Global (`WOPMIXM`), model `24115RA8EG` |
 
 The blobs were refreshed from `OS3.0.307.0.WOPMIXM`. Flash that build before
-reporting camera/audio issues.
+reporting camera/audio issues. `OS3.0.307.0.WOPMIXM` or newer for the same
+region is accepted; do not mix regions and do not downgrade (see
+[Rules](#rules)).
 
 ## Check what the phone is running
 

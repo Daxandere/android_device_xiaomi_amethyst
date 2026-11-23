@@ -44,8 +44,7 @@ SHA-256: `6bbbe660d0c3209766122b072ad5346831968563f0b75d12101762f28080ea07`
 
 ## Requisitos
 
-- HyperOS Global `OS3.0.307.0.WOPMIXM` (HyperOS 3.0 sobre Android 16) instalado en el teléfono antes de flashear, o una versión posterior de la misma región. Los blobs, el kernel y el firmware declarados por el árbol son de esa base: no mezclar regiones (`WOPMIXM` / `WOPINXM` / `WOPCNXM`) ni bajar de versión. El detalle está en [`docs/FIRMWARE.md`](https://github.com/Daxandere/android_device_xiaomi_amethyst/blob/amethyst-23.2-rc1/docs/FIRMWARE.md).
-- Comprobación: `adb shell getprop ro.build.version.incremental` tiene que devolver `OS3.0.307.0.WOPMIXM`, y `adb shell getprop ro.product.model` tiene que devolver `24115RA8EG`. En el teléfono: *Ajustes → Acerca del teléfono → versión de HyperOS*.
+- HyperOS Global `OS3.0.307.0.WOPMIXM` (HyperOS 3.0, Android 16) o posterior de la misma región, instalado antes de flashear. Comprobalo con `adb shell getprop ro.build.version.incremental`, que tiene que devolver `OS3.0.307.0.WOPMIXM`, o en *Ajustes → Acerca del teléfono → versión de HyperOS*. Regiones y versiones admitidas: [`docs/FIRMWARE.md`](https://github.com/Daxandere/android_device_xiaomi_amethyst/blob/amethyst-23.2-rc1/docs/FIRMWARE.md).
 - Bootloader desbloqueado y recovery de LineageOS para `amethyst` (el del RC sirve para las dos variantes).
 - El teléfono es A/B: la instalación es por *sideload* del OTA completo, no con `fastboot flash`.
 - La variante con microG exige borrar datos; la vanilla, no.

@@ -37,19 +37,11 @@ Cada carpeta publica además un `SHA256SUMS.txt` con esos valores.
 
 ## Requisitos
 
-- HyperOS Global `OS3.0.307.0.WOPMIXM` (HyperOS 3.0 sobre Android 16) instalado
-  en el teléfono antes de flashear, o una versión posterior de la misma región.
-  Los blobs, el kernel y el firmware del árbol son de esa base: no mezclar
-  regiones (`WOPMIXM` / `WOPINXM` / `WOPCNXM`) ni bajar de versión. El detalle
-  está en [FIRMWARE.md](FIRMWARE.md).
-- Comprobar la base antes de seguir:
-
-  ```bash
-  adb shell getprop ro.build.version.incremental   # OS3.0.307.0.WOPMIXM
-  adb shell getprop ro.product.model               # 24115RA8EG
-  ```
-
-  En el teléfono: *Ajustes → Acerca del teléfono → versión de HyperOS*.
+- HyperOS Global `OS3.0.307.0.WOPMIXM` (HyperOS 3.0, Android 16) o posterior de
+  la misma región, instalado antes de flashear. Comprobalo con
+  `adb shell getprop ro.build.version.incremental`, que tiene que devolver
+  `OS3.0.307.0.WOPMIXM`, o en *Ajustes → Acerca del teléfono → versión de
+  HyperOS*. Regiones y versiones admitidas: [FIRMWARE.md](FIRMWARE.md).
 - Bootloader desbloqueado y recovery de LineageOS para `amethyst`; el del RC
   sirve para las dos variantes.
 
