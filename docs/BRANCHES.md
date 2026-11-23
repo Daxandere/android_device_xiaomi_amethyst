@@ -84,6 +84,21 @@ ships 120, así que un dispositivo recién borrado arranca en 60–120 Hz. No su
 `config_defaultRefreshRate` por encima de 0: ese valor se convierte en un tope de
 render a esa frecuencia.
 
+### Variante con microG
+
+El mismo árbol produce la variante con microG Services, microG Companion,
+GsfProxy y Aurora Store preinstalados:
+
+```bash
+cd $DEVICE && ./microg/fetch-prebuilts.sh   # descarga los APK, verifica SHA-256
+cd $SRC
+WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd1-microg breakfast amethyst
+WITH_MICROG=true TARGET_UNOFFICIAL_BUILD_ID=rcd1-microg m -j32 bacon
+```
+
+El detalle —versiones, permisos, el motivo de `ro.debuggable=1` y lo que no
+funciona— está en [MICROG.md](MICROG.md).
+
 ## Pendientes abiertos
 
 ### 1. 2160p con el lente 0.7× cierra Aperture

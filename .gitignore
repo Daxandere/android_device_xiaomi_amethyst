@@ -4,6 +4,10 @@ out/
 *.img
 *.log
 
+# microG prebuilts are fetched with microg/fetch-prebuilts.sh, never committed
+microg/prebuilts/*.apk
+microg/prebuilts/*.part
+
 # Blob dumps
 dump/
 *-dump/

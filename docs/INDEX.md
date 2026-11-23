@@ -16,6 +16,7 @@ from scratch.
 | 9 | [OFFICIAL.md](OFFICIAL.md) | You want to submit the device to LineageOS. |
 | 10 | [DECISIONS.md](DECISIONS.md) | You want to know why something is done this way. |
 | 11 | [BRANCHES.md](BRANCHES.md) | You are resuming an experiment or checking what is still pending. |
+| 12 | [MICROG.md](MICROG.md) | You want the microG + Aurora Store variant instead of the vanilla RC. |
 
 ## Conventions
 

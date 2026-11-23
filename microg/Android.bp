@@ -1,0 +1,113 @@
+//
+// SPDX-FileCopyrightText: The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+// microG Services. Installed as a privileged product app so it can hold
+// FAKE_PACKAGE_SIGNATURE (see privapp-permissions-com.google.android.gms.xml)
+// and provide location.
+android_app_import {
+    name: "MicrogGmsCore",
+    apk: "prebuilts/GmsCore.apk",
+    presigned: true,
+    privileged: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+    required: [
+        "microg-gms-privapp-permissions",
+        "microg-gms-default-permissions",
+        "microg-gms-sysconfig",
+    ],
+    optional_uses_libs: [
+        "com.android.location.provider",
+        "org.apache.http.legacy",
+        "androidx.window.extensions",
+        "androidx.window.sidecar",
+    ],
+}
+
+// microG Companion (package com.android.vending), the Play Store stub that
+// apps check for. Privileged because it is granted INSTALL_PACKAGES.
+android_app_import {
+    name: "MicrogCompanion",
+    apk: "prebuilts/FakeStore.apk",
+    presigned: true,
+    privileged: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+    required: [
+        "microg-vending-privapp-permissions",
+        "microg-vending-default-permissions",
+    ],
+    optional_uses_libs: [
+        "androidx.window.extensions",
+        "androidx.window.sidecar",
+    ],
+}
+
+// Legacy GCM proxy for apps that still talk to com.google.android.gsf.
+android_app_import {
+    name: "MicrogGsfProxy",
+    apk: "prebuilts/GsfProxy.apk",
+    presigned: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+}
+
+// Aurora Store, kept as a normal (non-privileged) product app so its own
+// updater can replace it with the official signed build.
+android_app_import {
+    name: "AuroraStore",
+    apk: "prebuilts/AuroraStore.apk",
+    presigned: true,
+    preprocessed: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: false,
+    },
+    optional_uses_libs: [
+        "androidx.window.extensions",
+        "androidx.window.sidecar",
+    ],
+}
+
+prebuilt_etc {
+    name: "microg-gms-privapp-permissions",
+    src: "etc/privapp-permissions-com.google.android.gms.xml",
+    product_specific: true,
+    sub_dir: "permissions",
+}
+
+prebuilt_etc {
+    name: "microg-gms-default-permissions",
+    src: "etc/default-permissions-com.google.android.gms.xml",
+    product_specific: true,
+    sub_dir: "default-permissions",
+}
+
+prebuilt_etc {
+    name: "microg-gms-sysconfig",
+    src: "etc/sysconfig-com.google.android.gms.xml",
+    product_specific: true,
+    sub_dir: "sysconfig",
+}
+
+prebuilt_etc {
+    name: "microg-vending-privapp-permissions",
+    src: "etc/privapp-permissions-com.android.vending.xml",
+    product_specific: true,
+    sub_dir: "permissions",
+}
+
+prebuilt_etc {
+    name: "microg-vending-default-permissions",
+    src: "etc/default-permissions-com.android.vending.xml",
+    product_specific: true,
+    sub_dir: "default-permissions",
+}
