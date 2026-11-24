@@ -32,24 +32,24 @@ cover the checks noted below.
 | Android Auto | ⬜ | |
 | Bluetooth audio | ⬜ | |
 | Bluetooth LE Audio | ⬜ | |
-| NFC | ⬜ | |
+| NFC | ✅ | Device-owner test. |
 | eSIM | ⬜ | No eSIM available to test. |
-| GPS / GNSS | ⬜ | |
-| Camera — main | ✅ | Aperture recording at 1080p, 720p and 4K |
-| Camera — ultrawide | ⬜ | |
-| Camera — telephoto | ⬜ | |
-| Camera — front | ✅ | Aperture recording at 1080p30 |
-| Camera — video | ⚠️ | Color verified. CamX reported `EISMode:0` at 1080p, 720p and 4K. |
+| GPS / GNSS | ✅ | Device-owner test. |
+| Camera — main | ✅ | Verified working properly in latest test. |
+| Camera — ultrawide | ✅ | Verified working properly in latest test. |
+| Camera — telephoto | ✅ | Verified working properly in latest test. |
+| Camera — front | ✅ | Verified working properly in latest test. |
+| Camera — video | ✅ | Verified working properly in latest test. |
 | Camera — MiuiCamera | ⬜ | If installed |
 | Fingerprint (UDFPS) | ⚠️ | Screen-off and normal unlocks verified (6/6). **Caveat:** enrolling a new fingerprint leaves `LHBM_ON_WHITE_1000NIT` lit until display off (`rem=0` does not emit `lhbm_value(0)`). |
 | Face unlock | ⬜ | |
 | Quick Settings with background blur | ⚠️ | Owner reports stutter. Perfetto shows more GPU deadline misses with blur, including at fixed 120 Hz. See [display diagnosis](DISPLAY-TESTING.md). |
 | Developer touch indicators | ⚠️ | Physical Show taps test at fixed 120 Hz measured median frame gaps of 16.68 ms on and 8.34 ms off. Pointer location produced late frames in a separate ADB test. See [display diagnosis](DISPLAY-TESTING.md). |
 | Proximity | ✅ | Verified during calls and live via HAL (`5.0` ↔ `0.0`). |
-| Other sensors | ✅ | Verified on `rcd6`: `icm4x6xx` (accel/gyro + uncalibrated), `qmc630x` (mag + uncalibrated), `sip1328` (front/back ALS & flicker), `sns_tilt`, `pickup`, `ois_manager`, `pocket_mode`, `NonUi`, `sar_detector`, `GripPostureDetection`, `har`, `activity_recognition`, `traffic_detect`, `fod_detector`. Pending physical/API trigger tests: `pedometer`, `motion_detect`/`sns_smd`, `Elevator_Acc_Grv`. |
+| Other sensors | ✅ | Verified on `rcd6`: `icm4x6xx` (accel/gyro + uncal), `qmc630x` (mag + uncal), `sip1328` (front/back ALS & flicker), `sns_tilt`, `pickup`, `ois_manager`, `pocket_mode`, `NonUi`, `sar_detector`, `GripPostureDetection`, `har`, `activity_recognition`, `traffic_detect`, `fod_detector`, `MiPhoneCall`, `Touch Sensor`, `UDFPS Sensor`. `dbtap_v2` fires raw HAL events (3850), but DT2W via this sensor is not wired in LineageOS. Pending trigger/uncalled Xiaomi OEM sensors: `pedometer`, `motion_detect`, `sns_smd`, `Elevator_Acc_Grv`, `oem_treadmill`, `basement_detect`, `eqm`, `wwan`, `semtech_sx937x_0`, `Dynamic Sensor Manager`. |
 | IR blaster | ⬜ | |
 | Vibration / haptics | ⬜ | |
-| Charging (120 W) | ⬜ | Peak charging power remains unmeasured. |
+| Charging at 120 W | ⬜ | Peak charging power remains unmeasured. |
 | Charging limit | ⬜ | If implemented |
 | USB data and ADB | ✅ | Verified over USB. |
 | USB file transfer (MTP) | ⬜ | |
