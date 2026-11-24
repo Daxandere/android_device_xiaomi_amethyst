@@ -351,12 +351,25 @@ blob_fixups: blob_fixups_user_type = {
             'libprotobuf-cpp-full-21.7.so'
     ),
 
+    'vendor/bin/hw/vendor.qti.hardware.display.composer-service': blob_fixup()
+        .replace_needed(
+            'libtinyxml2.so',
+            'libtinyxml2-v34.so'
+        )
+        .sig_replace(
+            'e0 03 16 aa e1 03 14 aa 42 00 80 52 77 04 00 94',
+            'e0 03 16 aa e1 03 14 aa 22 00 80 52 77 04 00 94',
+        )
+        .sig_replace(
+            'f5 03 00 aa 08 20 42 39 28 02 30 37 48 02 00 b0',
+            'f5 03 00 aa 08 20 42 39 28 02 30 37 fb ff ff 17',
+        ),
+
     (
         'odm/bin/hw/vendor.xiaomi.sensor.citsensorservice.aidl',
         'odm/lib64/camera/plugins/com.xiaomi.plugin.anchor.so',
         'odm/lib64/hw/displayfeature.default.so',
         'vendor/bin/hw/vendor.qti.camera.provider-service_64',
-        'vendor/bin/hw/vendor.qti.hardware.display.composer-service',
         'vendor/bin/poweropt-service',
         'vendor/lib64/libaodoptfeature.so',
         'vendor/lib64/libapengine.so',
