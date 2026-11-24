@@ -12,6 +12,8 @@ Este informe es el registro de avance del proyecto: qué builds existen, qué se
 | `rcd2` (2 076 253 458 B) | `user` | claves propias del árbol | Instalado en limpio por *sideload*; es el build que corre ahora en el teléfono |
 | `rcd3-test` (2 083 630 861 B) | `userdebug` | claves propias del árbol | Compilado y verificado en el paquete; pendiente de flashear |
 | `rcd4-testkeys` (2 083 623 794 B) | `userdebug` | claves de prueba AOSP | Compilado y publicado; `INTERACTION` vuelve a `kgslMinPwrlevel "2"`; pendiente de *sideload* sobre `rcd1` |
+| `rcd5` (2 076 253 631 B) | `user` | claves propias del árbol | Instalado en el teléfono; basado en `16a319d` (sin `EXPENSIVE_RENDERING`); sirvió para medir el ajuste de `INTERACTION` y diagnosticar el fallo de Bluetooth |
+| `rcd6` (2 076 255 392 B) | `user` | claves propias del árbol | Compilado y publicado en `rcd6/`; corrige la firma Bluetooth en `plat_mac_permissions.xml`, añade el `INTERACTION` de 300 ms y el permiso F2FS en recovery |
 
 - Publicados en `https://ferrari.serverhive.in/daxandere/`, en `rc1/`, `rcd2/`, `rcd3-test/` y `rcd4-testkeys/`, cada carpeta con su `SHA256SUMS.txt`. Descargas y procedimiento en [DOWNLOAD.md](DOWNLOAD.md).
 - Un único producto: LineageOS vanilla, sin servicios de Google preinstalados ni añadidos de terceros. MindTheGapps queda como ZIP opcional aparte, fuera del ROM.
@@ -96,6 +98,27 @@ Publicado en `https://ferrari.serverhive.in/daxandere/rcd4-testkeys/` con
 `vendor/etc/powerhint.json` con `INTERACTION → kgslMinPwrlevel "2"` y
 `EXPENSIVE_RENDERING` en 0, y los 121 APK del staging firmados con claves de
 prueba AOSP (ninguno con las claves propias del árbol). El ZIP no se ha flasheado.
+
+
+### `rcd6`: corrección de Bluetooth (`plat_mac_permissions.xml`), boost `INTERACTION` de 300 ms y permiso F2FS en recovery
+
+1. **Causa raíz de «Bluetooth keeps stopping» y de las caídas de `zygote64`:**
+   En `rcd5` (`logcat -b crash`), `zygote64` abortaba al iniciar `com.android.bluetooth` (UID `1002`) con:
+   `selinux_android_setcontext(1002, 0, "default:privapp:targetSdkVersion=36:partition=system:complete", "com.android.bluetooth") failed`
+   y `SELinux: seapp_context_lookup_internal: No match for app with uid 1002, seinfo default:..., name com.android.bluetooth`.
+   El motivo es que `build/make/core/config.mk` solo asigna `MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES := $(MAINLINE_SEPOLICY_DEV_CERTIFICATES)` cuando `PRODUCT_MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES` está definido o `com.google.android.bt` está en `PRODUCT_PACKAGES`. En LineageOS vanilla (`com.android.bt`), `Bluetooth.apk` se firmaba con `vendor/lineage-priv/keys/bluetooth.x509.pem`, pero `plat_mac_permissions.xml` recibía el certificado AOSP de `build/make/target/product/security/` (`CN=com.android.bluetooth.services`). Sin coincidencia de firma, `com.android.bluetooth` caía en `seinfo=default` y no casaba con `user=bluetooth seinfo=bluetooth` de `plat_seapp_contexts`.
+   **Corrección:** definir `PRODUCT_MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES := vendor/lineage-priv/keys` en `vendor/lineage-priv/keys/keys.mk` y con guarda condicional en `lineage_amethyst.mk` cuando exista `vendor/lineage-priv/keys/bluetooth.x509.pem`. Verificado en `out/target/product/amethyst/system/etc/selinux/plat_mac_permissions.xml` de `rcd6`: la entrada `bluetooth` ya contiene el certificado propio (`7aa114d6c3...`).
+
+2. **Mejora de scroll/QS con blur activo en `configs/power/powerhint.json`:**
+   Sobre `rcd5` con root (APatch) y `gfxinfo com.android.systemui` a 120 Hz fijos (gesto de abrir/cerrar barra y QS), el baseline con blur activado daba `14 ms` (p50), `22 ms` (p90), `7.87 %` jank (`93.98 %` legacy) con el GPU en `4 ms` (p50); desactivando el blur bajaba a `8 ms` (p50), `11 ms` (p90), `1.64 %` jank (`16.39 %` legacy). Al ampliar `INTERACTION` a `300 ms` con suelo de CPU elevado, `ddrBoostFreq` (`2092000`), `l3BoostFreq` (`1708800`), `adaptiveHighFreq*` y `cpuDmaLatency` (`44`) manteniendo eliminado `EXPENSIVE_RENDERING`, el resultado **con blur activado** fue `8 ms` (p50), `9 ms` (p90), `12 ms` (p95), `1.89 %` jank (`5.66 %` legacy, 318 frames).
+
+3. **Permiso de lectura F2FS en recovery (`sepolicy/vendor/recovery.te`):**
+   Durante el *wipe* e instalación en Lineage Recovery, `libfs_mgr` imprimía `Failed to open /sys/fs/f2fs/features/linear_lookup: Permission denied` (no fatal; `status 0`) porque el dominio `recovery` carecía de lectura sobre `sysfs_fs_f2fs`. Se añadió `recovery_only(\`r_dir_file(recovery, sysfs_fs_f2fs)')` en `sepolicy/vendor/recovery.te`, compilado sin conflictos de `neverallow`.
+
+| Archivo (`rcd6`) | Tamaño | SHA-256 |
+| --- | --- | --- |
+| `lineage-23.2-20261124-UNOFFICIAL-rcd6-amethyst.zip` | 2 076 255 392 B | `e007d356f11f87af67d24e2c49e7772b6f29bd3489cd4e76e7184e185ea8f77c` |
+| `recovery.img` | 104 857 600 B | `aa06bcea166f3b65e60a709028c65ea1201e00bfd6d4888c52711f0785cbdae2` |
 
 ## Qué se comprobó
 

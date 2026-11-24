@@ -1,0 +1,2 @@
+# Allow recovery (libfs_mgr) to read /sys/fs/f2fs/features/linear_lookup
+recovery_only(`r_dir_file(recovery, sysfs_fs_f2fs)')

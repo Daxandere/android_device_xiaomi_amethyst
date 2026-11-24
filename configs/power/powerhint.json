@@ -102,14 +102,14 @@
         {
             "PowerHint": "INTERACTION",
             "Node": "msmPerfCpuMinFreq",
-            "Value": "0:1344000 1:1344000 2:1344000 3:1344000 4:1190400 5:1190400 6:1190400 7:1459200",
-            "Duration": 80
+            "Value": "0:1804800 1:1804800 2:1804800 3:1804800 4:2400000 5:2400000 6:2400000 7:2496000",
+            "Duration": 300
         },
         {
             "PowerHint": "INTERACTION",
             "Node": "kgslMinPwrlevel",
             "Value": "2",
-            "Duration": 80
+            "Duration": 300
         },
         {
             "PowerHint": "LAUNCH",
@@ -206,6 +206,42 @@
             "Node": "msmPerfCpuMinFreq",
             "Value": "0:1804800 1:1804800 2:1804800 3:1804800 4:2400000 5:2400000 6:2400000 7:2496000",
             "Duration": 1000
+        },
+        {
+            "PowerHint": "INTERACTION",
+            "Node": "ddrBoostFreq",
+            "Value": "2092000",
+            "Duration": 300
+        },
+        {
+            "PowerHint": "INTERACTION",
+            "Node": "l3BoostFreq",
+            "Value": "1708800",
+            "Duration": 300
+        },
+        {
+            "PowerHint": "INTERACTION",
+            "Node": "adaptiveHighFreqSilver",
+            "Value": "1708800",
+            "Duration": 300
+        },
+        {
+            "PowerHint": "INTERACTION",
+            "Node": "adaptiveHighFreqGold",
+            "Value": "1612800",
+            "Duration": 300
+        },
+        {
+            "PowerHint": "INTERACTION",
+            "Node": "adaptiveHighFreqPrime",
+            "Value": "1766400",
+            "Duration": 300
+        },
+        {
+            "PowerHint": "INTERACTION",
+            "Node": "cpuDmaLatency",
+            "Value": "44",
+            "Duration": 300
         }
     ]
 }

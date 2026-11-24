@@ -29,3 +29,8 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
     DeviceProduct=$(PRODUCT_SYSTEM_NAME)
 
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
+
+# Align Bluetooth sepolicy mac_permissions with custom release keys when present
+ifneq ($(wildcard vendor/lineage-priv/keys/bluetooth.x509.pem),)
+PRODUCT_MAINLINE_BLUETOOTH_SEPOLICY_DEV_CERTIFICATES := vendor/lineage-priv/keys
+endif
