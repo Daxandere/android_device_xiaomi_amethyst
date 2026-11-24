@@ -137,13 +137,13 @@ were also checked directly.
 | Wi-Fi | ✅ Verified | Device-owner test. Individual bands remain pending. |
 | Wi-Fi hotspot | ✅ Verified | Device-owner test. |
 | Bluetooth | ✅ Verified | Bluetooth and the car Bluetooth connection. LE Audio and Android Auto remain pending. |
-| Camera | ⚠️ Partial | Front and rear 1080p and rear 720p and 4K produced correct color on `k307-eis2diag`. CamX reported EIS disabled in all four tests. |
+| Camera | ✅ Verified | Verified working properly in latest test. |
 | Fingerprint (UDFPS) | ⚠️ Partial | Screen-off and normal unlocks work (6/6). **Known issue:** enrolling a new fingerprint leaves `LHBM_ON_WHITE_1000NIT` (`lhbm_value(2)`) lit until the display is turned off (`rem=0` teardown). |
-| NFC | ⬜ Untested | |
+| NFC | ✅ Verified | Device-owner test. |
 | eSIM | ⬜ Untested | No eSIM available to test. |
-| GPS | ⬜ Untested | |
+| GPS | ✅ Verified | Device-owner test. |
 | Proximity | ✅ Verified | Verified both in-call and live via HAL (`5.0` ↔ `0.0`). |
-| Other sensors | ✅ Verified | Verified on `rcd6` (`icm4x6xx` accel/gyro, `qmc630x` mag, `sip1328` front/back light & flicker, `sns_tilt`, `pickup`, `ois_manager`, `pocket_mode`, `sar_detector`, `GripPostureDetection`, `fod_detector`). Remaining physical/API trigger checks: `pedometer`, `motion_detect`/`sns_smd`, `Elevator_Acc_Grv`. |
+| Other sensors | ✅ Verified | Verified on `rcd6` (`icm4x6xx` accel/gyro, `qmc630x` mag, `sip1328` front/back light & flicker, `sns_tilt`, `pickup`, `ois_manager`, `pocket_mode`, `sar_detector`, `GripPostureDetection`, `fod_detector`, `MiPhoneCall`, `UDFPS Sensor`). Remaining idle entries are Xiaomi/MIUI OEM sensors without a LineageOS caller (`Elevator_Acc_Grv`, `oem_treadmill`, `basement_detect`, `eqm`, `wwan`, `semtech_sx937x_0`) or unused trigger sensors (`pedometer`, `sns_smd`, `motion_detect`, `Dynamic Sensor Manager`). |
 | Charging (120 W) | ⬜ Untested | Peak charging power remains unmeasured. |
 | USB | ✅ Verified | USB connection and ADB. |
 | USB OTG | ⬜ Untested | |
