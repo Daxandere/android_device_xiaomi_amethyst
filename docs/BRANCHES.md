@@ -121,28 +121,27 @@ render a esa frecuencia.
 
 ## Pendientes abiertos
 
-### 1. 2160p con el lente 0.7× cierra Aperture
+### 1. 2160p con el lente 0.7× (resuelto en `amethyst-23.2-rc1`)
 
-Con el vídeo en 2160p, al pulsar `0.7×` Aperture termina su actividad: el mapa
-de flujos del sensor ultra gran angular no tiene `3840x2160` (su mayor 16:9 es
-`3200x1800`) y Camera2 rechaza la sesión. Limitar los perfiles del XML
-multimedia a 1080p **no** lo arregla: CameraX construye la lista de calidades
-con `Recorder.getVideoCapabilities`, no con `/vendor/etc/media_profiles*.xml`.
-No se debe volver a aplicar ese límite sin una medición nueva. Hipótesis
-pendiente: filtrar los tamaños soportados en Aperture a partir de
-`SCALER_STREAM_CONFIGURATION_MAP`, o exponer un mapa de 4K coherente en el HAL.
-La reproducción completa está en
-[HANDOFF-307.md](HANDOFF-307.md#2160p-con-el-lente-07-cierra-aperture).
+Con el vídeo en 2160p, al pulsar `0.7×` Aperture cerraba su actividad porque el
+sensor ultra gran angular (`cameraId="2"`) no expone `3840x2160` (su mayor 16:9
+es `3200x1800`). La prueba en caliente del 21/11 dio falso negativo porque
+`CamcorderProfile` inicializa `MediaProfiles::getInstance()` durante la precarga
+de `Zygote` y entonces sólo se reinició `vendor.camera-provider`. Limitando
+`cameraId="2"` a `1080p` en `configs/media/media_profiles_volcano_amethyst_v0.xml`
+(conservando sus modos `highspeed*`) y cargándolo desde el arranque, Aperture
+baja automáticamente de `2160p` a `1080p` al elegir `0.7×` y graba sin cerrar.
 
-### 2. Croma corrupto a 1080p con EIS2
+### 2. Croma corrupto a 1080p con EIS2 (mitigado por defecto en `amethyst-23.2-rc1`)
 
-El RC activa el EIS2 de terceros con el perfil de stock, que vuelve a declarar
-`6@30` y `6@60` en `vsquality`. Esa combinación **nunca se probó a 1080p**: las
-pruebas anteriores corrían con un perfil que no declaraba 1080p mientras el EIS
-se forzaba. Primer paso al probar el RC: grabar 1080p30 con la estabilización
-activa y revisar el color. Si el croma falla, desactivar la estabilización en
-Aperture devuelve el color correcto (EIS sólo a 720p y 4K). Pista abierta: el
-`IPE14` mantiene `m_previewDimension` en `1600x1200` durante la sesión de 1080p.
+Con `is3rdEISV2Enabled=TRUE` y `6@30|6@60` en `vsquality` (probado en `rcd6`),
+tanto `1080p30` como `1080p60` entran en `VideoEIS2PreviewEIS2Offline_IPE14`,
+donde el `IPE14` recorta luminancia desde `1920×1200` a `1080` pero deja el
+plano `UV` desplazado ~60 píxeles hacia abajo. `EISv3` (`EISv3OperationMode=2`)
+mantiene `1,00×` en apps de terceros sin aportar estabilización electrónica.
+Se deja `is3rdEISV2Enabled=FALSE` y `vsquality=5@30|8@30|8@60|3001@24` por
+defecto: color 100 % alineado en `1080p` (`24`, `30` y `60` fps) manteniendo el
+OIS óptico del sensor principal.
 
 ### 3. Boost de blur sin efecto medible
 
