@@ -138,13 +138,13 @@ were also checked directly.
 | Wi-Fi hotspot | ✅ Verified | Device-owner test. |
 | Bluetooth | ✅ Verified | Bluetooth and the car Bluetooth connection. LE Audio and Android Auto remain pending. |
 | Camera | ⚠️ Partial | Front and rear 1080p and rear 720p and 4K produced correct color on `k307-eis2diag`. CamX reported EIS disabled in all four tests. |
-| Fingerprint (UDFPS) | ✅ Verified | Unlock works even with the display off. |
+| Fingerprint (UDFPS) | ⚠️ Partial | Screen-off and normal unlocks work (6/6). **Known issue:** enrolling a new fingerprint leaves `LHBM_ON_WHITE_1000NIT` (`lhbm_value(2)`) lit until the display is turned off (`rem=0` teardown). |
 | NFC | ⬜ Untested | |
-| eSIM | ⬜ Untested | |
+| eSIM | ⬜ Untested | No eSIM available to test. |
 | GPS | ⬜ Untested | |
-| Proximity | ✅ Verified | The display responds when the phone is held to the ear during a call. |
-| Other sensors | ⬜ Untested | |
-| Charging (120 W) | ⬜ Untested | |
+| Proximity | ✅ Verified | Verified both in-call and live via HAL (`5.0` ↔ `0.0`). |
+| Other sensors | ✅ Verified | Verified on `rcd6` (`icm4x6xx` accel/gyro, `qmc630x` mag, `sip1328` front/back light & flicker, `sns_tilt`, `pickup`, `ois_manager`, `pocket_mode`, `sar_detector`, `GripPostureDetection`, `fod_detector`). Remaining physical/API trigger checks: `pedometer`, `motion_detect`/`sns_smd`, `Elevator_Acc_Grv`. |
+| Charging (120 W) | ⬜ Untested | Peak charging power remains unmeasured. |
 | USB | ✅ Verified | USB connection and ADB. |
 | USB OTG | ⬜ Untested | |
 
