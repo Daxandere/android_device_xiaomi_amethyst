@@ -137,7 +137,8 @@ were also checked directly.
 | Wi-Fi | ✅ Verified | Device-owner test. Individual bands remain pending. |
 | Wi-Fi hotspot | ✅ Verified | Device-owner test. |
 | Bluetooth | ✅ Verified | Bluetooth and the car Bluetooth connection. LE Audio and Android Auto remain pending. |
-| Camera | ✅ Verified | Verified working properly in latest test. |
+| Camera | ✅ Verified | All lenses (`0.7×`, `1×`, `2×`, front) and 1080p/4K video verified (`rcd7`). |
+| Display & HWC3 | ✅ Verified | 60–120 Hz adaptive range, smooth 24 dp QS blur, and 120 Hz *Show taps* HWC3 fix verified. |
 | Fingerprint (UDFPS) | ⚠️ Partial | Screen-off and normal unlocks work (6/6). **Known issue:** enrolling a new fingerprint leaves `LHBM_ON_WHITE_1000NIT` (`lhbm_value(2)`) lit until the display is turned off (`rem=0` teardown). |
 | NFC | ✅ Verified | Device-owner test. |
 | eSIM | ⬜ Untested | No eSIM available to test. |
@@ -148,9 +149,9 @@ were also checked directly.
 | USB | ✅ Verified | USB connection and ADB. |
 | USB OTG | ⬜ Untested | |
 
-Published builds: `rcd1` (GitHub release), `rcd2` (`user`, own release keys,
-running on the phone) and the `rcd3-test` validation build. Downloads, checksums
-and installation are in [docs/DOWNLOAD.md](docs/DOWNLOAD.md).
+Published builds: `rcd1` (initial GitHub release) and `rcd7` (`user`, signed
+with private `release-keys`, daily-driver validated on hardware). Downloads,
+checksums and installation are in [docs/DOWNLOAD.md](docs/DOWNLOAD.md).
 
 Update this table after each hardware test. The full matrix lives in
 [docs/TESTING.md](docs/TESTING.md).

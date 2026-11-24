@@ -6,10 +6,11 @@ preinstalados. La publicación principal es la release
 en GitHub, con las notas del build y los dos archivos que caben bajo el límite
 de 2 GiB por asset. El servidor de builds queda como espejo.
 
-Hay tres builds publicados y un único producto: `rcd1` (el RC de GitHub), `rcd2`
-(release `user` firmada con las claves propias, la que corre en el teléfono) y
-`rcd3-test` (validación `userdebug` con esas mismas claves). Ninguno lleva
-variantes ni servicios preinstalados.
+Hay varios cortes publicados sobre un único producto limpio (vanilla): `rcd1`
+(el primer RC subido como asset en GitHub), `rcd2` (primera build `user` con
+claves propias) y **`rcd7`** (última build `user` firmada con `release-keys`
+propias, con fluidez de QS a 120 Hz, Bluetooth, recovery F2FS y cámara 1080p/`0.7×`
+corregidos). Ninguno lleva variantes ni servicios preinstalados.
 
 ## RC1 (`rcd1`)
 
@@ -66,9 +67,18 @@ noviembre de 2026:
 
 | Build | Incremental | Probado |
 |---|---|---|
-| `rcd1` | `1795395067` | arranque, cámara, pantalla, batería |
-| `rcd2` | `1795442392` | instalación limpia por *sideload* y uso diario |
-| `rcd3-test` | `1795459283` | compilado y verificado en el paquete; pendiente de flashear |
+| `rcd1` | `1795395067` | arranque, cámara base, pantalla, batería (`test-keys`) |
+| `rcd2` | `1795442392` | instalación limpia por *sideload* con `release-keys` propias |
+| `rcd7` | `1795533763` | uso diario completo (`user` + `release-keys`): QS blur a 120 Hz, Bluetooth + coche, recovery limpio, `0.7×` capado a 1080p y croma 1080p 24/30/60 fps corregido |
+
+## Build actual recomendada (`rcd7`, firmada con `release-keys`)
+
+Compilada el 24 de noviembre de 2026 como `user` con las claves privadas del árbol (`releasekey`, `ro.build.tags=release-keys`). Se instala directamente por *sideload* sin borrar datos sobre cualquier build previa firmada con estas mismas claves (`rcd2`, `rcd5`, `rcd6`).
+
+| Artefacto | Tamaño | SHA-256 |
+|---|---|---|
+| [`lineage-23.2-20261124-UNOFFICIAL-rcd7-amethyst.zip`](https://ferrari.serverhive.in/daxandere/rcd7/lineage-23.2-20261124-UNOFFICIAL-rcd7-amethyst.zip) | 2 076 254 035 B | `82495f2f4db92be53d980483726ab97b5591b5a87c1322bdfdc4a2ca6cb81748` |
+| [`recovery.img`](https://ferrari.serverhive.in/daxandere/rcd7/recovery.img) | 104 857 600 B | `0e143ecefc7f8dabbb2f72f55403f8a72da860cff3a87272930967302b2ba786` |
 
 ## Verificar la descarga
 

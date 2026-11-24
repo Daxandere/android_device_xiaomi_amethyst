@@ -43,8 +43,8 @@ cover the checks noted below.
 | Camera — MiuiCamera | ⬜ | If installed |
 | Fingerprint (UDFPS) | ⚠️ | Screen-off and normal unlocks verified (6/6). **Caveat:** enrolling a new fingerprint leaves `LHBM_ON_WHITE_1000NIT` lit until display off (`rem=0` does not emit `lhbm_value(0)`). |
 | Face unlock | ⬜ | |
-| Quick Settings with background blur | ⚠️ | Owner reports stutter. Perfetto shows more GPU deadline misses with blur, including at fixed 120 Hz. See [display diagnosis](DISPLAY-TESTING.md). |
-| Developer touch indicators | ⚠️ | Physical Show taps test at fixed 120 Hz measured median frame gaps of 16.68 ms on and 8.34 ms off. Pointer location produced late frames in a separate ADB test. See [display diagnosis](DISPLAY-TESTING.md). |
+| Quick Settings with background blur | ✅ | Fixed by dropping the empty/counter-productive `EXPENSIVE_RENDERING` GPU floor hint in `powerhint.json`; verified smooth at 120 Hz (`~8 ms` p95) with 24 dp shade blur enabled. See [display diagnosis](DISPLAY-TESTING.md). |
+| Developer touch indicators | ✅ | Fixed in `vendor.qti.hardware.display.composer-service` (`extract-files.py`): maps QTI's private `PresentOrValidate::Result(2)` to AOSP `Presented(1)` and silences non-HW cursor `SetCursorPosition`, eliminating the double `atomic_commit` stall (`+218` → `+2` HWC missed frames, `p95 = 9 ms` at 120 Hz with HWC overlays enabled). See [display diagnosis](DISPLAY-TESTING.md). |
 | Proximity | ✅ | Verified during calls and live via HAL (`5.0` ↔ `0.0`). |
 | Other sensors | ✅ | Verified on `rcd6`: `icm4x6xx` (accel/gyro + uncal), `qmc630x` (mag + uncal), `sip1328` (front/back ALS & flicker), `sns_tilt`, `pickup`, `ois_manager`, `pocket_mode`, `NonUi`, `sar_detector`, `GripPostureDetection`, `har`, `activity_recognition`, `traffic_detect`, `fod_detector`, `MiPhoneCall`, `Touch Sensor`, `UDFPS Sensor`. `dbtap_v2` fires raw HAL events (3850), but DT2W via this sensor is not wired in LineageOS. Pending trigger/uncalled Xiaomi OEM sensors: `pedometer`, `motion_detect`, `sns_smd`, `Elevator_Acc_Grv`, `oem_treadmill`, `basement_detect`, `eqm`, `wwan`, `semtech_sx937x_0`, `Dynamic Sensor Manager`. |
 | IR blaster | ⬜ | |

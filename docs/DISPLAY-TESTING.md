@@ -591,3 +591,47 @@ device stayed locked to the 60 Hz mode until the range was raised by hand. The
 overlay now ships 120, which gives a 60-120 Hz boot range because the panel has no
 mode below 60. `config_defaultRefreshRate` must stay at 0: a non-zero value there
 becomes a render frame rate cap vote at that value.
+
+## Root cause and fix for the Show taps (`show_touches`) 60 fps stall
+
+Disassembly of the Global 307 `vendor.qti.hardware.display.composer-service`,
+`libsdmextension.so` (`StrategyImpl::SetDrawOutcome`) and HyperOS
+`system_ext/lib64/libsurfaceflinger.so` explained why Stock Global 307 ran
+`HwcPresentOrValidateDisplay 0` in 1.66 ms while LineageOS executed a separate
+`HwcPresentDisplay 0` on every frame when `Sprite` was visible:
+
+1. `SpriteController::obtainSurface` creates `Sprite` (and its `[BBQ] Sprite`
+   child) with `ISurfaceComposerClient::eCursorWindow` (`0x2000`), so
+   SurfaceFlinger requests `Composition::CURSOR` on every frame.
+2. Because `[BBQ] Sprite` sits below `ScreenDecorOverlay` (`z = 3` below `z = 4, 5`),
+   `HWCDisplay::PreValidateDisplay` leaves `cursor_present` unset and assigns
+   `[BBQ] Sprite` to a standard `SDE` pipe (`Composition::DEVICE`), returning
+   `Error::HasChanges` with `needsCommit = false` (`UnifiedDraw: async commit: 1`).
+3. In `AidlComposerClient::CommandEngine::executePresentOrValidateDisplay`
+   (`0x6353c`), Qualcomm's composer accepts the display changes, triggers the
+   asynchronous SDM commit on its worker thread, and returns a QTI-private enum
+   value `static_cast<PresentOrValidate::Result>(2)` (*PresentedWithChanges*).
+   Stock `libsurfaceflinger.so` handles `state == 2` (`0x30e920: cmp w8, #0x2`),
+   but upstream AOSP `PresentOrValidate.aidl` / `HWComposer.cpp` only recognises
+   `Validated (0)` and `Presented (1)`. Receiving `2`, AOSP SurfaceFlinger drops
+   the `presentFence` and calls `presentDisplay` (`HwcPresentDisplay 0`) a second
+   time for the same frame, blocking on `_sde_encoder_phys_vid_wait_for_vblank`
+   for a second refresh period (`2 * 8.34 ms = 16.68 ms` -> 60 fps).
+
+`extract-files.py` now applies two `sig_replace` fixups to
+`vendor/bin/hw/vendor.qti.hardware.display.composer-service`:
+
+- `0x6353c`: `mov w2, #0x2` -> `mov w2, #0x1` (`PresentOrValidate::Result::Presented`)
+  when `!needsCommit && status == Error::HasChanges`.
+- `0x8a9f0`: `b 0x8a9dc` in `HWCDisplay::SetCursorPosition` when `!cursor_present`
+  so `updateCursorAsync()` returns `Error::None` cleanly while `composite()`
+  updates `displayFrame` in the same cycle.
+
+Verified at 120 Hz with hardware overlays enabled over `DevelopmentSettingsActivity`
+using real multitouch drags injected into `/dev/input/event7` (`focaltech_ts`):
+
+| Condition | Delta HWC missed frames | Settings janky frames | p50 | p90 | p95 |
+|---|---:|---:|---:|---:|---:|
+| Unpatched `composer-service`, `show_touches=1` | +218 | 19 / 117 (16.24%) | 8 ms | 32 ms | 34 ms |
+| Patched `composer-service`, `show_touches=0` | +2 | 0 / 117 (0.00%) | 5 ms | 6 ms | 8 ms |
+| Patched `composer-service`, `show_touches=1` | +2 | 1 / 130 (0.77%) | 5 ms | 9 ms | 9 ms |
