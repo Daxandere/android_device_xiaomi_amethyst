@@ -128,7 +128,7 @@ enableGPURotation=TRUE
 
 EnableLowFpsForSATnNight=TRUE
 
-#AE Sync Ratio format:CCT@W2U，W2T，W2T2,F2FA
+#AE Sync Ratio format:CCT@W2Uï¼ŒW2Tï¼ŒW2T2,F2FA
 AESyncRatiosVersion1=2850@2.36,2.89,0.0,1.46|5000@2.20,3.00,0.0,1.3|6500@2.26,3.03,0.0,1.36
 
 # Enable 3A and metadata
@@ -406,7 +406,7 @@ enableMotionCapture=0x0919
 # Video EIS
 iseispreviewSupported=TRUE
 #Res1@FPS1|Res2@FPS2 ...,5--720P,6--1080P,8--4K,3001--8K
-vsquality=5@30|6@30|6@60|8@30|8@60|3001@24
+vsquality=5@30|8@30|8@60|3001@24
 isFrontVHdrSupported=TRUE
 EISv3DisableAccel=1
 EISv2DisableAccel=1
@@ -430,7 +430,7 @@ isZoomEISPipSupported=1
 enableDMEbasedMCTF=1
 
 #For 3rdEISV2
-is3rdEISV2Enabled=TRUE
+is3rdEISV2Enabled=FALSE
 
 # Mimotion
 isMiMotionSupported=TRUE
