@@ -2846,6 +2846,8 @@ vendor/lib64/libthermalclient.so
 # Thermal (Mi)
 vendor/bin/mi_thermald
 vendor/etc/init/hw/init.mi_thermald.rc
+vendor/etc/thermal-map.conf
+vendor/etc/thermald-devices.conf
 
 # Thermal (Mi - Configs)
 odm/etc/thermal-4k.conf
