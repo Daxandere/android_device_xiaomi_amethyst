@@ -147,7 +147,7 @@ were also checked directly.
 | Other sensors | ✅ Verified | Verified on `rcd6`: `icm4x6xx` accel/gyro, `qmc630x` mag, `sip1328` light & flicker, `sns_tilt`, `pickup`, `ois_manager`, `pocket_mode`, `sar_detector`, `GripPostureDetection`, `fod_detector`, `MiPhoneCall`, `Touch Sensor`, `UDFPS Sensor`. `dbtap_v2` fires raw HAL events (3850; DT2W unlinked in LineageOS). Idle OEM/trigger entries: `pedometer`, `sns_smd`, `motion_detect`, `Elevator_Acc_Grv`, `oem_treadmill`, `basement_detect`, `eqm`, `wwan`, `semtech_sx937x_0`, `Dynamic Sensor Manager`. |
 | Charging (120 W) | ⬜ Untested | Peak charging power remains unmeasured. |
 | USB | ✅ Verified | USB connection and ADB. |
-| USB OTG | ⬜ Untested | |
+| USB OTG | ✅ Verified | Works well |
 
 Published builds: `rcd1` (initial GitHub release) and `rcd7` (`user`, signed
 with private `release-keys`, daily-driver validated on hardware). Downloads,
