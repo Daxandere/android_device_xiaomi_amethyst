@@ -1,1 +1,7 @@
 allow vendor_qti_init_shell proc_page_cluster:file { write };
+
+# Allow init.qcom.early_boot.sh to read /sys/kernel/smartpa/smartpa_type
+# and pre-populate persist.vendor.audio.pa.smartpa_type before audio HAL init
+allow vendor_qti_init_shell sysfs:dir search;
+allow vendor_qti_init_shell sysfs:file r_file_perms;
+set_prop(vendor_qti_init_shell, vendor_audio_prop)

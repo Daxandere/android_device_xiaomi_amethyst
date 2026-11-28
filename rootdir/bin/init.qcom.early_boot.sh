@@ -561,3 +561,16 @@ if [ -f /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies ]; then
     gpu_freq=`cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies` 2> /dev/null
     setprop vendor.gpu.available_frequencies "$gpu_freq"
 fi
+
+# Pre-populate persist.vendor.audio.pa.smartpa_type from kernel sysfs before
+# vendor.audio-hal starts. On clean flash, audio.primary.volcano.so calls
+# AudioDevice::init_smartpa_type() before pal_init()/agm_init(), causing AHAL
+# to fall back to Awinic params against a FourSemi (FS1945) ADSP graph (-95).
+if [ -r /sys/kernel/smartpa/smartpa_type ]; then
+    smartpa_type=`cat /sys/kernel/smartpa/smartpa_type 2> /dev/null`
+    case "$smartpa_type" in
+        aw882xx|fs19xx|sia91xx|tfa98xx|aw884xx)
+            setprop persist.vendor.audio.pa.smartpa_type "$smartpa_type"
+            ;;
+    esac
+fi
